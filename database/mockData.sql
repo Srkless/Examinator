@@ -34,34 +34,34 @@ insert into aktivnost (Naziv, SkraceniNaziv, MaksBrBodova, SkolskaGodina, IdPred
 
 
 insert into student_predmet (SkolskaGodina, Indeks, Ime, Prezime, Grupa, Napomena, IdPredmeta) values
-(2023, 'RA101/23', 'Marko', 'Jovanović', 'RA1', null, 1),
-(2023, 'RA102/23', 'Ana', 'Petrović', 'RA1', null, 1),
-(2023, 'RA103/23', 'Jelena', 'Nikolić', 'RA2', null, 1),
-(2023, 'RA104/23', 'Ivan', 'Stojanov', 'RA2', null, 2),
-(2023, 'RA105/23', 'Sara', 'Milovanović', 'RA1', null, 2),
-(2023, 'RA106/23', 'Luka', 'Đorđević', 'RA3', null, 3),
-(2023, 'RA107/23', 'Maja', 'Obradović', 'RA3', null, 3),
-(2023, 'RA108/23', 'Nikola', 'Kovačević', 'RA1', null, 4),
-(2023, 'RA109/23', 'Milica', 'Stefanović', 'RA2', null, 4),
-(2023, 'RA110/23', 'Aleksandar', 'Ilić', 'RA3', null, 4),
+(2023, '1101/22', 'Marko', 'Jovanović', 'RA1', null, 1),
+(2023, '1102/22', 'Ana', 'Petrović', 'RA1', null, 1),
+(2023, '1103/22', 'Jelena', 'Nikolić', 'RA2', null, 1),
+(2023, '1104/22', 'Ivan', 'Stojanov', 'RA2', null, 2),
+(2023, '1105/22', 'Sara', 'Milovanović', 'RA1', null, 2),
+(2023, '1106/22', 'Luka', 'Đorđević', 'RA3', null, 3),
+(2023, '1107/22', 'Maja', 'Obradović', 'RA3', null, 3),
+(2023, '1108/22', 'Nikola', 'Kovačević', 'RA1', null, 4),
+(2023, '1109/22', 'Milica', 'Stefanović', 'RA2', null, 4),
+(2023, '1110/22', 'Aleksandar', 'Ilić', 'RA3', null, 4),
 
-(2024, 'RA101/23', 'Marko', 'Jovanović', 'RA1', null, 2),
-(2024, 'RA102/23', 'Ana', 'Petrović', 'RA1', null, 2),
-(2024, 'RA103/23', 'Jelena', 'Nikolić', 'RA2', null, 2),
-(2024, 'RA104/23', 'Ivan', 'Stojanov', 'RA2', null, 3),
-(2024, 'RA105/23', 'Sara', 'Milovanović', 'RA1', null, 3),
-(2024, 'RA106/23', 'Luka', 'Đorđević', 'RA3', null, 4),
-(2024, 'RA107/23', 'Maja', 'Obradović', 'RA3', null, 4),
-(2024, 'RA108/23', 'Nikola', 'Kovačević', 'RA1', null, 1),
-(2024, 'RA109/23', 'Milica', 'Stefanović', 'RA2', null, 1),
-(2024, 'RA110/23', 'Aleksandar', 'Ilić', 'RA3', null, 1);
+(2024, '1111/22', 'Marko', 'Jovanović', 'RA1', null, 2),
+(2024, '1112/22', 'Ana', 'Petrović', 'RA1', null, 2),
+(2024, '1113/22', 'Jelena', 'Nikolić', 'RA2', null, 2),
+(2024, '1114/22', 'Ivan', 'Stojanov', 'RA2', null, 3),
+(2024, '1115/22', 'Sara', 'Milovanović', 'RA1', null, 3),
+(2024, '1116/22', 'Luka', 'Đorđević', 'RA3', null, 4),
+(2024, '1117/22', 'Maja', 'Obradović', 'RA3', null, 4),
+(2024, '1118/22', 'Nikola', 'Kovačević', 'RA1', null, 1),
+(2024, '1119/22', 'Milica', 'Stefanović', 'RA2', null, 1),
+(2024, '1120/22', 'Aleksandar', 'Ilić', 'RA3', null, 1);
 
 
-insert into formula (Naziv, Izraz, IdPredmeta) values
-('Ukupan broj bodova P1', 'K1 + K2 + PR', 1),
-('Ukupan broj bodova P2', 'K1 + ZI', 2),
-('Ukupan broj bodova PJ2', 'D1 + D2 + PR', 3),
-('Ukupan broj bodova M4', 'T1 + T2', 4);
+insert into formula (SkolskaGodina, Naziv, Izraz, IdPredmeta) values
+(2024, 'Ukupan broj bodova P1', 'K1 + K2 + PR', 1),
+(2024, 'Ukupan broj bodova P2', 'K1 + ZI', 2),
+(2025, 'Ukupan broj bodova PJ2', 'D1 + D2 + PR', 3),
+(2025, 'Ukupan broj bodova M4', 'T1 + T2', 4);
 
 insert into rezultat (IdAktivnosti, IdStudentPredmet, Bodovi) values
 (1, 1, 20),

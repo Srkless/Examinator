@@ -37,7 +37,7 @@ Ime					varchar(30)		not null,
 Prezime				varchar(30) 	not null,
 Grupa				varchar(5)		not null,
 Napomena			text,
-IdPredmeta		int				not null,
+IdPredmeta			int				not null,
 constraint FK_student_predmet_predmet
 foreign key (IdPredmeta)
 references predmet(IdPredmeta)
@@ -47,13 +47,15 @@ unique (Indeks, IdPredmeta, SkolskaGodina)						-- Jedan student moze biti u jed
 
 create table formula (
 IdFormule		int 			auto_increment	primary key,
+SkolskaGodina 	int				not null,
 Naziv			varchar(30)		not null,
 Izraz			varchar(100)	not null,
 IdPredmeta		int				not null,
 constraint FK_formula_predmet
 foreign key (IdPredmeta)
 references predmet(IdPredmeta)
-on update cascade on delete cascade								-- Prilikom update/delete predmeta, promjena se reflektuje i na formulu.
+on update cascade on delete cascade,							-- Prilikom update/delete predmeta, promjena se reflektuje i na formulu.
+unique (SkolskaGodina, Naziv, IdPredmeta)						-- U okviru jedne sk. godine, moze postojati samo jedna formula sa datim nazivom na datom predmetu!	
 );
 
 create table rezultat (
