@@ -14,24 +14,25 @@ import java.io.Serializable;
 public class StudentSubject {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "IdStudentPredmet")
   private Integer id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "SkolskaGodina")
   private Integer schoolYear;
 
-  @Column(nullable = false, length = 10)
+  @Column(nullable = false, length = 10, name = "Indeks")
   private String index;
 
-  @Column(nullable = false, length = 30)
+  @Column(nullable = false, length = 30, name = "Ime")
   private String firstName;
 
-  @Column(nullable = false, length = 30)
+  @Column(nullable = false, length = 30, name = "Prezime")
   private String lastName;
 
-  @Column(nullable = false, length = 5)
+  @Column(nullable = false, length = 5, name = "Grupa")
   private String group;
 
-  @Column(columnDefinition = "text")
+  @Column(columnDefinition = "text", name = "Napomena")
   private String note;
 
   @ManyToOne

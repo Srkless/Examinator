@@ -13,12 +13,13 @@ import java.io.Serializable;
 public class Subject {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(nullable = false, unique = true, name = "IdPredmeta")
   private Integer id;
 
-  @Column(nullable = false, length = 50)
+  @Column(nullable = false, length = 50, name = "Naziv")
   private String name;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false, unique = true, name = "Sifra")
   private Integer code;
 
   @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)

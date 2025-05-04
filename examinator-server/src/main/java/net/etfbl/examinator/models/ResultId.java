@@ -11,6 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResultId implements Serializable {
+
   private Integer activityId;
   private Integer studentSubjectId;
 }
