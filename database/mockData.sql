@@ -1,9 +1,9 @@
 use examinator;
 
-insert into korisnik (Ime, Prezime, Email) values
-('Marko', 'Marković', 'marko.markovic@etf.unibl.org'),
-('Jovana', 'Jovanović', 'jovana.jovanovic@etf.unibl.org'),
-('Petar', 'Petrović', 'petar.petrovic@etf.unibl.org');
+insert into korisnik (Ime, Prezime, Email, Username, PasswordHash) values
+('Marko', 'Marković', 'marko.markovic@etf.unibl.org', 'markom', ''),
+('Jovana', 'Jovanović', 'jovana.jovanovic@etf.unibl.org', 'jovana', ''),
+('Petar', 'Petrović', 'petar.petrovic@etf.unibl.org', 'petarp', '');
 
 insert into predmet (Naziv, Sifra) values
 ('Programiranje 1', 2223),

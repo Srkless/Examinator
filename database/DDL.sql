@@ -6,7 +6,9 @@ create table korisnik (
 IdKorisnika 	int 			auto_increment 	primary key,
 Ime 			varchar(30) 	not null,
 Prezime			varchar(30)		not null,
-Email			varchar(50) 	not null
+Email			varchar(50) 	not null,
+Username varchar(50) not null unique,
+PasswordHash varchar(255) not null
 );
 
 create table predmet (
