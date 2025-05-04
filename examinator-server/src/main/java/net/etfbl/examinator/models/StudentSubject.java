@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "student_predmet", uniqueConstraints = @UniqueConstraint(columnNames = { "Indeks", "IdPredmeta",
@@ -35,10 +37,12 @@ public class StudentSubject {
   @Column(columnDefinition = "text", name = "Napomena")
   private String note;
 
-  @ManyToOne
+  @ManyToOne()
   @JoinColumn(name = "IdPredmeta", nullable = false)
+  @JsonBackReference
   private Subject subject;
 
   @OneToMany(mappedBy = "studentSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
   private List<Result> results = new ArrayList<>();
 }
