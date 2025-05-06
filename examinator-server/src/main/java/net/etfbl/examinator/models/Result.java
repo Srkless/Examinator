@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "rezultat")
@@ -17,13 +18,15 @@ public class Result {
   @ManyToOne
   @MapsId("activityId")
   @JoinColumn(name = "IdAktivnosti")
+  @JsonBackReference
   private Activity activity;
 
   @ManyToOne
   @MapsId("studentSubjectId")
   @JoinColumn(name = "IdStudentPredmet")
+  @JsonBackReference
   private StudentSubject studentSubject;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "Bodovi")
   private Integer points;
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "predmet")
@@ -23,9 +25,11 @@ public class Subject {
   private Integer code;
 
   @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
   private List<Activity> activities = new ArrayList<>();
 
   @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
   private List<StudentSubject> studentSubjects = new ArrayList<>();
 
   @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)

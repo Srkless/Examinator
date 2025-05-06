@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "aktivnost", uniqueConstraints = @UniqueConstraint(columnNames = { "SkraceniNaziv", "IdPredmeta",
@@ -14,24 +16,27 @@ import java.io.Serializable;
 public class Activity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "IdAktivnosti")
   private Integer id;
 
-  @Column(nullable = false, length = 50)
+  @Column(name = "Naziv", nullable = false, length = 50)
   private String name;
 
   @Column(name = "SkraceniNaziv", nullable = false, length = 10)
   private String shortName;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "MaksBrBodova")
   private Integer maxPoints;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "SkolskaGodina")
   private Integer schoolYear;
 
   @ManyToOne
   @JoinColumn(name = "IdPredmeta", nullable = false)
+  @JsonBackReference
   private Subject subject;
 
   @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
   private List<Result> results = new ArrayList<>();
 }
