@@ -1,31 +1,35 @@
 package net.etfbl.examinator.models;
 
 import jakarta.persistence.*;
+
 import lombok.*;
+
 import java.util.*;
-import java.io.Serializable;
 
 @Entity
-@Table(name = "formula", uniqueConstraints = @UniqueConstraint(columnNames = { "SkolskaGodina", "Naziv",
-    "IdPredmeta" }))
+@Table(
+        name = "formula",
+        uniqueConstraints =
+                @UniqueConstraint(columnNames = {"SkolskaGodina", "Naziv", "IdPredmeta"}))
 @Getter
 @Setter
 @NoArgsConstructor
 public class Formula {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true, name = "IdFormule")
+    private Integer id;
 
-  @Column(nullable = false)
-  private Integer schoolYear;
+    @Column(nullable = false, name = "SkolskaGodina")
+    private Integer schoolYear;
 
-  @Column(nullable = false, length = 30)
-  private String name;
+    @Column(nullable = false, length = 30, name = "Naziv")
+    private String name;
 
-  @Column(nullable = false, length = 100)
-  private String expression;
+    @Column(nullable = false, length = 100, name = "Izraz")
+    private String expression;
 
-  @ManyToOne
-  @JoinColumn(name = "IdPredmeta", nullable = false)
-  private Subject subject;
+    @ManyToOne
+    @JoinColumn(name = "IdPredmeta", nullable = false)
+    private Subject subject;
 }

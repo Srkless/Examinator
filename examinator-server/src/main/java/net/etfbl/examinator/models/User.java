@@ -1,9 +1,10 @@
 package net.etfbl.examinator.models;
 
-import jakarta.persistence.*; // JPA/Hibernate annotations
-import lombok.*; // Lombok annotations
-import java.util.*; // Collections
-import java.io.Serializable; // For @Embeddable ID class
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.*;
+import java.io.Serializable;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "korisnik")
@@ -23,9 +24,12 @@ public class User {
     private String lastName;
 
     @Column(nullable = false, length = 50, name = "Email")
+    @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\."
+            + "[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"
+            + "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "{invalid.email}")
     private String email;
 
-    @Column(nullable = false, unique = true, length = 50, name="Username")
+    @Column(nullable = false, unique = true, length = 50, name = "Username")
     private String username;
 
     @Column(nullable = false, length = 255, name = "PasswordHash")
