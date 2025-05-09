@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import net.etfbl.examinator.models.Result;
+import net.etfbl.examinator.models.ResultId;
 
 @Repository
-public interface ResultRepository extends JpaRepository<Result, Integer> {
+public interface ResultRepository extends JpaRepository<Result, ResultId> {
+
 }
