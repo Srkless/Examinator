@@ -1,6 +1,7 @@
 package net.etfbl.examinator.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 
@@ -14,13 +15,12 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 public class Result {
-    @EmbeddedId
-    private ResultId id = new ResultId();
+    @EmbeddedId private ResultId id = new ResultId();
 
     @ManyToOne
     @MapsId("activityId")
     @JoinColumn(name = "IdAktivnosti")
-    @JsonBackReference("activity-results")
+    @JsonManagedReference("activity-results")
     private Activity activity;
 
     @ManyToOne

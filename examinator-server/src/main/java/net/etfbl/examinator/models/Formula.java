@@ -1,16 +1,18 @@
 package net.etfbl.examinator.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 import lombok.*;
 
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 @Entity
-@Table(name = "formula", uniqueConstraints = @UniqueConstraint(columnNames = { "SkolskaGodina", "Naziv",
-        "IdPredmeta" }))
+@Table(
+        name = "formula",
+        uniqueConstraints =
+                @UniqueConstraint(columnNames = {"SkolskaGodina", "Naziv", "IdPredmeta"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,6 +33,6 @@ public class Formula {
 
     @ManyToOne
     @JoinColumn(name = "IdPredmeta", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("subject-formulas")
     private Subject subject;
 }
