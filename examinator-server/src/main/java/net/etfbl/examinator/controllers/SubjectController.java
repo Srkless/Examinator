@@ -14,11 +14,13 @@ import java.util.Map;
 @RequestMapping("/api/subjects")
 public class SubjectController {
 
-    @Autowired private SubjectService subjectService;
+    @Autowired
+    private SubjectService subjectService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Subject> getById(@PathVariable Long id) {
-        Subject subject = subjectService.getById(id);
+    public ResponseEntity<Subject> getById(@PathVariable Integer id) {
+        Subject subject = subjectService.getById(id)
+                .orElseThrow(() -> new RuntimeException("Subject with ID " + id + " not found."));
         return ResponseEntity.ok(subject);
     }
 
