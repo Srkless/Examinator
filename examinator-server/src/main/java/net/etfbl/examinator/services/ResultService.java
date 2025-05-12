@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import net.etfbl.examinator.models.Activity;
 import net.etfbl.examinator.models.Result;
@@ -16,6 +17,7 @@ import net.etfbl.examinator.repositories.ResultRepository;
 import net.etfbl.examinator.repositories.StudentSubjectRepository;
 import net.etfbl.examinator.repositories.SubjectRepository;
 
+@Service
 public class ResultService {
   @Autowired
   private ResultRepository resultRepository;
@@ -54,12 +56,18 @@ public class ResultService {
   }
 
   public Result addResult(StudentSubject student, Activity activity, Integer points) {
+    if (student.getId() == null || activity.getId() == null) {
+      throw new IllegalArgumentException("Both studentSubject and activity must be persisted and have non-null IDs");
+    }
+
+    System.out.println("SID: " + student.getId() + " AID: " + activity.getId());
+
     Result r = new Result();
     r.setStudentSubject(student);
     r.setActivity(activity);
     r.setPoints(points);
-    resultRepository.save(r);
-    return r;
+
+    return resultRepository.save(r);
   }
 
   public Result addResult(Result result) {

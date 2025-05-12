@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,6 +16,11 @@ public class SubjectService {
 
     @Autowired
     private SubjectRepository subjectRepository;
+
+    public List<Subject> getAll() {
+        List<Subject> list = subjectRepository.findAll();
+        return list;
+    }
 
     public Optional<Subject> getById(Integer id) {
         return subjectRepository

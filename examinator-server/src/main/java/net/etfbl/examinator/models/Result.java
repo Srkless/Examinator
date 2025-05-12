@@ -14,7 +14,8 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 public class Result {
-    @EmbeddedId private ResultId id = new ResultId();
+    @EmbeddedId
+    private ResultId id = new ResultId();
 
     @ManyToOne
     @MapsId("activityId")

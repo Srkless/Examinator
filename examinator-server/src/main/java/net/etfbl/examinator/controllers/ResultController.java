@@ -62,16 +62,6 @@ public class ResultController {
     return ResponseEntity.ok(list);
   }
 
-  @GetMapping("/{resultId}")
-  public ResponseEntity<?> getById(@PathVariable ResultId resultId) {
-    if (resultService.getById(resultId).isEmpty()) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", "Result not found");
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
-    return ResponseEntity.ok(resultService.getById(resultId).get());
-  }
-
   @GetMapping("/{studentSubjectId}/{activityId}")
   public ResponseEntity<?> getById(
       @PathVariable Integer studentSubjectId,
@@ -86,11 +76,6 @@ public class ResultController {
     }
 
     return ResponseEntity.ok(result.get());
-  }
-
-  @PostMapping("/add")
-  public ResponseEntity<Result> addResult(@RequestBody Result result) {
-    return ResponseEntity.ok(resultService.addResult(result));
   }
 
   @PostMapping("/")

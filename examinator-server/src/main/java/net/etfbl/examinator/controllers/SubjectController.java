@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/subjects")
@@ -16,6 +17,12 @@ public class SubjectController {
 
     @Autowired
     private SubjectService subjectService;
+
+    @GetMapping
+    public ResponseEntity<List<Subject>> getAllSubjects() {
+        List<Subject> list = subjectService.getAll();
+        return ResponseEntity.ok(list);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Subject> getById(@PathVariable Integer id) {
