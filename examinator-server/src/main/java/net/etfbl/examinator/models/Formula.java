@@ -6,11 +6,11 @@ import lombok.*;
 
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
-@Table(
-        name = "formula",
-        uniqueConstraints =
-                @UniqueConstraint(columnNames = {"SkolskaGodina", "Naziv", "IdPredmeta"}))
+@Table(name = "formula", uniqueConstraints = @UniqueConstraint(columnNames = { "SkolskaGodina", "Naziv",
+        "IdPredmeta" }))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,5 +31,6 @@ public class Formula {
 
     @ManyToOne
     @JoinColumn(name = "IdPredmeta", nullable = false)
+    @JsonBackReference
     private Subject subject;
 }

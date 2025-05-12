@@ -11,8 +11,6 @@ import java.util.Optional;
 public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     Optional<Subject> findByName(String name);
 
-    Optional<Subject> findById(Long id);
-
     Optional<Subject> findByCode(Integer code);
 
     boolean existsByName(String name);

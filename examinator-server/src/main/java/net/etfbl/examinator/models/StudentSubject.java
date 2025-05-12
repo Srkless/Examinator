@@ -10,10 +10,8 @@ import lombok.*;
 import java.util.*;
 
 @Entity
-@Table(
-        name = "student_predmet",
-        uniqueConstraints =
-                @UniqueConstraint(columnNames = {"Indeks", "IdPredmeta", "SkolskaGodina"}))
+@Table(name = "student_predmet", uniqueConstraints = @UniqueConstraint(columnNames = { "Indeks", "IdPredmeta",
+        "SkolskaGodina" }))
 @Getter
 @Setter
 @NoArgsConstructor

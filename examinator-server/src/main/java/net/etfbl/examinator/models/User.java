@@ -3,6 +3,9 @@ package net.etfbl.examinator.models;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.io.Serializable;
 import jakarta.validation.constraints.*;
 
@@ -37,5 +40,6 @@ public class User {
 
     @ManyToMany
     @JoinTable(name = "korisnik_predmet", joinColumns = @JoinColumn(name = "IdKorisnika"), inverseJoinColumns = @JoinColumn(name = "IdPredmeta"))
+    @JsonBackReference
     private Set<Subject> subjects = new HashSet<>();
 }
