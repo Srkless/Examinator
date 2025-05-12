@@ -1,5 +1,6 @@
 package net.etfbl.examinator.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -26,7 +27,7 @@ public class Subject {
     private Integer code;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("subject-activities")
+    @JsonBackReference("subject-activities")
     private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -34,10 +35,10 @@ public class Subject {
     private List<StudentSubject> studentSubjects = new ArrayList<>();
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("subject-formulas")
     private List<Formula> formulas = new ArrayList<>();
 
     @ManyToMany(mappedBy = "subjects")
-    @JsonManagedReference
+    @JsonManagedReference("subjects-users")
     private Set<User> users = new HashSet<>();
 }

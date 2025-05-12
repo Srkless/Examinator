@@ -37,10 +37,10 @@ public class Activity {
 
     @ManyToOne
     @JoinColumn(name = "IdPredmeta")
-    @JsonBackReference("subject-activities")
+    @JsonManagedReference("subject-activities")
     private Subject subject;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("activity-results")
+    @JsonBackReference("activity-results")
     private List<Result> results = new ArrayList<>();
 }
