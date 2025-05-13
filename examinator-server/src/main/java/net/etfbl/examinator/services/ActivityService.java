@@ -3,6 +3,7 @@ package net.etfbl.examinator.services;
 import net.etfbl.examinator.models.Activity;
 import net.etfbl.examinator.models.Subject;
 import net.etfbl.examinator.repositories.ActivityRepository;
+import net.etfbl.examinator.repositories.SubjectRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.Optional;
 public class ActivityService {
     @Autowired private ActivityRepository activityRepository;
 
-    // @Autowired private SubjectRepository subjectRepository;
+    @Autowired private SubjectRepository subjectRepository;
 
     public Optional<Activity> addActivity(Map<String, Object> activityData) {
         String name = (String) activityData.get("name");
@@ -62,6 +63,7 @@ public class ActivityService {
 
     public Activity update(Activity updated) {
         Integer id = updated.getId();
+        Integer subjectID = updated.getSubject().getId();
 
         Optional<Activity> optionalActivity = activityRepository.findById(id);
         if (optionalActivity.isEmpty()) {
@@ -70,14 +72,20 @@ public class ActivityService {
 
         Activity existingActivity = optionalActivity.get();
 
-        if (activityRepository.existsByName(updated.getName())
-                && !existingActivity.getName().equals(updated.getName())) {
-            throw new RuntimeException("Name already exists");
+        Optional<Subject> optionalSubject = subjectRepository.findById(subjectID);
+
+        if (optionalSubject.isEmpty()) {
+            throw new IllegalArgumentException("Subject not found");
         }
 
-        if (activityRepository.existsByShortName(updated.getShortName())
-                && !existingActivity.getShortName().equals(updated.getShortName())) {
-            throw new RuntimeException("ShortName already exists");
+        Subject existingSubject = optionalSubject.get();
+        boolean nameConflict =
+                activityRepository.existsByNameAndSubjectIdAndIdNot(
+                        updated.getName(), subjectID, id);
+
+        if (nameConflict) {
+            throw new IllegalArgumentException(
+                    "Activity with the same name already exists for this subject");
         }
 
         existingActivity.setName(updated.getName());
@@ -85,5 +93,13 @@ public class ActivityService {
         existingActivity.setMaxPoints(updated.getMaxPoints());
 
         return activityRepository.save(existingActivity);
+    }
+
+    public void delete(Integer id) {
+        if (!activityRepository.existsById(id)) {
+            throw new RuntimeException("Activity with ID " + id + " does not exist");
+        }
+
+        activityRepository.deleteById(id);
     }
 }

@@ -1,7 +1,8 @@
 package net.etfbl.examinator.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.*;
 
@@ -14,6 +15,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +29,7 @@ public class Subject {
     private Integer code;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference("subject-activities")
+    // @JsonManagedReference("subject-activities")
     private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -39,6 +41,5 @@ public class Subject {
     private List<Formula> formulas = new ArrayList<>();
 
     @ManyToMany(mappedBy = "subjects")
-    @JsonManagedReference("subjects-users")
     private Set<User> users = new HashSet<>();
 }
