@@ -14,3 +14,5 @@
 **/*.log
 
 **/resources/static/
+
+**/log
