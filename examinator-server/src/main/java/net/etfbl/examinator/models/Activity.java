@@ -1,7 +1,8 @@
 package net.etfbl.examinator.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.*;
 
@@ -17,6 +18,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Activity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,10 +39,10 @@ public class Activity {
 
     @ManyToOne
     @JoinColumn(name = "IdPredmeta")
-    @JsonManagedReference("subject-activities")
+    // @JsonBackReference("subject-activities")
     private Subject subject;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference("activity-results")
+    @JsonManagedReference("activity-results")
     private List<Result> results = new ArrayList<>();
 }

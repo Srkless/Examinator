@@ -1,7 +1,6 @@
 package net.etfbl.examinator.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 
@@ -20,7 +19,7 @@ public class Result {
     @ManyToOne
     @MapsId("activityId")
     @JoinColumn(name = "IdAktivnosti")
-    @JsonManagedReference("activity-results")
+    @JsonBackReference("activity-results")
     private Activity activity;
 
     @ManyToOne

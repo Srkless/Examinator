@@ -1,6 +1,7 @@
 package net.etfbl.examinator.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -14,6 +15,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idKorisnika")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +47,5 @@ public class User {
             name = "korisnik_predmet",
             joinColumns = @JoinColumn(name = "IdKorisnika"),
             inverseJoinColumns = @JoinColumn(name = "IdPredmeta"))
-    @JsonBackReference("subjects-users")
     private Set<Subject> subjects = new HashSet<>();
 }

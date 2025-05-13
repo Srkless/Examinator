@@ -45,8 +45,23 @@ public class ActivityController {
 
     @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateSubject(@RequestBody Activity updated) {
-        Activity activity = activityService.update(updated);
-        return ResponseEntity.ok(activity);
+        try {
+            Activity activity = activityService.update(updated);
+            return ResponseEntity.ok(activity);
+        } catch (RuntimeException ex) {
+            // Vrati 400 Bad Request sa porukom o grešci
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteActivity(@PathVariable Integer id) {
+        try {
+            activityService.delete(id);
+            return ResponseEntity.ok("Activity deleted successfully");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // @PostMapping("/login")
