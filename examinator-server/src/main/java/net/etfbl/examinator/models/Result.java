@@ -1,10 +1,12 @@
 package net.etfbl.examinator.models;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.util.*;
-import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.*;
+
+import lombok.*;
+
+import java.util.*;
 
 @Entity
 @Table(name = "rezultat")
@@ -12,21 +14,20 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Setter
 @NoArgsConstructor
 public class Result {
-  @EmbeddedId
-  private ResultId id = new ResultId();
+    @EmbeddedId private ResultId id = new ResultId();
 
-  @ManyToOne
-  @MapsId("activityId")
-  @JoinColumn(name = "IdAktivnosti")
-  @JsonBackReference
-  private Activity activity;
+    @ManyToOne
+    @MapsId("activityId")
+    @JoinColumn(name = "IdAktivnosti")
+    @JsonBackReference("activity-results")
+    private Activity activity;
 
-  @ManyToOne
-  @MapsId("studentSubjectId")
-  @JoinColumn(name = "IdStudentPredmet")
-  @JsonBackReference
-  private StudentSubject studentSubject;
+    @ManyToOne
+    @MapsId("studentSubjectId")
+    @JoinColumn(name = "IdStudentPredmet")
+    @JsonBackReference("studentSubject-results")
+    private StudentSubject studentSubject;
 
-  @Column(nullable = false, name = "Bodovi")
-  private Integer points;
+    @Column(nullable = false, name = "Bodovi")
+    private Integer points;
 }

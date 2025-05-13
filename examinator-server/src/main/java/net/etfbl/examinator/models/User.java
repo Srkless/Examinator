@@ -1,16 +1,21 @@
 package net.etfbl.examinator.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.*;
-import lombok.*;
-import java.util.*;
-import java.io.Serializable;
 import jakarta.validation.constraints.*;
+
+import lombok.*;
+
+import java.util.*;
 
 @Entity
 @Table(name = "korisnik")
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idKorisnika")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +29,11 @@ public class User {
     private String lastName;
 
     @Column(nullable = false, length = 50, name = "Email")
-    @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\."
-            + "[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"
-            + "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "{invalid.email}")
+    @Pattern(
+            regexp =
+                    "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"
+                        + "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+            message = "{invalid.email}")
     private String email;
 
     @Column(nullable = false, unique = true, length = 50, name = "Username")
@@ -36,6 +43,9 @@ public class User {
     private String passwordHash;
 
     @ManyToMany
-    @JoinTable(name = "korisnik_predmet", joinColumns = @JoinColumn(name = "IdKorisnika"), inverseJoinColumns = @JoinColumn(name = "IdPredmeta"))
+    @JoinTable(
+            name = "korisnik_predmet",
+            joinColumns = @JoinColumn(name = "IdKorisnika"),
+            inverseJoinColumns = @JoinColumn(name = "IdPredmeta"))
     private Set<Subject> subjects = new HashSet<>();
 }
