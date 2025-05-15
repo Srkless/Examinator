@@ -1,7 +1,10 @@
 package net.etfbl.examinator.controllers;
 
 import lombok.RequiredArgsConstructor;
+import net.etfbl.examinator.security.JwtUtil;
 import net.etfbl.examinator.services.UserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +15,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
 
+  @Autowired
   private final UserService userService;
+
+  @Autowired
+  private JwtUtil jwtUtil;
 
   @PostMapping("/register")
   public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
@@ -27,7 +34,8 @@ public class UserController {
     String password = body.get("password");
 
     if (userService.authenticate(username, password)) {
-      return ResponseEntity.ok("Login successful");
+      String token = jwtUtil.generateToken(username);
+      return ResponseEntity.ok(Map.of("token", token));
     }
 
     return ResponseEntity.status(401).body("Invalid credentials");
