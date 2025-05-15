@@ -2,6 +2,7 @@
 
 set -e
 
+export JWT_SECRET=uGzM7Y+d5vJkO9npDpYb8vN1N0J4N2M4rSpLExwCrIU=
 TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")
 
 mkdir -p log
