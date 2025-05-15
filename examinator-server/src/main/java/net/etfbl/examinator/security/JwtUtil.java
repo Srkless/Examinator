@@ -19,13 +19,14 @@ public class JwtUtil {
   @Value("${jwt.secret}")
   private String secretKey;
 
-  private final long TOKEN_VALIDITY = 24;
+  @Value("${jwt.token.validity:86400000}")
+  private long tokenValidity;
 
   public String generateToken(String username) {
     return Jwts.builder()
         .setSubject(username)
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY))
+        .setExpiration(new Date(System.currentTimeMillis() + tokenValidity))
         .signWith(getSigningKey(), SignatureAlgorithm.HS256)
         .compact();
   }
