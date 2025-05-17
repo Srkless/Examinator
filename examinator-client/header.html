@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Examinator</title>
+  <link rel="stylesheet" href="headerStyles.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fondamento&display=swap" rel="stylesheet">
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <header class="main-header">
+   <a href="home.html" class="logo">Examinator</a>
+    <div class="user-menu" id="userMenu">
+    <div class="user-icon" id="userIcon">
+      <span class="material-icons">account_circle</span>
+      <span class="material-icons arrow">expand_more</span>
+    </div>
+    <ul class="dropdown" id="dropdownMenu">
+      <li>
+        <a href="#">
+          Podešavanja
+          <span class="material-icons">settings</span>
+        </a>
+      </li>
+      <li>
+        <a href="logout.html">
+          Odjava
+          <span class="material-icons">logout</span>
+        </a>
+      </li>
+    </ul>
+    </div>
+  </header>
+
+  <script>
+    const userIcon = document.getElementById('userIcon');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    userIcon.addEventListener('click', () => {
+      dropdownMenu.classList.toggle('show');
+    });
+    // Zatvaranje menija klikom van njega
+    document.addEventListener('click', (event) => {
+      if (!userIcon.contains(event.target)) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>

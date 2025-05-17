@@ -1,0 +1,86 @@
+@import url("https://fonts.googleapis.com/css2?family=Fondamento&display=swap");
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid #dcdcdc;
+  position: relative;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.logo {
+  font-family: "Fondamento", cursive;
+  font-size: 32px;
+  color: #000;
+  margin-left: 30px;
+  text-decoration: none;
+}
+
+.user-menu {
+  position: relative;
+}
+.user-menu .user-icon {
+  display: flex;
+  align-items: center;
+  background-color: inherit;
+  border-radius: 50px;
+  padding: 0.6rem 1rem;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.user-menu .user-icon:hover {
+  background-color: #f0f0f0;
+}
+.user-menu .user-icon:hover .material-icons {
+  color: #f66f19;
+}
+.user-menu .user-icon .material-icons {
+  font-size: 32px;
+  color: #333;
+  transition: color 0.3s ease;
+}
+.user-menu .user-icon .arrow {
+  font-size: 26px;
+}
+.user-menu .dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  background-color: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  list-style: none;
+  padding: 0.3rem 0;
+  min-width: 140px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+.user-menu .dropdown li a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: #333;
+}
+.user-menu .dropdown li a .material-icons {
+  font-size: 20px;
+  margin-left: 3rem;
+}
+.user-menu .dropdown li a:hover {
+  background-color: #f0f0f0;
+}
+.user-menu .dropdown.show {
+  display: block;
+}/*# sourceMappingURL=headerStyles.css.map */

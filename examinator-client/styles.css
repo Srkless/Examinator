@@ -1,31 +1,6 @@
-:root {
-  /* Font */
-  --font-family: "Roboto", sans-serif;
-
-  /* Boje */
-  --color-bg: #fff;
-  --color-primary: #F88E4A;
-  --color-primary-hover: #f66f19;
-  --color-text: #333;
-  --color-muted: #666;
-  --color-light-text: #989898;
-  --color-border: #ddd;
-  --color-error: red;
-
-  /* Veličine fonta */
-  --font-size-base: 14px;
-  --font-size-title: 24px;
-  --font-size-button: 16px;
-
-  /* Ostale vrednosti */
-  --border-radius: 8px;
-  --input-padding: 12px;
-}
-
-
 body {
-  font-family: var(--font-family);
-  background-color: var(--color-bg);
+  font-family: "Roboto";
+  background-color: #fff;
   margin: 0;
   min-height: 100vh;
   display: flex;
@@ -42,9 +17,9 @@ body {
 }
 
 .login-card {
-  background-color: var(--color-bg);
+  background-color: #fff;
   padding: 40px;
-  border-radius: var(--border-radius);
+  border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 350px;
@@ -52,9 +27,9 @@ body {
 }
 
 .login-title {
-  color: var(--color-text);
+  color: #333;
   margin-bottom: 30px;
-  font-size: var(--font-size-title);
+  font-size: 24px;
   font-weight: 500;
 }
 
@@ -66,29 +41,29 @@ body {
 .form-label {
   display: block;
   margin-bottom: 8px;
-  color: var(--color-light-text);
+  color: #989898;
   font-weight: 100;
-  font-size: var(--font-size-base);
+  font-size: 14px;
 }
 
 .form-input {
   width: 100%;
-  padding: var(--input-padding);
-  border: 1px solid var(--color-border);
+  padding: 12px;
+  border: 1px solid #ddd;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: var(--font-size-base);
+  font-size: 14px;
 }
 .form-input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: #F88E4A;
 }
 
 .forgot-password {
   display: block;
   text-align: center;
   margin-bottom: 20px;
-  color: var(--color-muted);
+  color: #666;
   text-decoration: none;
   font-size: 13px;
 }
@@ -101,35 +76,35 @@ body {
 }
 
 .checkbox-label {
-  font-size: var(--font-size-base);
-  color: var(--color-muted);
+  font-size: 14px;
+  color: #555;
 }
 
 .login-button {
-  background-color: var(--color-primary);
-  color: var(--color-bg);
+  background-color: #F88E4A;
+  color: #fff;
   border: none;
   padding: 12px;
   width: 100%;
   border-radius: 10px;
-  font-size: var(--font-size-button);
+  font-size: 16px;
   cursor: pointer;
   margin-top: 10px;
   font-weight: 500;
   transition: background-color 0.3s ease;
 }
 .login-button:hover {
-  background-color: var(--color-primary-hover);
+  background-color: #f66f19;
 }
 
 .register-prompt {
   margin-top: 20px;
-  color:var(--color-muted);
-  font-size: var(--font-size-base);
+  color: #666;
+  font-size: 14px;
 }
 
 .register-link {
-  color: var(--color-primary);
+  color: #F88E4A;
   text-decoration: none;
   font-weight: 500;
 }
@@ -138,7 +113,7 @@ body {
 }
 
 .error-message {
-  color: var(--color-error);
+  color: red;
   font-size: 0.9rem;
   margin-top: 4px;
 }/*# sourceMappingURL=styles.css.map */

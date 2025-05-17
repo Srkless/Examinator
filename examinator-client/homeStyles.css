@@ -1,0 +1,227 @@
+@import url("https://fonts.googleapis.com/css2?family=Fondamento&display=swap");
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid #dcdcdc;
+  position: relative;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.logo {
+  font-family: "Fondamento", cursive;
+  font-size: 32px;
+  color: #000;
+  margin-left: 30px;
+  text-decoration: none;
+}
+
+.user-menu {
+  position: relative;
+}
+.user-menu .user-icon {
+  display: flex;
+  align-items: center;
+  background-color: inherit;
+  border-radius: 50px;
+  padding: 0.6rem 1rem;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.user-menu .user-icon:hover {
+  background-color: #f0f0f0;
+}
+.user-menu .user-icon:hover .material-icons {
+  color: #f66f19;
+}
+.user-menu .user-icon .material-icons {
+  font-size: 32px;
+  color: #333;
+  transition: color 0.3s ease;
+}
+.user-menu .user-icon .arrow {
+  font-size: 26px;
+}
+.user-menu .dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  background-color: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  list-style: none;
+  padding: 0.3rem 0;
+  min-width: 140px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+.user-menu .dropdown li a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: #333;
+}
+.user-menu .dropdown li a .material-icons {
+  font-size: 20px;
+  margin-left: 3rem;
+}
+.user-menu .dropdown li a:hover {
+  background-color: #f0f0f0;
+}
+.user-menu .dropdown.show {
+  display: block;
+}
+
+.content {
+  padding: 2rem;
+}
+
+.hidden {
+  display: none;
+}
+
+h2 {
+  max-width: calc(100% - 300px);
+  font-size: 26px;
+  margin: 4rem auto 1rem auto;
+  color: #333;
+}
+
+#no-subjects {
+  text-align: center;
+  margin-top: 5rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+table {
+  max-width: calc(100% - 300px);
+  margin: 0 auto;
+  border-collapse: collapse;
+  width: 100%;
+}
+table td, table th {
+  padding: 0.75rem;
+  border: 1px solid #333;
+  text-align: center;
+  color: #1f1f1f;
+}
+table .material-icons {
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+table .material-icons:hover {
+  color: #f66f19;
+}
+
+.add-button {
+  position: fixed;
+  bottom: 4rem;
+  right: 5rem;
+  background-color: #F88E4A;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.add-button .material-icons {
+  font-size: 36px;
+  color: #fff;
+}
+.add-button:hover {
+  background-color: #f66f19;
+}
+
+dialog {
+  width: 500px;
+  min-height: 250px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif;
+}
+dialog form#subject-form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  color: #333;
+  font-weight: 300;
+}
+dialog form#subject-form .dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #dcdcdc;
+  padding-bottom: 0.5rem;
+  height: 30px;
+  box-sizing: border-box;
+}
+dialog form#subject-form .dialog-header h3 {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #888;
+  font-weight: 400;
+}
+dialog form#subject-form .dialog-header .close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+dialog form#subject-form .dialog-header .close-btn .material-icons {
+  font-size: 1.5rem;
+}
+dialog form#subject-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+}
+dialog form#subject-form label input {
+  margin-top: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+dialog form#subject-form label input:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+dialog form#subject-form .buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+dialog form#subject-form .buttons button {
+  width: 120px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #F88E4A;
+  color: #fff;
+}
+dialog form#subject-form .buttons button:hover {
+  background-color: #f66f19;
+}/*# sourceMappingURL=homeStyles.css.map */
