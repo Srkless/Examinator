@@ -118,4 +118,20 @@ subjectsBody.addEventListener("click", function (e) {
       document.querySelector(".close-btn").blur();
     }
   }
+  else if(e.target.textContent == "groups"){  // korisnici na predmetu (TODO)
+
+  }
+  else if(e.target.textContent === "display_settings"){ // aktivnosti i formule
+    window.location.href = "activities.html";
+  }
+  else if(e.target.textContent === "school"){ // studenti na predmetu
+    window.location.href = ".html";   // dodati html dokument za studente na predmetu
+  }
+  else if(e.target.textContent === "description"){ // rezultati studenata na predmetu
+    window.location.href = ".html";   // dodati html dokument za rezultate studenata na predmetu
+  }
+  else if(e.target.textContent == "grid_on"){ // unos rezultata
+    
+    window.location.href = ".html";
+  }
 });
