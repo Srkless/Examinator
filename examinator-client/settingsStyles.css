@@ -1,0 +1,167 @@
+:root {
+  --accent-color: #f66f19;
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #dcdcdc;
+}
+
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.settings-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.settings-section {
+  margin-bottom: 40px;
+}
+
+.setting-label {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--text-color);
+}
+
+/* Theme toggle section */
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 25px;
+}
+
+.theme-name {
+  font-size: 16px;
+}
+
+/* Color selection section */
+.color-setting-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 25px;
+}
+
+.selected-color-name {
+  font-size: 16px;
+}
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(30px);
+}
+
+/* Color options */
+.color-options {
+  display: flex;
+  gap: 10px;
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Novi način označavanja odabrane boje - bijeli kružić unutar dota */
+.color-option.selected::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.color-red {
+  background-color: #dc3545;
+}
+
+.color-blue {
+  background-color: #0d6efd;
+}
+
+.color-orange {
+  background-color: #f66f19;
+}
+
+.color-yellow {
+  background-color: #ffc107;
+}
+
+.color-green {
+  background-color: #28a745;
+}
+
+/* Dark mode specific styles */
+body.dark-theme {
+  --background-color: #222222;
+  --text-color: #f5f5f5;
+  --border-color: #444444;
+}
+
+body.dark-theme .theme-toggle-container,
+body.dark-theme .color-setting-container {
+  background-color: #333333;
+  border-color: var(--border-color);
+}

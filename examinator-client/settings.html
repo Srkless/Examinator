@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Examinator - Podešavanja</title>
+  <link rel="stylesheet" href="headerStyles2.css">
+  <link rel="stylesheet" href="settingsStyles.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fondamento&display=swap" rel="stylesheet">
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <header class="main-header">
+    <a href="home.html" class="logo">Examinator</a>
+    <div class="user-menu" id="userMenu">
+      <div class="user-icon" id="userIcon">
+        <span class="material-icons">account_circle</span>
+        <span class="material-icons arrow">expand_more</span>
+      </div>
+      <ul class="dropdown" id="dropdownMenu">
+        <li>
+          <a href="settings.html">
+            Podešavanja
+            <span class="material-icons">settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="logout.html">
+            Odjava
+            <span class="material-icons">logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="settings-container">
+    <div class="settings-section">
+      <div class="setting-label">Promjena teme</div>
+      <div class="theme-toggle-container">
+        <span class="theme-name">Svijetla</span>
+        <label class="switch">
+          <input type="checkbox" id="themeToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="setting-label">Akcentna boja</div>
+      <div class="color-setting-container">
+        <span class="selected-color-name">Narandžasta</span>
+        <div class="color-options">
+          <div class="color-option color-red" data-color="#dc3545" data-name="Crvena"></div>
+          <div class="color-option color-blue" data-color="#0d6efd" data-name="Plava"></div>
+          <div class="color-option color-orange selected" data-color="#f66f19" data-name="Narandžasta"></div>
+          <div class="color-option color-yellow" data-color="#ffc107" data-name="Žuta"></div>
+          <div class="color-option color-green" data-color="#28a745" data-name="Zelena"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="themeManager.js"></script>
+</body>
+</html>
