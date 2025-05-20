@@ -14,8 +14,7 @@ import java.util.Optional;
 @Service
 public class SubjectService {
 
-    @Autowired
-    private SubjectRepository subjectRepository;
+    @Autowired private SubjectRepository subjectRepository;
 
     public List<Subject> getAll() {
         List<Subject> list = subjectRepository.findAll();
@@ -23,8 +22,7 @@ public class SubjectService {
     }
 
     public Optional<Subject> getById(Integer id) {
-        return subjectRepository
-                .findById(id);
+        return subjectRepository.findById(id);
     }
 
     public Optional<String> add(@RequestBody Map<String, String> body) {
@@ -46,9 +44,10 @@ public class SubjectService {
     public Subject update(Subject updated) {
         Integer id = updated.getId();
 
-        Subject subject = subjectRepository
-                .findById(id)
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+        Subject subject =
+                subjectRepository
+                        .findById(id)
+                        .orElseThrow(() -> new RuntimeException("Subject not found"));
 
         if (subjectRepository.existsByName(updated.getName())
                 && !subject.getName().equals(updated.getName())) {
