@@ -18,7 +18,7 @@ function HomeForm() {
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const res = await getUserSubjects(); // ČEKANJE Promise-a
+                const res = await getUserSubjects();
 
                 const newSubjects = res.map((item) => {
                     const name = item.name.trim();
@@ -79,7 +79,7 @@ function HomeForm() {
         const newSubject = `${name} (${code})`;
 
         try {
-            await addSubject(name, code); // Poziv backendu
+            await addSubject(name, code);
 
             if (editingIndex !== null) {
                 const updatedSubjects = [...subjects];
@@ -92,7 +92,6 @@ function HomeForm() {
             closeDialog();
         } catch (error) {
             console.error(error.message);
-            // Po želji možeš prikazati grešku korisniku (npr. toast ili alert)
         }
     };
 
@@ -108,7 +107,7 @@ function HomeForm() {
         } else if (text === 'display_settings') {
             window.location.href = 'activities.html';
         } else {
-            window.location.href = '.html'; // Replace accordingly
+            window.location.href = '.html';
         }
     };
 
