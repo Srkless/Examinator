@@ -19,7 +19,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
-    @Autowired private JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -33,24 +34,26 @@ public class SecurityConfig implements WebMvcConfigurer {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        auth ->
-                                auth.requestMatchers(
-                                                "/",
-                                                "/login",
-                                                "/register",
-                                                "/index.html",
-                                                "/favicon.ico",
-                                                "/manifest.json",
-                                                "/static/**",
-                                                "/assets/**", // for vite/webpack bundled assets
-                                                "/js/**",
-                                                "/css/**",
-                                                "/images/**", // More general image folder
-                                                "/api/users/login",
-                                                "/api/users/register")
-                                        .permitAll()
-                                        .anyRequest()
-                                        .authenticated())
+                        auth -> auth.requestMatchers(
+                                "/",
+                                "/login",
+                                "/register",
+                                "/settings",
+                                "/logout",
+                                "/logout.html",
+                                "/index.html",
+                                "/favicon.ico",
+                                "/manifest.json",
+                                "/static/**",
+                                "/assets/**", // for vite/webpack bundled assets
+                                "/js/**",
+                                "/css/**",
+                                "/images/**", // More general image folder
+                                "/api/users/login",
+                                "/api/users/register")
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated())
                 .sessionManagement(
                         sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
