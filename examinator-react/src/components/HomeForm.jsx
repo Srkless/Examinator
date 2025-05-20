@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import HeaderComponent from './HeaderComponent';
-import { addSubject } from '../services/SubjectManagementService';
+import {
+    addSubject,
+    getUserSubjects,
+} from '../services/SubjectManagementService';
 
 function HomeForm() {
     const [subjects, setSubjects] = useState([]);
@@ -12,6 +15,25 @@ function HomeForm() {
 
     const dialogRef = useRef(null);
 
+    useEffect(() => {
+        const fetchSubjects = async () => {
+            try {
+                const res = await getUserSubjects(); // ČEKANJE Promise-a
+
+                const newSubjects = res.map((item) => {
+                    const name = item.name.trim();
+                    const code = item.code;
+                    return `${name} (${code})`;
+                });
+
+                setSubjects(newSubjects);
+            } catch (err) {
+                console.error('Greška:', err.message);
+            }
+        };
+
+        fetchSubjects();
+    }, []);
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (!e.target.closest('.user-icon')) {

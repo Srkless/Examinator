@@ -1,6 +1,7 @@
 package net.etfbl.examinator.models;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -41,9 +42,6 @@ public class Subject {
     private List<Formula> formulas = new ArrayList<>();
 
     @ManyToMany(mappedBy = "subjects")
-    // @JoinTable(
-    //         name = "korisnik_predmet", // <-- ovo će biti ime povezne tabele
-    //         joinColumns = @JoinColumn(name = "IdKorisnika"),
-    //         inverseJoinColumns = @JoinColumn(name = "IdPredmeta"))
+    @JsonIgnore
     private Set<User> users = new HashSet<>();
 }

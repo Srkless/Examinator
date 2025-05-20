@@ -1,12 +1,16 @@
 package net.etfbl.examinator.services;
 
 import net.etfbl.examinator.models.Subject;
+import net.etfbl.examinator.models.User;
 import net.etfbl.examinator.repositories.SubjectRepository;
+import net.etfbl.examinator.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,17 +19,21 @@ import java.util.Optional;
 public class SubjectService {
 
     @Autowired private SubjectRepository subjectRepository;
+    @Autowired private UserRepository userRepository;
 
-    public List<Subject> getAll() {
-        List<Subject> list = subjectRepository.findAll();
-        return list;
+    public List<Subject> getAll(Principal principal) {
+        User user =
+                userRepository
+                        .findByUsername(principal.getName())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+        return new ArrayList<Subject>(user.getSubjects());
     }
 
     public Optional<Subject> getById(Integer id) {
         return subjectRepository.findById(id);
     }
 
-    public Optional<String> add(@RequestBody Map<String, String> body) {
+    public Optional<String> add(@RequestBody Map<String, String> body, Principal principal) {
         String name = body.get("name");
         String code = body.get("code");
 
@@ -38,6 +46,13 @@ public class SubjectService {
         subject.setCode(Integer.parseInt(code));
 
         subjectRepository.save(subject);
+
+        User user =
+                userRepository
+                        .findByUsername(principal.getName())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+        user.getSubjects().add(subject);
+        userRepository.save(user);
         return Optional.empty();
     }
 

@@ -8,33 +8,38 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/subjects")
 public class SubjectController {
 
-    @Autowired
-    private SubjectService subjectService;
+    @Autowired private SubjectService subjectService;
 
     @GetMapping
-    public ResponseEntity<List<Subject>> getAllSubjects() {
-        List<Subject> list = subjectService.getAll();
+    public ResponseEntity<List<Subject>> getAllSubjects(Principal principal) {
+        List<Subject> list = subjectService.getAll(principal);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Subject> getById(@PathVariable Integer id) {
-        Subject subject = subjectService.getById(id)
-                .orElseThrow(() -> new RuntimeException("Subject with ID " + id + " not found."));
+        Subject subject =
+                subjectService
+                        .getById(id)
+                        .orElseThrow(
+                                () ->
+                                        new RuntimeException(
+                                                "Subject with ID " + id + " not found."));
         return ResponseEntity.ok(subject);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> add(@RequestBody Map<String, String> body, Principal principal) {
         return subjectService
-                .add(body)
+                .add(body, principal)
                 .map(error -> ResponseEntity.badRequest().body(error))
                 .orElseGet(() -> ResponseEntity.ok("Subject added successfully"));
     }
