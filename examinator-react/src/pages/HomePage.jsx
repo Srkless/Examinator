@@ -1,12 +1,8 @@
 import React from 'react';
+import HomeForm from '../components/HomeForm';
 
 const HomePage = () => {
-  return (
-    <main className="home-page">
-      <h1>Welcome to the Home Page!</h1>
-      <p>You are now logged in.</p>
-    </main>
-  );
+    return <HomeForm />;
 };
 
 export default HomePage;
