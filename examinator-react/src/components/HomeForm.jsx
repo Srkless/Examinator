@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import HeaderComponent from './HeaderComponent';
+import { addSubject } from '../services/SubjectManagementService';
 
 function HomeForm() {
     const [subjects, setSubjects] = useState([]);
@@ -47,20 +48,30 @@ function HomeForm() {
         setSubjectCode('');
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!subjectName.trim() || !subjectCode.trim()) return;
 
-        const newSubject = `${subjectName.trim()} (${subjectCode.trim()})`;
-        if (editingIndex !== null) {
-            const updatedSubjects = [...subjects];
-            updatedSubjects[editingIndex] = newSubject;
-            setSubjects(updatedSubjects);
-        } else {
-            setSubjects([...subjects, newSubject]);
-        }
+        const name = subjectName.trim();
+        const code = subjectCode.trim();
+        const newSubject = `${name} (${code})`;
 
-        closeDialog();
+        try {
+            await addSubject(name, code); // Poziv backendu
+
+            if (editingIndex !== null) {
+                const updatedSubjects = [...subjects];
+                updatedSubjects[editingIndex] = newSubject;
+                setSubjects(updatedSubjects);
+            } else {
+                setSubjects([...subjects, newSubject]);
+            }
+
+            closeDialog();
+        } catch (error) {
+            console.error(error.message);
+            // Po želji možeš prikazati grešku korisniku (npr. toast ili alert)
+        }
     };
 
     const handleIconClick = (text, index) => {

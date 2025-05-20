@@ -41,5 +41,9 @@ public class Subject {
     private List<Formula> formulas = new ArrayList<>();
 
     @ManyToMany(mappedBy = "subjects")
+    // @JoinTable(
+    //         name = "korisnik_predmet", // <-- ovo će biti ime povezne tabele
+    //         joinColumns = @JoinColumn(name = "IdKorisnika"),
+    //         inverseJoinColumns = @JoinColumn(name = "IdPredmeta"))
     private Set<User> users = new HashSet<>();
 }
