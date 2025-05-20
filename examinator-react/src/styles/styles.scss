@@ -3,8 +3,21 @@ $primary-color: #F88E4A;
 $text-color: #333;
 $light-gray: #f5f5f5;
 $white: #fff;
+$bg-color: #fff;
 $border-radius: 8px;
 $box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+
+:root {
+  --accent-color: #f66f19;
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #dcdcdc;
+}
+
+body {
+  background-color: var(--background-color);
+}
 
 // Mixins
 @mixin flex-center {
@@ -14,7 +27,7 @@ $box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 // Base styles
-body {
+.login-register-body {
   font-family: 'Roboto';
   background-color: $white;
   margin: 0;
@@ -66,7 +79,7 @@ body {
   border-radius: 4px;
   box-sizing: border-box;
   font-size: 14px;
-  
+
   &:focus {
     outline: none;
     border-color: $primary-color;
@@ -81,7 +94,7 @@ body {
   color: #666;
   text-decoration: none;
   font-size: 13px;
-  
+
   &:hover {
     text-decoration: underline;
   }
@@ -108,7 +121,7 @@ body {
   margin-top: 10px;
   font-weight: 500;
   transition: background-color 0.3s ease;
-  
+
   &:hover {
     background-color: darken($primary-color, 10%);
   }
@@ -124,7 +137,7 @@ body {
   color: $primary-color;
   text-decoration: none;
   font-weight: 500;
-  
+
   &:hover {
     text-decoration: underline;
   }
@@ -135,4 +148,462 @@ body {
   font-size: 0.9rem;
   margin-top: 4px;
   text-align: center;
+}
+
+
+
+// Home styles:;
+@import url('https://fonts.googleapis.com/css2?family=Fondamento&display=swap');
+
+// Variables
+$primary-color: #F88E4A;
+$select-color: #f66f19;
+$bg-color: #fff;
+$text-color: #333;
+$label-text-color: #444;
+$dialog-header-color: #888;
+$light-gray: #f5f5f5;
+$white: #fff;
+$border-radius: 8px;
+$box-shadow: 0 4px 6px color-mix(in srgb, var(--text-color) 20%, transparent);
+$border-color: #dcdcdc;
+$logo-size: 32px;
+$logo-color: #000;
+$table-border-color: #333;
+$table-color: #1f1f1f;
+$text-color-bright: #666;
+
+
+.home-body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--background-color);
+  border-bottom: 1px solid var(--background-color);
+  position: relative;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.logo {
+  font-family: 'Fondamento', cursive;
+  font-size: $logo-size;
+  color: var(--text-color);
+  margin-left: 30px;
+  text-decoration: none; // da ne bude podvucen kao link
+}
+
+.user-menu {
+  position: relative;
+
+  .user-icon {
+    display: flex;
+    align-items: center;
+    background-color: inherit;
+    border-radius: 50px;
+    padding: 0.6rem 1rem;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #f0f0f0;
+
+      .material-icons {
+        color: var(--accent-color);
+      }
+    }
+
+    .material-icons {
+      font-size: 32px;
+      color: var(--text-color);
+      transition: color 0.3s ease;
+    }
+
+    .arrow {
+      font-size: 26px;
+    }
+  }
+
+  .dropdown {
+    display: flex-column;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    background-color: $bg-color;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    list-style: none;
+    padding: 0.3rem 0;
+    min-width: 140px;
+    box-shadow: $box-shadow;
+    z-index: 10;
+
+    li {
+      a {
+        display: flex;
+        justify-content: space-between; // tekst levo, ikonica desno
+        align-items: center;
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+        color: $text-color;
+
+        .material-icons {
+          font-size: 20px;
+          margin-left: 3rem; // razmak izmedju teksta i ikonice
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+
+    &.show {
+      display: block;
+    }
+  }
+}
+
+// kraj header-a
+
+.content {
+  padding: 2rem;
+}
+
+.hidden {
+  display: none;
+}
+
+h2 {
+  max-width: calc(100% - 300px);
+  font-size: 26px;
+  margin: 4rem auto 1rem auto;
+  color: var(--text-color);
+}
+
+// #no-subjects {
+//   max-width: calc(100% - 300px);
+//   margin: 0 auto;
+//   color: #909090;
+//   font-size: 1rem;
+//   font-weight: 400;
+// }
+
+#no-subjects {
+  text-align: center;
+  margin-top: 5rem;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+table {
+  max-width: calc(100% - 300px); // ukupno 150px sa leve i 150px sa desne strane
+  margin: 0 auto; // centriranje horizontalno
+  border-collapse: collapse;
+  width: 100%;
+
+  td,
+  th {
+    padding: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--text-color) 30%, transparent);
+    text-align: center;
+    // font-weight: bold;
+    color: var(--text-color);
+  }
+
+  .material-icons {
+    color: var(--text-color);
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--accent-color);
+    }
+  }
+}
+
+.add-button {
+  position: fixed;
+  bottom: 4rem;
+  right: 5rem;
+  background-color: var(--accent-color);
+  border: 2.5px solid $white;
+  border-radius: 50%;
+  padding: 0.5rem;
+  cursor: pointer;
+
+  .material-icons {
+    font-size: 36px;
+    color: $white;
+  }
+
+  &:hover {
+    background-color: var(--accent-color);
+    opacity: 0.8;
+  }
+}
+
+dialog {
+  width: 500px;
+  min-height: 250px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  box-shadow: $box-shadow;
+  background-color: var(--background-color);
+  font-family: "Roboto", sans-serif;
+
+  form#subject-form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    color: var(--text-color);
+    font-weight: 300;
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      height: 30px;
+      box-sizing: border-box; // da padding ne poveca ukupnu visinu
+
+      h3 {
+        margin: 0;
+        font-size: 0.92rem;
+        color: $dialog-header-color;
+        font-weight: 400;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+
+        .material-icons {
+          font-size: 1.5rem;
+        }
+      }
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 1rem;
+      color: var(--text-color);
+      font-weight: 500;
+
+      input {
+        margin-top: 0.4rem;
+        padding: 0.5rem 0.8rem;
+        border: 1px solid $border-color;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        background-color: var(--background-color);
+        color: var(--text-color);
+
+        &:focus {
+          outline: none;
+          border-color: var(--accent-color);
+        }
+      }
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center; // centriraj dugmad
+      gap: 1.5rem; // razmak izmedju dugmadi
+      margin-top: 1rem;
+
+      button {
+        width: 120px;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: $border-radius;
+        cursor: pointer;
+        background-color: var(--accent-color);
+        color: $white;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+}
+
+
+.settings-body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.settings-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.settings-section {
+  margin-bottom: 40px;
+}
+
+.setting-label {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--text-color);
+}
+
+/* Theme toggle section */
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 25px;
+}
+
+.theme-name {
+  font-size: 16px;
+}
+
+/* Color selection section */
+.color-setting-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 25px;
+}
+
+.selected-color-name {
+  font-size: 16px;
+}
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked+.slider {
+  background-color: var(--accent-color);
+}
+
+input:checked+.slider:before {
+  transform: translateX(30px);
+}
+
+/* Color options */
+.color-options {
+  display: flex;
+  gap: 10px;
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Novi način označavanja odabrane boje - bijeli kružić unutar dota */
+.color-option.selected::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.color-red {
+  background-color: #dc3545;
+}
+
+.color-blue {
+  background-color: #0d6efd;
+}
+
+.color-orange {
+  background-color: #f66f19;
+}
+
+.color-yellow {
+  background-color: #ffc107;
+}
+
+.color-green {
+  background-color: #28a745;
+}
+
+
+/* Dark mode specific styles */
+body.dark-theme {
+  --background-color: #222222;
+  --text-color: #f5f5f5;
+  --border-color: #444444;
+}
+
+body.dark-theme .theme-toggle-container,
+body.dark-theme .color-setting-container {
+  background-color: #333333;
+  border-color: var(--border-color);
 }
