@@ -10,7 +10,14 @@ const SettingsForm = () => {
     const themeNameRef = useRef(null);
     const selectedColorNameRef = useRef(null);
 
-    document.body.classList.add('settings-body');
+    useEffect(() => {
+        document.body.classList.forEach((className) => {
+            if (className !== 'dark-theme') {
+                document.body.classList.remove(className);
+            }
+        });
+        document.body.classList.add('settings-body');
+    }, []);
 
     useEffect(() => {
         // Tema

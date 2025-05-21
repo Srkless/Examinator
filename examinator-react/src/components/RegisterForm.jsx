@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/loginService';
 
@@ -44,8 +44,17 @@ const RegisterForm = () => {
         }
     };
 
+    useEffect(() => {
+        document.body.classList.forEach((className) => {
+            if (className !== 'dark-theme') {
+                document.body.classList.remove(className);
+            }
+        });
+        document.body.classList.add('login-register-body');
+    }, []);
+
     return (
-        <main className="login-page login-register-body">
+        <main className="login-page">
             <div className="login-card">
                 <h1 className="login-title">Kreirajte nalog</h1>
 
