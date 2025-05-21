@@ -50,6 +50,15 @@ function HomeForm() {
         }
     }, [isDialogOpen]);
 
+    useEffect(() => {
+        document.body.classList.forEach((className) => {
+            if (className !== 'dark-theme') {
+                document.body.classList.remove(className);
+            }
+        });
+        document.body.classList.add('home-body');
+    }, []);
+
     const handleAddClick = () => {
         setSubjectName('');
         setSubjectCode('');
@@ -112,7 +121,7 @@ function HomeForm() {
     };
 
     return (
-        <div className="home-body">
+        <div>
             <HeaderComponent />
             <main className="main-content">
                 {subjects.length > 0 ? (
