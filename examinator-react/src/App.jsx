@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RequireAuth from './components/RequireAuth';
 import SettingsPage from './pages/SettingsPage';
+import LogoutPage from './pages/LogoutPage.jsx'
 import './styles/styles.scss';
 
 const App = () => {
@@ -28,6 +29,7 @@ const App = () => {
             <Routes>
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/logout" element={<LogoutPage />} />
                 <Route element={<RequireAuth />}>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/settings" element={<SettingsPage />} />

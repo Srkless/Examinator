@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const HeaderComponent = () => {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -28,16 +29,16 @@ const HeaderComponent = () => {
                 {showDropdown && (
                     <ul className="dropdown">
                         <li>
-                            <a href="/settings">
+                            <Link to="/settings">
                                 Podešavanja
                                 <span className="material-icons">settings</span>
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="logout.html">
+                            <Link to="/logout">
                                 Odjava
                                 <span className="material-icons">logout</span>
-                            </a>
+                            </Link>
                         </li>
                     </ul>
                 )}
