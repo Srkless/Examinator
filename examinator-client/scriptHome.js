@@ -94,7 +94,7 @@ form.addEventListener("submit", (e) => {
   dialog.close();
 });
 
-// Klik na ikonicu u redu (edit)
+// Klik na ikonicu u redu
 subjectsBody.addEventListener("click", function (e) {
   if (e.target.textContent === "edit") {
     const icon = e.target;
@@ -118,11 +118,27 @@ subjectsBody.addEventListener("click", function (e) {
       document.querySelector(".close-btn").blur();
     }
   }
-  else if(e.target.textContent == "groups"){  // korisnici na predmetu (TODO)
-
+  else if(e.target.textContent == "groups"){ 
+    popuniPredavace();
+    professorsDialog.showModal();
   }
-  else if(e.target.textContent === "display_settings"){ // aktivnosti i formule
-    window.location.href = "activities.html";
+  else if (e.target.textContent === "display_settings") {  // aktivnosti i formule
+    const icon = e.target;
+    const row = icon.closest("tr");
+
+    if (!row) return;
+
+    const fullText = row.cells[0].textContent.trim(); // npr: Programiranje 1 (2235)
+    const match = fullText.match(/(.+)\s+\((.+)\)/);
+
+    if (match) {
+      const naziv = match[1].trim();
+      const sifra = match[2].trim();
+      const prikaz = `${naziv} - ${sifra}`;
+
+      localStorage.setItem("selectedSubject", prikaz);
+      window.location.href = "activities.html";
+    }
   }
   else if(e.target.textContent === "school"){ // studenti na predmetu
     window.location.href = ".html";   // dodati html dokument za studente na predmetu
@@ -134,4 +150,105 @@ subjectsBody.addEventListener("click", function (e) {
     
     window.location.href = ".html";
   }
+});
+
+
+// Elementi dialoga za predavače
+const professorsDialog = document.getElementById("professors-dialog");
+const closeProfessorsDialog = document.getElementById("close-professors-dialog");
+const cancelProfessors = document.getElementById("cancel-professors");
+const addProfessorBtn = document.getElementById("add-professor");
+const professorSelect = document.getElementById("professor-select");
+const professorTable = document.getElementById("professor-table");
+const professorBody = document.getElementById("professor-body");
+const noProfessorsMsg = document.getElementById("no-professors");
+
+const professorsForm = document.getElementById("professors-form");
+
+// Simulacija baze predavaca
+const sviPredavaci = [
+  { id: 1, ime: "Danijela", prezime: "Banjac", email: "danijela.banjac@eft.unibl.org" },
+  { id: 2, ime: "Goran", prezime: "Banjac", email: "goran.banjac@eft.unibl.org" },
+  { id: 3, ime: "Nikola", prezime: "Obradović", email: "nikola.obradovic@eft.unibl.org" }
+];
+
+let dodatiPredavaci = []; // predavaci koji su trenutno dodati za predmet
+
+// Popunjavanje select menija (kasnije zameni sa fetch iz baze)
+function popuniPredavace() {
+  professorSelect.innerHTML = `<option value="" disabled selected>Izaberite predavača</option>`;
+  sviPredavaci.forEach(p => {
+    const option = document.createElement("option");
+    option.value = p.id;
+    option.textContent = `${p.ime} ${p.prezime}`;
+    professorSelect.appendChild(option);
+  });
+}
+
+// Zatvaranje dialoga
+closeProfessorsDialog.addEventListener("click", () => professorsDialog.close());
+cancelProfessors.addEventListener("click", () => professorsDialog.close());
+
+// Dodavanje predavača
+addProfessorBtn.addEventListener("click", () => {
+  const selectedId = professorSelect.value;
+  if (!selectedId) return;
+
+  const selected = sviPredavaci.find(p => p.id == selectedId);
+  if (!selected) return;
+
+  // Proveri da li je vec dodat
+  if (dodatiPredavaci.some(p => p.id == selectedId)) return;
+
+  // Dodaj i sortiraj listu
+  dodatiPredavaci.push(selected);
+  dodatiPredavaci.sort((a, b) => a.ime.localeCompare(b.ime));
+
+  // Prikazi sortiran sadrzaj u tabeli
+  professorBody.innerHTML = "";
+
+  dodatiPredavaci.forEach(p => {
+    const row = document.createElement("tr");
+    row.dataset.id = p.id;
+    row.innerHTML = `
+      <td>${p.ime}</td>
+      <td>${p.prezime}</td>
+      <td>${p.email}</td>
+      <td><span class="material-icons delete-professor">delete</span></td>
+    `;
+    professorBody.appendChild(row);
+  });
+
+  professorTable.hidden = false;
+  noProfessorsMsg.hidden = true;
+});
+
+// Brisanje predavaca
+professorBody.addEventListener("click", (e) => {
+  if (e.target.classList.contains("delete-professor")) {
+    const row = e.target.closest("tr");
+    const id = row.dataset.id;
+
+    // Ukloni iz tabele
+    row.remove();
+
+    // Ukloni iz liste
+    dodatiPredavaci = dodatiPredavaci.filter(p => p.id != id);
+
+    // Azuriraj prikaz
+    if (dodatiPredavaci.length === 0) {
+      professorTable.hidden = true;
+      noProfessorsMsg.hidden = false;
+    }
+  }
+});
+
+// Sacuvaj predavace (submit forme)
+professorsForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  console.log("Sačuvani predavači:", dodatiPredavaci);
+
+  // Ovdje možeš slati podatke backendu putem fetch-a
+  professorsDialog.close();
 });

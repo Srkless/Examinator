@@ -48,7 +48,7 @@
     <span class="material-icons">add</span>
   </button>
 
-  <!-- Dialog box -->
+  <!-- Dialog box za dodavanje/izmjenu predmeta -->
   <dialog id="dialog">
   <form method="dialog" id="subject-form">
     <div class="dialog-header">
@@ -72,6 +72,49 @@
   </form>
 </dialog>
 <!-- Kraj dialog box-a za dodavanje/izmjenu predmeta -->
+
+
+<!-- Dialog box za dodavanje predavaca-->
+ <dialog id="professors-dialog">
+  <form id="professors-form">
+    <div class="dialog-header">
+      <h3>Dodavanje predavača</h3>
+      <button type="button" id="close-professors-dialog" class="close-btn">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="add-professor-row">
+      <label for="professor-select">Predavač</label>
+      <select id="professor-select">
+        <option value="" disabled selected>Izaberite predavača</option>
+      </select>
+      <button type="button" id="add-professor">Dodaj</button>
+    </div>
+
+    <p id="no-professors" class="no-data-msg">Trenutno nema ni jedan predavač na predmetu</p>
+
+    <div class="professor-table-container">
+      <table id="professor-table" hidden>
+        <thead>
+          <tr>
+            <th>Ime</th>
+            <th>Prezime</th>
+            <th>Email</th>
+            <th>Akcija</th>
+          </tr>
+        </thead>
+        <tbody id="professor-body"></tbody>
+      </table>
+    </div>
+
+    <div class="buttons bottom-buttons">
+      <button type="button" class="cancel-btn" id="cancel-professors">Otkaži</button>
+      <button type="submit" class="confirm-btn">Sačuvaj</button>
+    </div>
+  </form>
+</dialog>
+<!-- Kraj dialog box-a za dodavanje predavaca-->
 
 <script src="scriptHome.js"></script>
 </body>

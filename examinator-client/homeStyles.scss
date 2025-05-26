@@ -283,3 +283,155 @@ dialog {
     }
   }
 }
+
+// dialog box za dodavanje predavaca na predmetu
+dialog#professors-dialog {
+  width: 650px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: $box-shadow;
+  font-family: "Roboto", sans-serif;
+  padding: 0;
+
+  form#professors-form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    color: $text-color;
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid $border-color;
+      padding-bottom: 0.5rem;
+      height: 30px;             
+      box-sizing: border-box;   // da padding ne poveca ukupnu visinu
+      font-family: "Roboto", sans-serif;
+
+      h3 {
+        margin: 0;
+        font-size: 0.92rem; 
+        color: $dialog-header-color;   
+        font-weight: 400;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+
+        .material-icons {
+          font-size: 1.5rem;
+        }
+      }
+    }
+
+    .add-professor-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      label {
+        font-weight: 500;
+        color: $label-text-color;
+      }
+
+      select {
+        flex-grow: 1;
+        padding: 0.5rem 0.8rem;
+        font-size: 1rem;
+        border: 1px solid $border-color;
+        border-radius: 5px;
+        appearance: none;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-color;
+        }
+      }
+
+      button {
+        width: 100px;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: $border-radius;
+        cursor: pointer;
+        background-color: $primary-color;
+        color: $white;
+
+        &:hover {
+          background-color: $select-color;
+        }
+      }
+    }
+
+    .no-data-msg {
+      text-align: center;
+      font-size: 1rem;
+      color: $text-color-bright;
+      margin-top: 1rem;
+    }
+
+    .professor-table-container {
+      margin-top: 1rem;
+      table {
+        max-width: calc(100% - 20px); // ukupno 10px sa leve i 10px sa desne strane
+        margin: 0 auto;               // centriranje horizontalno
+        border-collapse: collapse;
+        width: 100%;
+
+        td{
+          padding: 0.4rem 0.4rem;
+        }
+        
+        th{
+          padding: 0.5rem;
+        }
+
+        td, th {
+          border: 0.4px solid $table-border-color;
+          text-align: center;
+          color: $table-color;
+        }
+
+        .material-icons {
+          cursor: pointer;
+          color: $text-color;
+        
+          &:hover {
+            color: $select-color;
+          }
+        }
+      }
+    }
+
+
+    .bottom-buttons {
+      display: flex;
+      justify-content: center; // centriraj dugmad
+      gap: 1.5rem;              // razmak izmedju dugmadi
+      margin-top: 1rem;
+
+      button {
+        width: 120px;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: $border-radius;
+        cursor: pointer;
+        background-color: $primary-color;
+        color: $white;
+
+        &:hover {
+          background-color: $select-color;
+        }
+      }
+    }
+  }
+}
