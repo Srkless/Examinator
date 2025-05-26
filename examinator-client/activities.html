@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Examinator - Aktivnosti i formule</title>
+  <link rel="stylesheet" href="activitiesStyle.css">
+  <link rel="stylesheet" href="headerStyles2.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fondamento&display=swap" rel="stylesheet">
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+<body>
+  <header class="main-header">
+    <a href="home.html" class="logo">Examinator</a>
+    <div class="user-menu" id="userMenu">
+      <div class="user-icon" id="userIcon">
+        <span class="material-icons">account_circle</span>
+        <span class="material-icons arrow">expand_more</span>
+      </div>
+      <ul class="dropdown" id="dropdownMenu">
+        <li>
+          <a href="settings.html">
+            Podešavanja
+            <span class="material-icons">settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="logout.html">
+            Odjava
+            <span class="material-icons">logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-content container">
+    <div class="subject-row">
+      <div class="field field-subject">
+        <label for="subject">Naziv predmeta</label>
+        <input type="text" id="subject" readonly />
+      </div>
+
+      <div class="field field-year">
+        <label for="schoolYear">Školska godina</label>
+        <select id="schoolYear"></select>
+      </div>
+    </div>
+
+    <section>
+      <div class="section-header">
+        <h2>Aktivnosti</h2>
+        <button id="addActivityBtn" class="add-button">Nova aktivnost</button>
+      </div>
+      <div id="activitiesContainer">
+        <p class="no-data">Trenutno nemate ni jednu aktivnost na predmetu</p>
+      </div>
+    </section>
+
+    <section class="formule-section">
+      <div class="section-header">
+        <h2>Formule</h2>
+        <button id="addFormulaBtn" class="add-button">Nova formula</button>
+      </div>
+      <div id="formulasContainer">
+        <p class="no-data">Trenutno nemate ni jednu formulu na predmetu</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dialog za aktivnost -->
+  <dialog id="activityDialog">
+    <form method="dialog" id="activityForm">
+      <div class="dialog-header">
+        <h3>Dodavanje nove aktivnosti</h3>
+        <button type="button" id="closeActivityDialog" class="close-btn">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <label>Naziv aktivnosti</label>
+      <input type="text" name="naziv" required />
+      <label>Skraćeni naziv aktivnosti</label>
+      <input type="text" name="skrNaziv" required />
+      <label>Maks. broj bodova</label>
+      <input type="number" name="maxBodova" min="0" required />
+      <div class="buttons">
+        <button type="button" class="cancel-btn">Otkaži</button>
+        <button type="submit" class="confirm-btn">Sačuvaj</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog za formulu -->
+  <dialog id="formulaDialog">
+    <form method="dialog" id="formulaForm">
+      <div class="dialog-header">
+        <h3>Dodavanje nove formule</h3>
+        <button type="button" id="closeFormulaDialog" class="close-btn">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <label>Naziv</label>
+      <input type="text" name="naziv" required />
+      <label>Izraz</label>
+      <textarea name="izraz" required></textarea>
+      <div class="inline-buttons">
+        <span>Aktivnosti</span>
+        <div class="group" id="activityTags"></div>
+      </div>
+      <div class="inline-buttons">
+        <span>Operatori</span>
+        <div class="group" id="operators">
+          <button type="button">+</button>
+          <button type="button">*</button>
+          <button type="button">&lt;</button>
+          <button type="button">&gt;</button>
+          <button type="button">AND</button>
+          <button type="button">OR</button>
+        </div>
+      </div>
+      <div class="buttons">
+        <button type="button" class="cancel-btn">Otkaži</button>
+        <button type="submit" class="confirm-btn">Sačuvaj</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog za brisanje aktivnosti - UPOZORENJE -->
+  <dialog id="warningDialog" class="warning-dialog">
+  <form class="warning-form">
+    <div class="dialog-header">
+      <h3>Upozorenje</h3>
+      <button type="button" id="closeWarningDialog" class="close-btn">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="warning-content">
+      <span class="material-icons warning-icon">warning</span>
+      <p>
+        Neki studenti imaju već unesene bodove za ovu aktivnost.<br />
+        Ako nastavite, svi bodovi će biti trajno obrisani.
+      </p>
+    </div>
+
+    <div class="buttons">
+      <button type="button" class="cancel-btn" id="cancelWarning">Otkaži</button>
+      <button type="button" class="confirm-btn" id="confirmDelete">Nastavi</button>
+    </div>
+  </form>
+</dialog>
+
+
+
+  <script src="activitiesScript.js"></script>
+</body>
+</html>

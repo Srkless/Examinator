@@ -1,0 +1,397 @@
+@import url('https://fonts.googleapis.com/css2?family=Fondamento&display=swap');
+
+// Variables
+$primary-color: #F88E4A;
+$select-color: #f66f19;
+$bg-color: #fff;
+$text-color: #333;
+$label-text-color: #444;
+$dialog-header-color: #888;
+$light-gray: #f5f5f5;
+$white: #fff;
+$border-radius: 8px;
+$box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+$border-color: #dcdcdc;
+$logo-size: 32px;
+$logo-color: #000;
+$table-border-color: #333;
+$table-color: #1f1f1f;
+$text-color-bright: #666;
+$table-header-color: #f5f5f5;
+$warning-color: #e53935;
+$warning-select-color: #cc2f2f;
+$cancel-warning-color: #ccc;
+$cancel-warning-select-color: #bbb;
+
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: $bg-color;
+}
+
+.container {
+  max-width: calc(100% - 500px); // 250px sa svake strane
+  margin: 0 auto;
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.subject-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+  margin-bottom: 3rem;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: $text-color;
+      font-size: 1rem;
+    }
+
+    input,
+    select {
+      padding: 0.5rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      line-height: 1.2;
+      background-color: $bg-color;
+    }
+
+    select {
+      appearance: none; // uklanja nativni izgled selektora
+      background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      background-size: 1rem;
+      padding-right: 2rem; // da tekst ne ide preko strelice
+      cursor: pointer;
+
+      &:focus {
+          outline: none;
+          border-color: $primary-color;
+        }
+    }
+  }
+
+  .field-subject {
+    width: 400px;
+  }
+
+  .field-year {
+    width: 140px;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+
+  .add-button {
+    width: 150px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: $border-radius;
+    cursor: pointer;
+    background-color: $primary-color;
+    color: $white;
+
+    &:hover {
+      background-color: $select-color;
+    }
+  }
+}
+
+// Razmak između aktivnosti i formula
+.formule-section {
+  margin-top: 6rem;
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+
+  th, td {
+    padding: 0.75rem 1rem;
+    border: 1px solid $border-color;
+    text-align: center;
+  }
+  
+  // th {
+  //   background-color: $table-header-color;
+  // }
+
+  .action-column {
+    width: 150px;     // sirina 'akcija' kolone
+    text-align: center;
+    white-space: nowrap;
+
+    .material-icons {
+      font-size: 20px;
+      margin: 0 15px;
+      color: $text-color;
+      cursor: pointer;
+      transition: color 0.2s ease, background-color 0.2s ease;
+      padding: 4px;
+      border-radius: 4px;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+
+.no-data {
+  color: $text-color-bright;
+  font-size: 1rem;
+  margin: 1rem 0;
+}
+
+// Dialog stil
+dialog {
+  width: 500px;
+  min-height: 250px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  box-shadow: $box-shadow;
+  font-family: "Roboto", sans-serif;
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 1rem;
+      color: $label-text-color;
+      font-weight: 500;
+      // margin-bottom: 0.1rem;
+    }
+
+    input, textarea {
+      margin-top: 0.1rem;
+      padding: 0.5rem 0.8rem;
+      border: 1px solid $border-color;
+      border-radius: 5px;
+      font-size: 0.9rem;
+
+      &:focus {
+          outline: none;
+          border-color: $primary-color;
+        }
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center; // centriraj dugmad
+      gap: 1.5rem;              // razmak izmedju dugmadi
+      margin-top: 1rem;
+
+      button {
+        width: 120px;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: $border-radius;
+        cursor: pointer;
+        background-color: $primary-color;
+        color: $white;
+
+        &:hover {
+          background-color: $select-color;
+        }
+      }
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid $border-color;
+      padding-bottom: 0.5rem;
+      height: 30px;             
+      box-sizing: border-box;   // da padding ne poveca ukupnu visinu
+
+      h3 {
+        margin: 0;
+        font-size: 0.92rem; 
+        color: $dialog-header-color;   
+        font-weight: 400;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+
+        .material-icons {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+}
+
+// Dugmići za unos izraza (formule)
+.inline-buttons {
+  span {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+  }
+
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    button {
+        width: 60px;
+        padding: 0.4rem 0.4rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: $border-radius;
+        cursor: pointer;
+        background-color: $primary-color;
+        color: $white;
+
+        &:hover {
+          background-color: $select-color;
+        }
+      }
+  }
+}
+
+
+// warning
+.warning-dialog {
+  width: 500px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  font-family: "Roboto", sans-serif;
+  padding: 0;
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .warning-form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    color: $table-color;
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid $border-color;
+      padding-bottom: 0.5rem;
+
+      h3 {
+        margin: 0;
+        font-size: 0.95rem;
+        color: $warning-color; // crvena nijansa za upozorenje
+        font-weight: 500;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+
+        .material-icons {
+          font-size: 1.5rem;
+        }
+      }
+    }
+
+    .warning-content {
+      display: flex;
+      // align-items: flex-start;
+      align-items: center;
+      gap: 1rem;
+
+      .warning-icon {
+        font-size: 52px;
+        color: $warning-color;
+        flex-shrink: 0;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1rem;
+        color: $label-text-color;
+        line-height: 1.4;
+      }
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+
+      button {
+        width: 120px;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .cancel-btn {
+        background-color: $cancel-warning-color;
+        color: $text-color;
+
+        &:hover {
+          background-color: $cancel-warning-select-color;
+        }
+      }
+
+      .confirm-btn {
+        background-color: $warning-color;
+        color: $white;
+
+        &:hover {
+          background-color: $warning-select-color;
+        }
+      }
+    }
+  }
+}
