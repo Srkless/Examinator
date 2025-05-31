@@ -1,0 +1,326 @@
+@import url("https://fonts.googleapis.com/css2?family=Fondamento&display=swap");
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: #fff;
+}
+
+.container {
+  max-width: calc(100% - 500px);
+  margin: 0 auto;
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.subject-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+.subject-row .field {
+  display: flex;
+  flex-direction: column;
+}
+.subject-row .field label {
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  color: #333;
+  font-size: 1rem;
+}
+.subject-row .field input,
+.subject-row .field select {
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  line-height: 1.2;
+  background-color: #fff;
+}
+.subject-row .field select {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1rem;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+.subject-row .field select:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+.subject-row .field-subject {
+  width: 400px;
+}
+.subject-row .field-year {
+  width: 140px;
+}
+.subject-row .student-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 1rem;
+  align-self: flex-end;
+}
+.subject-row .student-buttons button {
+  height: 42px;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.5rem;
+  min-width: 60px;
+  background-color: #F88E4A;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.subject-row .student-buttons button .material-icons {
+  font-size: 22px;
+}
+.subject-row .student-buttons button:hover {
+  background-color: #f66f19;
+}
+.subject-row .student-buttons button[data-tooltip] {
+  position: relative;
+}
+.subject-row .student-buttons button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  color: #fff;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 100;
+}
+.subject-row .student-buttons button[data-tooltip].show-tooltip::after {
+  opacity: 1;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.section-header h2 {
+  margin: 0;
+}
+.section-header .search-bar {
+  margin: 2rem 0 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.section-header .search-bar input {
+  width: 300px;
+  height: 42px;
+  padding: 0 1rem 0 1rem;
+  font-size: 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1.2rem;
+}
+.section-header .search-bar input:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+
+.no-data {
+  text-align: center;
+  margin-top: 5rem;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+table th, table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #dcdcdc;
+  text-align: center;
+}
+table th {
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+table th:hover {
+  color: #F88E4A;
+}
+table .material-icons {
+  cursor: pointer;
+  margin: 0 10px;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  padding: 4px;
+  border-radius: 4px;
+}
+table .material-icons:hover {
+  color: #f66f19;
+}
+table .action-column {
+  width: 150px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+dialog#studentDialog {
+  width: 450px;
+  min-height: 250px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif;
+}
+dialog#studentDialog::backdrop {
+  background: rgba(0, 0, 0, 0.3);
+}
+dialog#studentDialog form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+dialog#studentDialog form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+}
+dialog#studentDialog form input, dialog#studentDialog form textarea {
+  margin-top: 0.1rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+dialog#studentDialog form input:focus, dialog#studentDialog form textarea:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+dialog#studentDialog form .buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+dialog#studentDialog form .buttons button {
+  width: 120px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #F88E4A;
+  color: #fff;
+}
+dialog#studentDialog form .buttons button:hover {
+  background-color: #f66f19;
+}
+dialog#studentDialog form .dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #dcdcdc;
+  padding-bottom: 0.5rem;
+  height: 30px;
+  box-sizing: border-box;
+}
+dialog#studentDialog form .dialog-header h3 {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #888;
+  font-weight: 400;
+}
+dialog#studentDialog form .dialog-header .close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+dialog#studentDialog form .dialog-header .close-btn .material-icons {
+  font-size: 1.5rem;
+}
+
+#paginationWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #dcdcdc;
+}
+#paginationWrapper.hidden {
+  display: none;
+}
+#paginationWrapper #paginationCenter {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  justify-content: center;
+  flex: 1;
+}
+#paginationWrapper #paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+#paginationWrapper #paginationControls .material-icons {
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s;
+}
+#paginationWrapper #paginationControls .material-icons:hover {
+  color: #f66f19;
+}
+#paginationWrapper #paginationInfo {
+  font-weight: 500;
+  color: #333;
+}
+#paginationWrapper #rowsPerPage {
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  background-color: #fff;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1rem;
+  padding-right: 2rem;
+  cursor: pointer;
+  margin-left: auto;
+  width: 110px;
+}
+#paginationWrapper #rowsPerPage:focus {
+  border-color: #f66f19;
+  outline: none;
+}/*# sourceMappingURL=studentsStyle.css.map */

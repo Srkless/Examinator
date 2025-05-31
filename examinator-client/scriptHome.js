@@ -141,7 +141,23 @@ subjectsBody.addEventListener("click", function (e) {
     }
   }
   else if(e.target.textContent === "school"){ // studenti na predmetu
-    window.location.href = ".html";   // dodati html dokument za studente na predmetu
+    const icon = e.target;
+    const row = icon.closest("tr");
+
+    if (!row) return;
+
+    const fullText = row.cells[0].textContent.trim(); // npr: Programiranje 1 (2235)
+    const match = fullText.match(/(.+)\s+\((.+)\)/);
+
+    if (match) {
+      const naziv = match[1].trim();
+      const sifra = match[2].trim();
+      const prikaz = `${naziv} - ${sifra}`;
+
+      localStorage.setItem("selectedSubject", prikaz);
+      window.location.href = "students.html"; 
+    }
+    // window.location.href = "students.html";   
   }
   else if(e.target.textContent === "description"){ // rezultati studenata na predmetu
     window.location.href = ".html";   // dodati html dokument za rezultate studenata na predmetu

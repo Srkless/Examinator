@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Examinator - Studenti na predmetu</title>
+  <link rel="stylesheet" href="studentsStyle.css">
+  <link rel="stylesheet" href="headerStyles2.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fondamento&display=swap" rel="stylesheet">
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+  <header class="main-header">
+    <a href="home.html" class="logo">Examinator</a>
+    <div class="user-menu" id="userMenu">
+      <div class="user-icon" id="userIcon">
+        <span class="material-icons">account_circle</span>
+        <span class="material-icons arrow">expand_more</span>
+      </div>
+      <ul class="dropdown" id="dropdownMenu">
+        <li>
+          <a href="settings.html">
+            Podešavanja
+            <span class="material-icons">settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="logout.html">
+            Odjava
+            <span class="material-icons">logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-content container">
+    <div class="subject-row">
+      <div class="field field-subject">
+        <label for="subject">Naziv predmeta</label>
+        <input type="text" id="subject" readonly />
+      </div>
+
+      <div class="field field-year">
+        <label for="schoolYear">Školska godina</label>
+        <select id="schoolYear"></select>
+      </div>
+
+      <!-- <div class="student-buttons"> -->
+      <!--  <button id="importStudents"><span class="material-icons">upload</span></button> -->
+      <!--  <button id="addStudentBtn"><span class="material-icons">person_add</span></button> -->
+         <!-- <button type="button" class="add-btn" id="addStudentBtn">Dodaj studenta</button> -->
+      <!-- </div> -->
+      <div class="student-buttons">
+        <button id="importStudents" data-tooltip="Uvezi spisak studenata">
+          <span class="material-icons">upload</span>
+        </button>
+        <button id="addStudentBtn" data-tooltip="Dodaj studenta">
+          <span class="material-icons">person_add</span>
+        </button>
+      </div>
+    </div>
+
+    <section>
+      <section>
+        <div class="section-header">
+          <h2>Studenti</h2>
+          <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pretraga studenata..." />
+          </div>
+        </div>
+
+        <div id="studentsContainer">
+          <p class="no-data">Trenutno nema ni jednog studenta na predmetu</p>
+        </div>
+
+        <div id="paginationWrapper" class="hidden">
+          <div id="paginationCenter">
+            <div id="paginationControls"></div>
+            <div id="paginationInfo">1 / 1</div>
+          </div>
+
+          <select id="rowsPerPage">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+
+    </section>
+  </main>
+
+  <!-- Dialog za dodavanje studenta -->
+  <dialog id="studentDialog">
+    <form method="dialog" id="studentForm">
+      <div class="dialog-header">
+        <h3>Dodavanje studenta na predmet</h3>
+        <button type="button" class="close-btn" id="closeStudentDialog">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <label>Ime *</label>
+      <input type="text" name="ime" required />
+
+      <label>Prezime *</label>
+      <input type="text" name="prezime" required />
+
+      <label>Indeks</label>
+      <input type="text" name="indeks" />
+
+      <label>Grupa</label>
+      <input type="text" name="grupa" />
+
+      <label>Napomena</label>
+      <textarea name="napomena"></textarea>
+
+      <div class="buttons">
+        <button type="button" class="cancel-btn">Otkaži</button>
+        <button type="submit" class="confirm-btn">Sačuvaj</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="studentsScript.js"></script>
+</body>
+</html>
