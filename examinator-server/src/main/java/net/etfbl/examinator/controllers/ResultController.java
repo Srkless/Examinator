@@ -6,7 +6,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -123,5 +126,16 @@ public class ResultController {
       error.put("error", ex.getMessage());
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+  }
+
+  @GetMapping(value = "/activities/{id}/results.pdf", produces = "application/pdf")
+  public ResponseEntity<byte[]> getActivityResultsPdf(@PathVariable Integer id) {
+    byte[] pdf = resultService.generateActivityResultsPdf(id);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_PDF);
+    headers.setContentDisposition(ContentDisposition.inline().filename("activity-" + id + "-results.pdf").build());
+
+    return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
   }
 }
