@@ -4,6 +4,7 @@ import net.etfbl.examinator.models.Activity;
 import net.etfbl.examinator.models.Subject;
 import net.etfbl.examinator.repositories.ActivityRepository;
 import net.etfbl.examinator.repositories.SubjectRepository;
+import net.etfbl.examinator.requests.AddActivityRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,38 +14,35 @@ import java.util.Optional;
 
 @Service
 public class ActivityService {
-    @Autowired private ActivityRepository activityRepository;
+    @Autowired
+    private ActivityRepository activityRepository;
 
-    @Autowired private SubjectRepository subjectRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
 
-    public Optional<Activity> addActivity(Map<String, Object> activityData) {
-        String name = (String) activityData.get("name");
-        String shortName = (String) activityData.get("shortName");
-        Integer maxPoints = (Integer) activityData.get("maxPoints");
-        Integer schoolYear = (Integer) activityData.get("schoolYear");
+    public Optional<Activity> addActivity(AddActivityRequest request) {
+        String name = request.getName();
+        String shortName = request.getShortName();
+        Integer maxPoints = request.getMaxPoints();
+        Integer schoolYear = request.getSchoolYear();
+        Integer subjectId = request.getSubjectId();
 
-        Map<String, Object> subjectData = (Map<String, Object>) activityData.get("subject");
-
-        if (name == null
-                || shortName == null
-                || maxPoints == null
-                || schoolYear == null
-                || subjectData == null) {
+        if (name == null || shortName == null || maxPoints == null || schoolYear == null || subjectId == null) {
             throw new IllegalArgumentException("All fields must be provided");
         }
 
-        if (activityRepository.existsByName(name)) {
-            throw new IllegalArgumentException("Activity with this name already exists");
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new IllegalArgumentException("Subject not found"));
+
+        if (activityRepository.existsByNameAndSubjectIdAndSchoolYear(name, subjectId, schoolYear)) {
+            throw new IllegalArgumentException(
+                    "Activity with this name already exists for the given subject and school year");
         }
 
-        if (activityRepository.existsByShortName(shortName)) {
-            throw new IllegalArgumentException("Activity with this short name already exists");
+        if (activityRepository.existsByShortNameAndSubjectIdAndSchoolYear(shortName, subjectId, schoolYear)) {
+            throw new IllegalArgumentException(
+                    "Activity with this short name already exists for the given subject and school year");
         }
-
-        Subject subject = new Subject();
-        subject.setName((String) subjectData.get("name"));
-        subject.setCode((Integer) subjectData.get("code"));
-        subject.setId((Integer) subjectData.get("id"));
 
         Activity activity = new Activity();
         activity.setName(name);
@@ -79,9 +77,8 @@ public class ActivityService {
         }
 
         Subject existingSubject = optionalSubject.get();
-        boolean nameConflict =
-                activityRepository.existsByNameAndSubjectIdAndIdNot(
-                        updated.getName(), subjectID, id);
+        boolean nameConflict = activityRepository.existsByNameAndSubjectIdAndSchoolYearAndIdNot(
+                updated.getName(), subjectID, updated.getSchoolYear(), id);
 
         if (nameConflict) {
             throw new IllegalArgumentException(

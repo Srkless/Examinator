@@ -19,4 +19,11 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
     boolean existsById(Integer id);
 
     boolean existsByNameAndSubjectIdAndIdNot(String name, Integer subjectId, Integer excludeId);
+
+    boolean existsByNameAndSubjectIdAndSchoolYear(String name, Integer subjectId, Integer schoolYear);
+
+    boolean existsByShortNameAndSubjectIdAndSchoolYear(String shortName, Integer subjectId, Integer schoolYear);
+
+    boolean existsByNameAndSubjectIdAndSchoolYearAndIdNot(String name, Integer subjectId, Integer schoolYear,
+            Integer excludeId);
 }
