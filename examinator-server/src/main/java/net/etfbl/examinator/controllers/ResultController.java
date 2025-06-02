@@ -1,5 +1,12 @@
 package net.etfbl.examinator.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,14 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import net.etfbl.examinator.models.Activity;
@@ -32,6 +32,9 @@ import net.etfbl.examinator.requests.UpdateResultRequest;
 import net.etfbl.examinator.services.ResultService;
 import net.etfbl.examinator.services.SubjectService;
 
+/**
+ * REST controller for managing results of activities for student subjects.
+ */
 @RestController
 @RequestMapping("/api/results")
 public class ResultController {
@@ -48,14 +51,34 @@ public class ResultController {
   @Autowired
   private ActivityRepository activityRepository;
 
+  /**
+   * Retrieves all results.
+   *
+   * @return List of all Result entities.
+   */
+  @Operation(summary = "Get all results")
+  @ApiResponse(responseCode = "200", description = "List of all results", content = @Content(schema = @Schema(implementation = Result.class)))
   @GetMapping
   public ResponseEntity<List<Result>> getAllResults() {
     List<Result> list = resultService.getAllResults();
     return ResponseEntity.ok(list);
   }
 
+  /**
+   * Retrieves all results for a specific subject by ID.
+   *
+   * @param subjectId ID of the subject.
+   * @return List of results or 404 if subject not found.
+   */
+  @Operation(summary = "Get results for a specific subject")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "List of results for subject", content = @Content(schema = @Schema(implementation = Result.class))),
+      @ApiResponse(responseCode = "404", description = "Subject not found", content = @Content(schema = @Schema(implementation = Map.class)))
+  })
   @GetMapping("/subject/{subjectId}")
-  public ResponseEntity<?> getResultsForSubject(@PathVariable Integer subjectId) {
+  public ResponseEntity<?> getResultsForSubject(
+      @Parameter(description = "ID of the subject", required = true) @PathVariable Integer subjectId) {
+
     if (subjectService.getById(subjectId).isEmpty()) {
       Map<String, String> error = new HashMap<>();
       error.put("error", "Subject with ID " + subjectId + " not found.");
@@ -65,10 +88,23 @@ public class ResultController {
     return ResponseEntity.ok(list);
   }
 
+  /**
+   * Retrieves a specific Result by composite key: studentSubjectId and
+   * activityId.
+   *
+   * @param studentSubjectId ID of the student-subject relation.
+   * @param activityId       ID of the activity.
+   * @return Result if found, or 404 error if not.
+   */
+  @Operation(summary = "Get result by studentSubjectId and activityId")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Found result", content = @Content(schema = @Schema(implementation = Result.class))),
+      @ApiResponse(responseCode = "404", description = "Result not found", content = @Content(schema = @Schema(implementation = Map.class)))
+  })
   @GetMapping("/{studentSubjectId}/{activityId}")
   public ResponseEntity<?> getById(
-      @PathVariable Integer studentSubjectId,
-      @PathVariable Integer activityId) {
+      @Parameter(description = "StudentSubject ID", required = true) @PathVariable Integer studentSubjectId,
+      @Parameter(description = "Activity ID", required = true) @PathVariable Integer activityId) {
 
     Optional<Result> result = resultService.getById(studentSubjectId, activityId);
 
@@ -81,8 +117,22 @@ public class ResultController {
     return ResponseEntity.ok(result.get());
   }
 
+  /**
+   * Adds a new Result.
+   *
+   * @param request The request body containing studentSubjectId, activityId and
+   *                points.
+   * @return Created Result or 400 if invalid IDs.
+   */
+  @Operation(summary = "Add a new result")
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "Result created", content = @Content(schema = @Schema(implementation = Result.class))),
+      @ApiResponse(responseCode = "400", description = "Invalid studentSubjectId or activityId", content = @Content(schema = @Schema(implementation = Map.class)))
+  })
   @PostMapping("/")
-  public ResponseEntity<?> addResult(@RequestBody AddResultRequest request) {
+  public ResponseEntity<?> addResult(
+      @Parameter(description = "AddResultRequest payload", required = true) @RequestBody AddResultRequest request) {
+
     Optional<StudentSubject> studentOpt = studentSubjectRepository.findById(request.getStudentSubjectId());
     Optional<Activity> activityOpt = activityRepository.findById(request.getActivityId());
 
@@ -96,8 +146,21 @@ public class ResultController {
     return ResponseEntity.status(HttpStatus.CREATED).body(savedResult);
   }
 
+  /**
+   * Updates an existing Result.
+   *
+   * @param request The request body containing updated result data.
+   * @return Updated Result or 404 if not found.
+   */
+  @Operation(summary = "Update an existing result")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Result updated", content = @Content(schema = @Schema(implementation = Result.class))),
+      @ApiResponse(responseCode = "404", description = "Result not found", content = @Content(schema = @Schema(implementation = String.class)))
+  })
   @PutMapping("/")
-  public ResponseEntity<?> updateResult(@RequestBody UpdateResultRequest request) {
+  public ResponseEntity<?> updateResult(
+      @Parameter(description = "UpdateResultRequest payload", required = true) @RequestBody UpdateResultRequest request) {
+
     ResultId id = new ResultId(request.getActivityId(), request.getStudentSubjectId());
 
     Result existing = resultService.getById(id)
@@ -111,10 +174,22 @@ public class ResultController {
     return ResponseEntity.ok(updated);
   }
 
+  /**
+   * Deletes a Result by composite key.
+   *
+   * @param studentSubjectId ID of the student-subject relation.
+   * @param activityId       ID of the activity.
+   * @return Deleted Result or 404 if not found.
+   */
+  @Operation(summary = "Delete a result by studentSubjectId and activityId")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Result deleted", content = @Content(schema = @Schema(implementation = Result.class))),
+      @ApiResponse(responseCode = "404", description = "Result not found", content = @Content(schema = @Schema(implementation = Map.class)))
+  })
   @DeleteMapping("/{studentSubjectId}/{activityId}")
   public ResponseEntity<?> removeResult(
-      @PathVariable Integer studentSubjectId,
-      @PathVariable Integer activityId) {
+      @Parameter(description = "StudentSubject ID", required = true) @PathVariable Integer studentSubjectId,
+      @Parameter(description = "Activity ID", required = true) @PathVariable Integer activityId) {
 
     ResultId id = new ResultId(activityId, studentSubjectId);
 
@@ -128,8 +203,21 @@ public class ResultController {
     }
   }
 
+  /**
+   * Generates a PDF report of results for a given activity.
+   *
+   * @param id Activity ID.
+   * @return PDF file as byte array with content disposition inline.
+   */
+  @Operation(summary = "Generate PDF report of activity results")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "PDF generated", content = @Content(mediaType = "application/pdf")),
+      @ApiResponse(responseCode = "404", description = "Activity or results not found")
+  })
   @GetMapping(value = "/activities/{id}/results.pdf", produces = "application/pdf")
-  public ResponseEntity<byte[]> getActivityResultsPdf(@PathVariable Integer id) {
+  public ResponseEntity<byte[]> getActivityResultsPdf(
+      @Parameter(description = "Activity ID", required = true) @PathVariable Integer id) {
+
     byte[] pdf = resultService.generateActivityResultsPdf(id);
 
     HttpHeaders headers = new HttpHeaders();

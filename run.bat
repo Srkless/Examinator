@@ -21,7 +21,7 @@ cd ..\examinator-server
 echo 🚀 Starting Spring Boot server...
 echo 📝 Logging to %LOG_FILE%
 
-start /b "" mvn spring-boot:run > "..\%LOG_FILE%" 2>&1
+start /b "" mvnw spring-boot:run > "..\%LOG_FILE%" 2>&1
 
 echo 🚀 Spring Boot server started
 pause
