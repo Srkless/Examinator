@@ -33,13 +33,11 @@ public class ActivityController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getById(@PathVariable Integer id) {
-        Activity activity =
-                activityService
-                        .getById(id)
-                        .orElseThrow(
-                                () ->
-                                        new RuntimeException(
-                                                "Activity with ID " + id + " not found."));
+        Activity activity = activityService
+                .getById(id)
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Activity with ID " + id + " not found."));
         return ResponseEntity.ok(activity);
     }
 
@@ -66,13 +64,13 @@ public class ActivityController {
 
     // @PostMapping("/login")
     // public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-    //     String username = body.get("username");
-    //     String password = body.get("password");
+    // String username = body.get("username");
+    // String password = body.get("password");
     //
-    //     if (userService.authenticate(username, password)) {
-    //         return ResponseEntity.ok("Login successful");
-    //     }
+    // if (userService.authenticate(username, password)) {
+    // return ResponseEntity.ok("Login successful");
+    // }
     //
-    //     return ResponseEntity.status(401).body("Invalid credentials");
+    // return ResponseEntity.status(401).body("Invalid credentials");
     // }
 }

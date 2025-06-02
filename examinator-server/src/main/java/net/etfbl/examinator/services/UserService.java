@@ -38,7 +38,11 @@ public class UserService {
     user.setPasswordHash(passwordEncoder.encode(body.get("password")));
 
     userRepository.save(user);
-    return Optional.empty(); // no error
+    return Optional.empty();
+  }
+
+  public Optional<User> getByUsername(String username) {
+    return userRepository.findByUsername(username);
   }
 
   public boolean authenticate(String username, String password) {
