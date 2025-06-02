@@ -50,6 +50,10 @@ public class SecurityConfig implements WebMvcConfigurer {
                                 "/css/**",
                                 "/images/**", // More general image folder
                                 "/api/users/login",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/index.html",
                                 "/api/users/register")
                                 .permitAll()
                                 .anyRequest()
