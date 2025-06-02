@@ -38,7 +38,7 @@ Generate the JavaDocs by running the appropriate `generate_docs` script for your
   ```  
 - On Windows:  
   ```bat  
-  generate_docs.bat  
+  generate_docs.ps1  
   ```  
 
 After generation, open the generated docs in your default browser by running the same script again or manually open the `target/site/apidocs/index.html` file.
