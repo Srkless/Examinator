@@ -28,7 +28,7 @@ public class SubjectController {
     public ResponseEntity<Subject> getById(@PathVariable Integer id) {
         Subject subject =
                 subjectService
-                        .getById(id)
+                        .getByCode(id)
                         .orElseThrow(
                                 () ->
                                         new RuntimeException(

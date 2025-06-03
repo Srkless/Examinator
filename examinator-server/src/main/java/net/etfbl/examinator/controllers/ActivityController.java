@@ -31,15 +31,15 @@ public class ActivityController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Activity> getById(@PathVariable Integer id) {
+    @GetMapping("/{shortName}")
+    public ResponseEntity<Activity> getById(@PathVariable String shortName) {
         Activity activity =
                 activityService
-                        .getById(id)
+                        .getByShortName(shortName)
                         .orElseThrow(
                                 () ->
                                         new RuntimeException(
-                                                "Activity with ID " + id + " not found."));
+                                                "Activity with code " + shortName + " not found."));
         return ResponseEntity.ok(activity);
     }
 
