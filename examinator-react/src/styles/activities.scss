@@ -1,0 +1,249 @@
+@use 'variables';
+@import url('https://fonts.googleapis.com/css2?family=Fondamento&display=swap');
+
+
+.activities-body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: var(--background-color);
+}
+
+
+
+.activities-container {
+  max-width: calc(100% - 500px); // 250px sa svake strane
+  margin: 0 auto;
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.subject-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+  margin-bottom: 3rem;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: var(--text-color);
+      font-size: 1rem;
+    }
+
+    input,
+    select {
+      padding: 0.5rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      line-height: 1.2;
+      background-color: var(--background-color);
+    }
+
+    select {
+      appearance: none; // uklanja nativni izgled selektora
+      background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      background-size: 1rem;
+      padding-right: 2rem; // da tekst ne ide preko strelice
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+    }
+  }
+
+  .field-subject {
+    width: 400px;
+  }
+
+  .field-year {
+    width: 140px;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+
+  .add-activity-button {
+    width: 150px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: variables.$border-radius;
+    cursor: pointer;
+    background-color: var(--accent-color);
+    color: var(--white);
+
+    &:hover {
+      background-color: var(--accent-color);
+      opacity: 0.8;
+    }
+  }
+}
+
+.formule-section {
+  margin-top: 6rem;
+}
+
+
+
+.no-data {
+  color: var(--text-color-bright);
+  font-size: 1rem;
+  margin: 1rem 0;
+}
+
+dialog {
+  width: 500px;
+  min-height: 250px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  box-shadow: var(--box-shadow);
+  font-family: "Roboto", sans-serif;
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 1rem;
+      color: var(--label-text-color);
+      font-weight: 500;
+      // margin-bottom: 0.1rem;
+    }
+
+    input,
+    textarea {
+      margin-top: 0.1rem;
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      font-size: 0.9rem;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center; // centriraj dugmad
+      gap: 1.5rem; // razmak izmedju dugmadi
+      margin-top: 1rem;
+
+      button {
+        width: 120px;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        // border-radius: var(--border-radius);
+        border-radius: variables.$border-radius;
+        cursor: pointer;
+        background-color: var(--accent-color);
+        color: var(--white);
+
+        &:hover {
+          background-color: var(--select-color);
+        }
+      }
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      height: 30px;
+      box-sizing: border-box; // da padding ne poveca ukupnu visinu
+
+      h3 {
+        margin: 0;
+        font-size: 0.92rem;
+        color: var(--dialog-header-color);
+        font-weight: 400;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+
+        .material-icons {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+}
+
+#activitiesContainer,
+#formulasContainer {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    max-width: 100%;
+
+    th,
+    td {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    // th {
+    //   background-color: $table-header-color;
+    // }
+
+    .action-column {
+      width: 150px; // sirina 'akcija' kolone
+      text-align: center;
+      white-space: nowrap;
+
+      .material-icons {
+        font-size: 20px;
+        margin: 0 15px;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: color 0.2s ease, var(--background-color) 0.2s ease;
+        padding: 4px;
+        border-radius: 4px;
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}

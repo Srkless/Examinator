@@ -27,6 +27,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         registry.addViewController("/").setViewName("forward:/index.html");
         registry.addViewController("/login").setViewName("forward:/index.html");
         registry.addViewController("/register").setViewName("forward:/index.html");
+        registry.addViewController("/activities").setViewName("forward:/index.html");
         registry.addViewController("/settings").setViewName("forward:/index.html");
         registry.addViewController("/logout").setViewName("forward:/index.html");
     }
@@ -39,6 +40,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                                 "/",
                                 "/login",
                                 "/register",
+                                "/activities",
                                 "/settings",
                                 "/logout",
                                 "/index.html",

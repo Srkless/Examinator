@@ -61,6 +61,9 @@ public class ActivityService {
         return activityRepository.findById(id);
     }
 
+    public Optional<Activity> getByShortName(String shortName) {
+        return activityRepository.findByShortName(shortName);
+    }
     public Activity update(Activity updated) {
         Integer id = updated.getId();
         Integer subjectID = updated.getSubject().getId();

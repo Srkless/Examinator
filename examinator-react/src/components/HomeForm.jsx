@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import HeaderComponent from './HeaderComponent';
+import { Link } from 'react-router-dom';
 import {
     addSubject,
     getUserSubjects,
@@ -114,13 +115,14 @@ function HomeForm() {
                 setDialogOpen(true);
             }
         } else if (text === 'display_settings') {
-            window.location.href = 'activities.html';
+            // window.location.href = 'activities';
+
         } else {
             window.location.href = '.html';
         }
     };
-
     return (
+
         <div>
             <HeaderComponent />
             <main className="main-content">
@@ -153,18 +155,17 @@ function HomeForm() {
                                             </span>
                                         </td>
                                         <td>
-                                            <span
-                                                className="material-icons"
-                                                onClick={() =>
-                                                    handleIconClick(
-                                                        'display_settings',
-                                                        i,
-                                                    )
-                                                }
-                                            >
-                                                display_settings
-                                            </span>
+                                            <Link to='/activities' state={{ subject: subjects[i] }}>
+                                                <span
+                                                    className="material-icons"
+                                                    onClick={() => handleIconClick('display_settings', i)}
+                                                >
+                                                    display_settings
+                                                </span>
+                                            </Link>
+
                                         </td>
+
                                         <td>
                                             <span
                                                 className="material-icons"
@@ -266,7 +267,7 @@ function HomeForm() {
                 </form>
             </dialog>
             {/* )} */}
-        </div>
+        </div >
     );
 }
 

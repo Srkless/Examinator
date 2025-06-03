@@ -33,6 +33,9 @@ public class SubjectService {
         return subjectRepository.findById(id);
     }
 
+    public Optional<Subject> getByCode(Integer code) {
+        return subjectRepository.findByCode(code);
+    }
     public Optional<String> add(@RequestBody Map<String, String> body, Principal principal) {
         String name = body.get("name");
         String code = body.get("code");
