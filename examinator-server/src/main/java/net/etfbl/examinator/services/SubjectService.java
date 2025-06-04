@@ -4,10 +4,13 @@ import net.etfbl.examinator.models.Subject;
 import net.etfbl.examinator.models.User;
 import net.etfbl.examinator.repositories.SubjectRepository;
 import net.etfbl.examinator.repositories.UserRepository;
+import net.etfbl.examinator.requests.AddProfessorRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.persistence.EntityNotFoundException;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -18,14 +21,15 @@ import java.util.Optional;
 @Service
 public class SubjectService {
 
-    @Autowired private SubjectRepository subjectRepository;
-    @Autowired private UserRepository userRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Subject> getAll(Principal principal) {
-        User user =
-                userRepository
-                        .findByUsername(principal.getName())
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository
+                .findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         return new ArrayList<Subject>(user.getSubjects());
     }
 
@@ -50,10 +54,9 @@ public class SubjectService {
 
         subjectRepository.save(subject);
 
-        User user =
-                userRepository
-                        .findByUsername(principal.getName())
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository
+                .findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         user.getSubjects().add(subject);
         userRepository.save(user);
         return Optional.empty();
@@ -62,10 +65,9 @@ public class SubjectService {
     public Subject update(Subject updated) {
         Integer id = updated.getId();
 
-        Subject subject =
-                subjectRepository
-                        .findById(id)
-                        .orElseThrow(() -> new RuntimeException("Subject not found"));
+        Subject subject = subjectRepository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("Subject not found"));
 
         if (subjectRepository.existsByName(updated.getName())
                 && !subject.getName().equals(updated.getName())) {
@@ -78,6 +80,19 @@ public class SubjectService {
         }
         subject.setName(updated.getName());
         subject.setCode(updated.getCode());
+
+        return subjectRepository.save(subject);
+    }
+
+    public Subject addUserToSubject(String username, Integer subjectId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new EntityNotFoundException("Subject not found with id: " + subjectId));
+
+        user.getSubjects().add(subject);
+
+        subject.getUsers().add(user);
 
         return subjectRepository.save(subject);
     }

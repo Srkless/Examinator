@@ -13,9 +13,17 @@ import net.etfbl.examinator.models.Result;
 import net.etfbl.examinator.models.ResultId;
 import net.etfbl.examinator.models.StudentSubject;
 import net.etfbl.examinator.models.Subject;
+import net.etfbl.examinator.repositories.ActivityRepository;
 import net.etfbl.examinator.repositories.ResultRepository;
 import net.etfbl.examinator.repositories.StudentSubjectRepository;
 import net.etfbl.examinator.repositories.SubjectRepository;
+
+import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.layout.*;
+import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.io.source.ByteArrayOutputStream;
 
 @Service
 public class ResultService {
@@ -23,7 +31,13 @@ public class ResultService {
   private ResultRepository resultRepository;
 
   @Autowired
-  StudentSubjectRepository studentRepository;
+  private StudentSubjectRepository studentRepository;
+
+  @Autowired
+  private SubjectRepository subjectRepository;
+
+  @Autowired
+  private ActivityRepository activityRepository;
 
   public List<Result> getAllResults() {
     List<Result> list = resultRepository.findAll();
@@ -93,9 +107,6 @@ public class ResultService {
     return existing;
   }
 
-  // TODO sort properly comparing index, this is just a temporary solution, a
-  // placeholder
-
   private Comparator<Result> getStudentIndexComparator() {
     return (r1, r2) -> {
       Integer id1 = r1.getId().getStudentSubjectId();
@@ -116,5 +127,55 @@ public class ResultService {
         return 0;
       }
     };
+  }
+
+  public byte[] generateActivityResultsPdf(Integer activityId) {
+    List<Result> results = resultRepository.findAll().stream()
+        .filter(r -> r.getActivity().getId().equals(activityId))
+        .sorted(getStudentIndexComparator())
+        .collect(Collectors.toList());
+
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    PdfWriter writer = new PdfWriter(byteArrayOutputStream);
+    PdfDocument pdf = new PdfDocument(writer);
+    Document document = new Document(pdf);
+
+    Activity act = activityRepository.findById(activityId).get();
+    String subjectName = act.getSubject().getName();
+    String activityName = act.getName();
+
+    document.add(new Paragraph(subjectName).setBold().setFontSize(16).setTextAlignment(TextAlignment.CENTER));
+    document.add(new Paragraph(activityName).setFontSize(14).setTextAlignment(TextAlignment.CENTER));
+
+    Table table = new Table(UnitValue.createPercentArray(new float[] { 3, 4, 2 }));
+    table.setWidth(UnitValue.createPercentValue(100));
+    table.addHeaderCell("Indeks");
+    table.addHeaderCell("Ime i prezime");
+    table.addHeaderCell("Bodovi");
+
+    for (Result result : results) {
+      StudentSubject ss = result.getStudentSubject();
+      String index = ss.getIndex();
+      String name = ss.getFirstName() + " " + ss.getLastName();
+      String points = result.getPoints().toString();
+
+      table.addCell(index);
+      table.addCell(name);
+      table.addCell(points);
+    }
+
+    document.add(table);
+    document.close();
+
+    return byteArrayOutputStream.toByteArray();
+  }
+
+  // TODO implement service for generating finals results
+  public byte[] generateSubjectResultsPdf(Integer subjectId, List<Integer> students) {
+    if (students.size() == 0) {
+    } else {
+
+    }
+    return null;
   }
 }
