@@ -67,7 +67,7 @@ public class SubjectController {
     public ResponseEntity<?> getById(@PathVariable Integer id) {
         try {
             Subject subject = subjectService
-                    .getById(id)
+                    .getByCode(id)
                     .orElseThrow(() -> new RuntimeException("Subject with ID " + id + " not found."));
             return ResponseEntity.ok(subject);
         } catch (RuntimeException e) {

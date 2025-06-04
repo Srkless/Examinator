@@ -34,18 +34,17 @@ public class ActivityController {
      * Adds a new Activity using the provided request body.
      *
      * @param body Map containing the Activity fields and values.
-     * @return HTTP 200 with success message if added; 400 with error message otherwise.
+     * @return HTTP 200 with success message if added; 400 with error message
+     *         otherwise.
      */
     @Operation(summary = "Add a new Activity")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Activity added successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid request or Activity could not be added",
-                     content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "200", description = "Activity added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request or Activity could not be added", content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PostMapping("/add")
     public ResponseEntity<?> register(
-            @Parameter(description = "Activity fields as key-value pairs", required = true)
-            @RequestBody Map<String, Object> body) {
+            @Parameter(description = "Activity fields as key-value pairs", required = true) @RequestBody Map<String, Object> body) {
         try {
             Optional<Activity> result = activityService.addActivity(body);
             return result.map(activity -> ResponseEntity.ok("Activity added successfully"))
@@ -65,22 +64,17 @@ public class ActivityController {
      */
     @Operation(summary = "Get Activity by ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Found the Activity",
-                     content = @Content(schema = @Schema(implementation = Activity.class))),
-        @ApiResponse(responseCode = "404", description = "Activity not found",
-                     content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "200", description = "Found the Activity", content = @Content(schema = @Schema(implementation = Activity.class))),
+            @ApiResponse(responseCode = "404", description = "Activity not found", content = @Content(schema = @Schema(implementation = String.class)))
     })
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getById(
-            @Parameter(description = "ID of the Activity to retrieve", required = true)
-            @PathVariable Integer id) {
-        Activity activity =
-                activityService
-                        .getByShortName(shortName)
-                        .orElseThrow(
-                                () ->
-                                        new RuntimeException(
-                                                "Activity with code " + shortName + " not found."));
+            @Parameter(description = "ID of the Activity to retrieve", required = true) @PathVariable Integer id) {
+        Activity activity = activityService
+                .getById(id)
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Activity with ID " + id + " not found."));
         return ResponseEntity.ok(activity);
     }
 
@@ -92,15 +86,12 @@ public class ActivityController {
      */
     @Operation(summary = "Update an existing Activity")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Activity updated successfully",
-                     content = @Content(schema = @Schema(implementation = Activity.class))),
-        @ApiResponse(responseCode = "400", description = "Invalid update request",
-                     content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "200", description = "Activity updated successfully", content = @Content(schema = @Schema(implementation = Activity.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid update request", content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateSubject(
-            @Parameter(description = "Updated Activity object", required = true)
-            @RequestBody Activity updated) {
+            @Parameter(description = "Updated Activity object", required = true) @RequestBody Activity updated) {
         try {
             Activity activity = activityService.update(updated);
             return ResponseEntity.ok(activity);
@@ -117,14 +108,12 @@ public class ActivityController {
      */
     @Operation(summary = "Delete an Activity by ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Activity deleted successfully"),
-        @ApiResponse(responseCode = "400", description = "Error during deletion",
-                     content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "200", description = "Activity deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Error during deletion", content = @Content(schema = @Schema(implementation = String.class)))
     })
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteActivity(
-            @Parameter(description = "ID of the Activity to delete", required = true)
-            @PathVariable Integer id) {
+            @Parameter(description = "ID of the Activity to delete", required = true) @PathVariable Integer id) {
         try {
             activityService.delete(id);
             return ResponseEntity.ok("Activity deleted successfully");
