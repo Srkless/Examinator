@@ -1,6 +1,5 @@
 package net.etfbl.examinator.parsers;
 
-import net.etfbl.examinator.parsers.Parser;
 import net.etfbl.examinator.models.StudentSubject;
 import java.util.List;
 import java.util.Arrays;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
  * Note: Proper CSV parsing (e.g., handling quoted values, commas inside fields)
  * is not yet implemented.
  */
-public class CsvParser implements Parser {
+public class CsvStudentParser implements StudentParser {
 
   /**
    * Parses student subject data from a CSV string.
