@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Examinator - Studenti na predmetu</title>
+  <link rel="stylesheet" href="studentsResultsStyle.css">
+  <link rel="stylesheet" href="headerStyles2.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fondamento&display=swap" rel="stylesheet">
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+  <header class="main-header">
+    <a href="home.html" class="logo">Examinator</a>
+    <div class="user-menu" id="userMenu">
+      <div class="user-icon" id="userIcon">
+        <span class="material-icons">account_circle</span>
+        <span class="material-icons arrow">expand_more</span>
+      </div>
+      <ul class="dropdown" id="dropdownMenu">
+        <li>
+          <a href="settings.html">
+            Podešavanja
+            <span class="material-icons">settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="logout.html">
+            Odjava
+            <span class="material-icons">logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-content container">
+    <div class="subject-row">
+      <div class="field field-subject">
+        <label for="subject">Naziv predmeta</label>
+        <input type="text" id="subject" readonly />
+      </div>
+
+      <div class="field field-year">
+        <label for="schoolYear">Školska godina</label>
+        <select id="schoolYear"></select>
+      </div>
+    </div>
+
+  <div class="checkbox-section">
+      <div class="section">
+        <strong>Student:</strong>
+        <label><input type="checkbox" class="student-option" value="indeks"> Indeks</label>
+        <label><input type="checkbox" class="student-option" value="ime"> Ime</label>
+        <label><input type="checkbox" class="student-option" value="prezime"> Prezime</label>
+        <label><input type="checkbox" class="student-option" value="grupa"> Grupa</label>
+        <label><input type="checkbox" class="student-option" value="napomena"> Napomena</label>
+      </div>
+
+      <div class="section">
+        <strong>Aktivnosti:</strong>
+        <div id="activityOptionsContainer"></div>
+      </div>
+
+      <div class="section">
+        <strong>Formule:</strong>
+        <div id="formulaOptionsContainer"></div>
+      </div>
+
+
+      <div class="section">
+        <strong>Studenti na predmetu:</strong>
+        <label><input type="radio" name="studentSource" value="svi" checked> svi</label>
+        <label><input type="radio" name="studentSource" value="fajl"> prema spisku</label>
+      </div>
+    </div>
+
+    <div id="selectedColumns" class="selected-columns">
+      <strong>Kolone:</strong> <span id="columnList"></span>
+    </div>
+
+
+    <div class="generate-button-wrapper">
+      <button id="generateBtn" class="generate-button">Generiši</button>
+    </div>
+
+    <div id="tableContainer" class="table-section"></div>
+
+    <div id="studentsContainer">
+      <p class="no-data">Izaberite kolone koje želite da imate u tabeli</p>
+    </div>
+
+    <div id="paginationWrapper" class="hidden">
+      <div id="paginationCenter">
+        <div id="paginationControls"></div>
+        <div id="paginationInfo">1 / 1</div>
+      </div>
+      
+      <select id="rowsPerPage">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+    <div class="buttons action-buttons">
+      <button id="exportBtn" style="display:none;" class="export-btn">Export</button>
+      <button id="copyBtn" style="display:none;" class="export-btn">Kopiraj u Clipboard</button>
+    </div>
+  </main>
+
+  <script src="studentsResultsScript.js"></script>
+</body>
+</html>
