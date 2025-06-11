@@ -47,10 +47,10 @@ public class SecurityConfig implements WebMvcConfigurer {
                                 "/favicon.ico",
                                 "/manifest.json",
                                 "/static/**",
-                                "/assets/**", // for vite/webpack bundled assets
+                                "/assets/**",
                                 "/js/**",
                                 "/css/**",
-                                "/images/**", // More general image folder
+                                "/images/**",
                                 "/api/users/login",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
