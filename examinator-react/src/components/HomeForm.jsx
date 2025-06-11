@@ -117,6 +117,8 @@ function HomeForm() {
         } else if (text === 'display_settings') {
             // window.location.href = 'activities';
 
+        } else if (text === 'school') {
+
         } else {
             window.location.href = '.html';
         }
@@ -167,14 +169,16 @@ function HomeForm() {
                                         </td>
 
                                         <td>
-                                            <span
-                                                className="material-icons"
-                                                onClick={() =>
-                                                    handleIconClick('school', i)
-                                                }
-                                            >
-                                                school
-                                            </span>
+                                            <Link to='/students' state={{ subject: subjects[i] }}>
+                                                <span
+                                                    className="material-icons"
+                                                    onClick={() =>
+                                                        handleIconClick('school', i)
+                                                    }
+                                                >
+                                                    school
+                                                </span>
+                                            </Link>
                                         </td>
                                         <td>
                                             <span

@@ -7,6 +7,7 @@ import RequireAuth from './components/RequireAuth';
 import SettingsPage from './pages/SettingsPage';
 import LogoutPage from './pages/LogoutPage.jsx'
 import ActivitiesPage from './pages/ActivitiesPage.jsx'
+import StudentManagementPage from './pages/StudentManagementPage.jsx';
 import './styles/styles.scss';
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/activities" element={<ActivitiesPage />} />
+                    <Route path="/students" element={<StudentManagementPage />} />
                 </Route>
             </Routes>
         </Router>
