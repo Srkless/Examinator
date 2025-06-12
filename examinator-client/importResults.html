@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Examinator - Unos rezultata</title>
+  <link rel="stylesheet" href="importResultsStyle.css">
+  <link rel="stylesheet" href="headerStyles2.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fondamento&display=swap" rel="stylesheet">
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+  <header class="main-header">
+    <a href="home.html" class="logo">Examinator</a>
+    <div class="user-menu" id="userMenu">
+      <div class="user-icon" id="userIcon">
+        <span class="material-icons">account_circle</span>
+        <span class="material-icons arrow">expand_more</span>
+      </div>
+      <ul class="dropdown" id="dropdownMenu">
+        <li>
+          <a href="settings.html">
+            Podešavanja
+            <span class="material-icons">settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="logout.html">
+            Odjava
+            <span class="material-icons">logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-content container">
+    <div class="subject-row">
+      <div class="field field-subject">
+        <label for="subject">Naziv predmeta</label>
+        <input type="text" id="subject" readonly />
+      </div>
+
+      <div class="field field-year">
+        <label for="schoolYear">Školska godina</label>
+        <input type="text" id="schoolYear" readonly />
+      </div>
+
+      <div class="result-buttons">
+        <button id="importResult" data-tooltip="Importovanje rezultata">
+          <span class="material-icons">upload</span>
+        </button>
+      </div>
+    </div>
+
+    <section>
+      <section>
+        <div class="section-header">
+          <h2>Unos rezultata</h2>
+          <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pretraga studenata..." />
+          </div>
+        </div>
+
+         <div id="studentsContainer"></div>
+
+    </section>
+  </main>
+
+  <!-- Dugmad za skrolovanje -->
+  <button id="goTopBtn" title="Idi na vrh">
+    <span class="material-icons">arrow_upward</span>
+  </button>
+
+  <button id="goBottomBtn" title="Idi na dno">
+    <span class="material-icons">arrow_downward</span>
+  </button>
+
+
+  <script src="importResultsScript.js"></script>
+</body>
+</html>

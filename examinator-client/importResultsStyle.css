@@ -1,0 +1,226 @@
+@import url("https://fonts.googleapis.com/css2?family=Fondamento&display=swap");
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: #fff;
+}
+
+.container {
+  max-width: calc(100% - 500px);
+  margin: 0 auto;
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.subject-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+.subject-row .field {
+  display: flex;
+  flex-direction: column;
+}
+.subject-row .field label {
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  color: #333;
+  font-size: 1rem;
+}
+.subject-row .field input,
+.subject-row .field select {
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  line-height: 1.2;
+  background-color: #fff;
+}
+.subject-row .field select {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1rem;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+.subject-row .field select:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+.subject-row .field-subject {
+  width: 400px;
+}
+.subject-row .field-year {
+  width: 140px;
+}
+.subject-row .result-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 1rem;
+  align-self: flex-end;
+}
+.subject-row .result-buttons button {
+  height: 42px;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.5rem;
+  min-width: 60px;
+  background-color: #F88E4A;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.subject-row .result-buttons button .material-icons {
+  font-size: 22px;
+}
+.subject-row .result-buttons button:hover {
+  background-color: #f66f19;
+}
+.subject-row .result-buttons button[data-tooltip] {
+  position: relative;
+}
+.subject-row .result-buttons button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  color: #fff;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 100;
+}
+.subject-row .result-buttons button[data-tooltip].show-tooltip::after {
+  opacity: 1;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.section-header h2 {
+  margin: 0;
+}
+.section-header .search-bar {
+  margin: 2rem 0 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.section-header .search-bar input {
+  width: 300px;
+  height: 42px;
+  padding: 0 1rem 0 1rem;
+  font-size: 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1.2rem;
+}
+.section-header .search-bar input:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+table th, table td {
+  padding: 0.4rem;
+  border: 1px solid #dcdcdc;
+  text-align: center;
+}
+table th {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+table th:hover {
+  color: #F88E4A;
+}
+
+.activity-input {
+  width: 70px;
+  height: 40px;
+  padding: 0rem;
+  font-size: 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  text-align: center;
+}
+.activity-input:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+
+.save-btn {
+  margin-top: 2rem;
+  background-color: #F88E4A;
+  color: #fff;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+}
+.save-btn:hover {
+  background-color: #f66f19;
+}
+
+#goTopBtn,
+#goBottomBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 100;
+  display: none;
+  background-color: #fff;
+  color: #F88E4A;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease;
+  justify-content: center;
+  align-items: center;
+}
+
+#goTopBtn:hover,
+#goBottomBtn:hover {
+  color: #f66f19;
+}
+
+#goTopBtn .material-icons,
+#goBottomBtn .material-icons {
+  font-size: 28px;
+  line-height: 50px;
+}/*# sourceMappingURL=importResultsStyle.css.map */
