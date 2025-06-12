@@ -79,20 +79,35 @@ form.addEventListener("submit", (e) => {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${name} (${code})</td>
-      <td><span class="material-icons">edit</span></td>
-      <td><span class="material-icons">groups</span></td>
-      <td><span class="material-icons">display_settings</span></td>
-      <td><span class="material-icons">school</span></td>
-      <td><span class="material-icons">description</span></td>
-      <td><span class="material-icons">grid_on</span></td>
+      <td><span class="material-icons" data-tooltip="Izmjena osnovnih podataka o predmetu">edit</span></td>
+      <td><span class="material-icons" data-tooltip="Predavači na predmetu">groups</span></td>
+      <td><span class="material-icons" data-tooltip="Definisanje aktivnosti i formula">calculate</span></td>
+      <td><span class="material-icons" data-tooltip="Studenti na predmetu">school</span></td>
+      <td><span class="material-icons" data-tooltip="Rezultati studenata na predmetu">description</span></td>
+      <td><span class="material-icons" data-tooltip="Unos rezultata">grid_on</span></td>
     `;
     subjectsBody.appendChild(row);
+    enableTooltipsForIcons();
   }
 
   updateSubjectVisibility();
   form.reset();
   dialog.close();
 });
+
+// Tooltip
+function enableTooltipsForIcons() {
+  document.querySelectorAll('.material-icons[data-tooltip]').forEach(icon => {
+    let timeout;
+    icon.addEventListener('mouseenter', () => {
+      timeout = setTimeout(() => icon.classList.add('show-tooltip'), 500);
+    });
+    icon.addEventListener('mouseleave', () => {
+      clearTimeout(timeout);
+      icon.classList.remove('show-tooltip');
+    });
+  });
+}
 
 // Klik na ikonicu u redu
 subjectsBody.addEventListener("click", function (e) {
@@ -122,7 +137,7 @@ subjectsBody.addEventListener("click", function (e) {
     popuniPredavace();
     professorsDialog.showModal();
   }
-  else if (e.target.textContent === "display_settings") {  // aktivnosti i formule
+  else if (e.target.textContent === "calculate") {  // aktivnosti i formule
     const icon = e.target;
     const row = icon.closest("tr");
 
@@ -157,7 +172,6 @@ subjectsBody.addEventListener("click", function (e) {
       localStorage.setItem("selectedSubject", prikaz);
       window.location.href = "students.html"; 
     }
-    // window.location.href = "students.html";   
   }
   else if(e.target.textContent === "description"){ // rezultati studenata na predmetu
     const icon = e.target;
@@ -179,8 +193,20 @@ subjectsBody.addEventListener("click", function (e) {
     // window.location.href = "studentResults.html";  
   }
   else if(e.target.textContent == "grid_on"){ // unos rezultata
-    
-    window.location.href = ".html";
+    const row = e.target.closest("tr");
+    const fullText = row?.cells[0].textContent.trim();
+    const match = fullText.match(/(.+)\s+\((.+)\)/);
+
+    if (match) {
+      const naziv = match[1].trim();
+      const sifra = match[2].trim();
+      subjectInput.value = `${naziv} - ${sifra}`;
+
+      yearSelect.value = "";
+      activitySelect.value = "";
+      resultsDialog.showModal(); 
+    }
+    // window.location.href = "importResults.html";
   }
 });
 
@@ -283,4 +309,70 @@ professorsForm.addEventListener("submit", (e) => {
 
   // Ovdje možeš slati podatke backendu putem fetch-a
   professorsDialog.close();
+});
+
+
+
+// Elementi dialoga za unos rezultata
+const resultsDialog = document.getElementById("results-dialog");
+const subjectInput = document.getElementById("subject");
+const yearSelect = document.getElementById("schoolYear");
+const activitySelect = document.getElementById("activity-select");
+const closeResultsDialog = document.getElementById("close-results-dialog");
+const cancelResults = document.getElementById("cancel-results");
+const resultsForm = document.getElementById("results-form");
+
+// Popuni školsku godinu
+function populateSchoolYears() {
+  yearSelect.innerHTML = '<option value="" disabled selected>Izaberite školsku godinu</option>';
+  const today = new Date();
+  let year = today.getFullYear();
+  const month = today.getMonth();
+  if (month >= 9) year += 1;
+
+  for (let i = 0; i < 10; i++) {
+    const start = year - i;
+    const end = start + 1;
+    const option = document.createElement("option");
+    option.value = `${start}/${end}`;
+    option.textContent = `${start}/${end}`;
+    if (i === 0) option.selected = true;
+    yearSelect.appendChild(option);
+  }
+}
+
+// Popuni aktivnosti - Aktivnosti (skraceni naziv aktivnosti uzeti iz baze)
+function populateActivities() {
+  const activities = ["K1", "K2", "LAB"];
+  activitySelect.innerHTML = '<option value="" disabled selected>Izaberite aktivnost</option>';
+  activities.forEach(a => {
+    const opt = document.createElement("option");
+    opt.value = a;
+    opt.textContent = a;
+    activitySelect.appendChild(opt);
+  });
+}
+
+populateSchoolYears();
+populateActivities();
+
+// Zatvori dijalog
+closeResultsDialog.addEventListener("click", () => resultsDialog.close());
+cancelResults.addEventListener("click", () => resultsDialog.close());
+
+// Potvrda
+resultsForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const year = yearSelect.value;
+  const activity = activitySelect.value;
+  const subject = subjectInput.value;
+
+  if (!year || !activity || !subject) return;
+
+  localStorage.setItem("selectedSubject", subject);
+  localStorage.setItem("selectedYear", year);
+  localStorage.setItem("selectedActivity", activity);
+
+  window.location.href = "importResults.html";
 });

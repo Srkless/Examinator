@@ -116,6 +116,45 @@
 </dialog>
 <!-- Kraj dialog box-a za dodavanje predavaca-->
 
+
+
+<!-- Dialog box za unos rezultata -->
+<dialog id="results-dialog">
+  <form id="results-form" method="dialog">
+    <div class="dialog-header">
+      <h3>Unos rezultata</h3>
+      <button class="close-btn" type="button" id="close-results-dialog">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="results-row">
+      <label for="subject">Naziv predmeta</label>
+      <input type="text" id="subject" readonly />
+    </div>
+
+    <div class="results-row">
+      <label for="schoolYear">Školska godina</label>
+      <select id="schoolYear" required>
+        <option value="" disabled selected>Izaberite školsku godinu</option>
+      </select>
+    </div>
+
+    <div class="results-row">
+      <label for="activity-select">Aktivnost</label>
+      <select id="activity-select" required>
+        <option value="" disabled selected>Izaberite aktivnost</option>
+      </select>
+    </div>
+
+    <div class="bottom-buttons">
+      <button type="button" id="cancel-results">Otkazati</button>
+      <button type="submit" id="confirm-results">Potvrditi</button>
+    </div>
+  </form>
+</dialog>
+<!-- Kraj dialog box-a za unos rezultata -->
+
 <script src="scriptHome.js"></script>
 </body>
 </html>

@@ -127,6 +127,50 @@ table .material-icons {
 table .material-icons:hover {
   color: #f66f19;
 }
+table .material-icons[data-tooltip] {
+  position: relative;
+}
+table .material-icons[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.8rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0s linear;
+  transition-delay: 0s;
+  z-index: 1000;
+  pointer-events: none;
+}
+table .material-icons[data-tooltip]::before {
+  content: "";
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #444 transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0s linear;
+  transition-delay: 0s;
+  z-index: 1000;
+  pointer-events: none;
+}
+table .material-icons[data-tooltip]:hover::after, table .material-icons[data-tooltip]:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.6s;
+}
 
 .add-button {
   position: fixed;
@@ -354,5 +398,104 @@ dialog#professors-dialog form#professors-form .bottom-buttons button {
   color: #fff;
 }
 dialog#professors-dialog form#professors-form .bottom-buttons button:hover {
+  background-color: #f66f19;
+}
+
+dialog#results-dialog {
+  width: 500px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif;
+  padding: 0;
+}
+dialog#results-dialog form#results-form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  color: #333;
+}
+dialog#results-dialog form#results-form .dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #dcdcdc;
+  padding-bottom: 0.5rem;
+  height: 30px;
+  box-sizing: border-box;
+}
+dialog#results-dialog form#results-form .dialog-header h3 {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #888;
+  font-weight: 400;
+}
+dialog#results-dialog form#results-form .dialog-header .close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+dialog#results-dialog form#results-form .dialog-header .close-btn .material-icons {
+  font-size: 1.5rem;
+}
+dialog#results-dialog form#results-form .results-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+dialog#results-dialog form#results-form .results-row label {
+  font-weight: 500;
+  color: #444;
+}
+dialog#results-dialog form#results-form .results-row select,
+dialog#results-dialog form#results-form .results-row input {
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+dialog#results-dialog form#results-form .results-row select:focus,
+dialog#results-dialog form#results-form .results-row input:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+dialog#results-dialog form#results-form .results-row select {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1rem;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+dialog#results-dialog form#results-form .results-row select:focus {
+  outline: none;
+  border-color: #F88E4A;
+}
+dialog#results-dialog form#results-form .bottom-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+dialog#results-dialog form#results-form .bottom-buttons button {
+  width: 120px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #F88E4A;
+  color: #fff;
+}
+dialog#results-dialog form#results-form .bottom-buttons button:hover {
   background-color: #f66f19;
 }/*# sourceMappingURL=homeStyles.css.map */
