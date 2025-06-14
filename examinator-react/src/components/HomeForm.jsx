@@ -155,7 +155,7 @@ function HomeForm() {
         try {
             const res = await getUsersOnSubject(subjectCode);
             if (res.length === 1) {
-                console.error('Ne možete ukloniti posljednjeg predavača.');
+                alert('Ne možete ukloniti posljednjeg predavača.');
                 return;
             }
             await removeUserFromSubject(selectedUsername, subjectCode);
