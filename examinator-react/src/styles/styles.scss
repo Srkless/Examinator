@@ -446,6 +446,159 @@ dialog {
   }
 }
 
+dialog#professors-dialog {
+  width: 650px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif;
+  padding: 0;
+}
+
+dialog#professors-dialog form#professors-form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  color: #333;
+}
+
+dialog#professors-dialog form#professors-form .dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #dcdcdc;
+  padding-bottom: 0.5rem;
+  height: 30px;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+dialog#professors-dialog form#professors-form .dialog-header h3 {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #888;
+  font-weight: 400;
+}
+
+dialog#professors-dialog form#professors-form .dialog-header .close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+dialog#professors-dialog form#professors-form .dialog-header .close-btn .material-icons {
+  font-size: 1.5rem;
+}
+
+dialog#professors-dialog form#professors-form .add-professor-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+dialog#professors-dialog form#professors-form .add-professor-row label {
+  font-weight: 500;
+  color: #444;
+}
+
+dialog#professors-dialog form#professors-form .add-professor-row select {
+  flex-grow: 1;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+dialog#professors-dialog form#professors-form .add-professor-row select:focus {
+  outline: none;
+  border-color: var(--border-color);
+}
+
+dialog#professors-dialog form#professors-form .add-professor-row button {
+  width: 100px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: var(--accent-color);
+  color: #fff;
+}
+
+dialog#professors-dialog form#professors-form .add-professor-row button:hover {
+  background-color: var(--accent-color);
+}
+
+dialog#professors-dialog form#professors-form .no-data-msg {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+  margin-top: 1rem;
+}
+
+dialog#professors-dialog form#professors-form .professor-table-container {
+  margin-top: 1rem;
+}
+
+dialog#professors-dialog form#professors-form .professor-table-container table {
+  max-width: calc(100% - 20px);
+  margin: 0 auto;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+dialog#professors-dialog form#professors-form .professor-table-container table td {
+  padding: 0.4rem 0.4rem;
+}
+
+dialog#professors-dialog form#professors-form .professor-table-container table th {
+  padding: 0.5rem;
+}
+
+dialog#professors-dialog form#professors-form .professor-table-container table td,
+dialog#professors-dialog form#professors-form .professor-table-container table th {
+  border: 0.4px solid #333;
+  text-align: center;
+  color: #1f1f1f;
+}
+
+dialog#professors-dialog form#professors-form .professor-table-container table .material-icons {
+  cursor: pointer;
+  color: #333;
+}
+
+dialog#professors-dialog form#professors-form .professor-table-container table .material-icons:hover {
+  color: var(--accent-color);
+}
+
+dialog#professors-dialog form#professors-form .bottom-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+dialog#professors-dialog form#professors-form .bottom-buttons button {
+  width: 120px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: var(--accent-color);
+  color: #fff;
+}
+
+dialog#professors-dialog form#professors-form .bottom-buttons button:hover {
+  background-color: var(--accent-color);
+}
 
 .settings-body {
   margin: 0;

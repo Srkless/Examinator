@@ -26,6 +26,7 @@ echo "📝 Logging to $LOG_FILE"
 
 nohup mvn spring-boot:run > "../$LOG_FILE" 2>&1 &
 
+
 PID=$!
 
 echo "🚀 Spring Boot server started with PID: $PID"

@@ -4,17 +4,27 @@ import { Link } from 'react-router-dom';
 import {
     addSubject,
     getUserSubjects,
+    getUsersOnSubject,
+    addUserToSubject,
+    removeUserFromSubject,
 } from '../services/SubjectManagementService';
+import { getUsers } from '../services/UserService';
 
 function HomeForm() {
     const [subjects, setSubjects] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [subjectUsers, setSubjectUsers] = useState([]);
+
+    const [selectedUsername, setSelectedUsername] = useState(null);
     const [subjectName, setSubjectName] = useState('');
     const [subjectCode, setSubjectCode] = useState('');
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [isProfessorDialogOpen, setProfessorDialogOpen] = useState(false);
     const [editingIndex, setEditingIndex] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
 
     const dialogRef = useRef(null);
+    const profDialogRef = useRef(null);
 
     useEffect(() => {
         const fetchSubjects = async () => {
@@ -35,6 +45,46 @@ function HomeForm() {
 
         fetchSubjects();
     }, []);
+
+    useEffect(() => {
+        const fetchSubjectUsers = async () => {
+            if (!subjectCode) return; // ne pozivaj ako subjectId nije definisan
+
+            try {
+                const res = await getUsersOnSubject(subjectCode);
+
+                const subjectUsers = res.map((user) => {
+                    const firstName = user.firstName.trim();
+                    const lastName = user.lastName.trim();
+                    return {
+                        id: user.id,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: user.email,
+                        username: user.username,
+                    };
+                });
+
+                console.log('Učitani korisnici predmeta:', subjectUsers);
+                setSubjectUsers(subjectUsers);
+
+                const users = await getUsers();
+
+                const availableUsers = users.filter(
+                    (user) => !res.some((u) => u.id === user.id),
+                );
+
+                setUsers(availableUsers);
+            } catch (err) {
+                console.error(
+                    'Greška pri učitavanju korisnika predmeta:',
+                    err.message,
+                );
+            }
+        };
+        fetchSubjectUsers();
+    }, [subjectCode, isProfessorDialogOpen]); // pozovi kad se otvori dialog ili promeni subjectId
+
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (!e.target.closest('.user-icon')) {
@@ -52,6 +102,12 @@ function HomeForm() {
     }, [isDialogOpen]);
 
     useEffect(() => {
+        if (isProfessorDialogOpen && profDialogRef.current) {
+            profDialogRef.current.showModal();
+        }
+        setSelectedUsername('');
+    }, [isProfessorDialogOpen]);
+    useEffect(() => {
         document.body.classList.forEach((className) => {
             if (className !== 'dark-theme') {
                 document.body.classList.remove(className);
@@ -67,19 +123,69 @@ function HomeForm() {
         setDialogOpen(true);
     };
 
+    const handleAddProfessor = async () => {
+        if (!selectedUsername || !subjectCode) return;
+
+        try {
+            await addUserToSubject(selectedUsername, subjectCode);
+            setSubjectUsers((prevUsers) => [
+                ...prevUsers,
+                {
+                    username: selectedUsername,
+                    firstName: users.find(
+                        (user) => user.username === selectedUsername,
+                    ).firstName,
+                    lastName: users.find(
+                        (user) => user.username === selectedUsername,
+                    ).lastName,
+                    email: users.find(
+                        (user) => user.username === selectedUsername,
+                    ).email,
+                },
+            ]);
+        } catch (err) {
+            console.error('Greška pri dodavanju:', err.message);
+        }
+    };
+
+    const handleRemoveProfessor = async (selectedUsername) => {
+        console.log('username:', selectedUsername, 'subjectCode:', subjectCode);
+        if (!selectedUsername || !subjectCode) return;
+
+        try {
+            const res = await getUsersOnSubject(subjectCode);
+            if (res.length === 1) {
+                console.error('Ne možete ukloniti posljednjeg predavača.');
+                return;
+            }
+            await removeUserFromSubject(selectedUsername, subjectCode);
+            setSubjectUsers((prevUsers) =>
+                prevUsers.filter((user) => user.username !== selectedUsername),
+            );
+            setSelectedUsername('');
+            console.log('Uspješno uklonjen predavač:', selectedUsername);
+        } catch (err) {
+            console.error('Greška pri brisanju:', err.message);
+        }
+    };
+
     const openDialog = () => {
         setDialogOpen(true);
     };
     const closeDialog = () => {
-        setDialogOpen(false);
         if (dialogRef.current) {
             dialogRef.current.close();
+            setDialogOpen(false);
+            setEditingIndex(null);
+            setSubjectName('');
+            setSubjectCode('');
         }
-        setEditingIndex(null);
-        setSubjectName('');
-        setSubjectCode('');
-    };
 
+        if (profDialogRef.current) {
+            profDialogRef.current.close();
+            setProfessorDialogOpen(false);
+        }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!subjectName.trim() || !subjectCode.trim()) return;
@@ -106,8 +212,8 @@ function HomeForm() {
     };
 
     const handleIconClick = (text, index) => {
+        const match = subjects[index].match(/(.+)\s+\((.+)\)/);
         if (text === 'edit') {
-            const match = subjects[index].match(/(.+)\s+\((.+)\)/);
             if (match) {
                 setSubjectName(match[1]);
                 setSubjectCode(match[2]);
@@ -116,15 +222,15 @@ function HomeForm() {
             }
         } else if (text === 'display_settings') {
             // window.location.href = 'activities';
-
         } else if (text === 'school') {
-
-        } else {
-            window.location.href = '.html';
+        } else if (text === 'groups') {
+            if (match) {
+                setSubjectCode(match[2]);
+                setProfessorDialogOpen(true);
+            }
         }
     };
     return (
-
         <div>
             <HeaderComponent />
             <main className="main-content">
@@ -157,23 +263,36 @@ function HomeForm() {
                                             </span>
                                         </td>
                                         <td>
-                                            <Link to='/activities' state={{ subject: subjects[i] }}>
+                                            <Link
+                                                to="/activities"
+                                                state={{ subject: subjects[i] }}
+                                            >
                                                 <span
                                                     className="material-icons"
-                                                    onClick={() => handleIconClick('display_settings', i)}
+                                                    onClick={() =>
+                                                        handleIconClick(
+                                                            'display_settings',
+                                                            i,
+                                                        )
+                                                    }
                                                 >
                                                     display_settings
                                                 </span>
                                             </Link>
-
                                         </td>
 
                                         <td>
-                                            <Link to='/students' state={{ subject: subjects[i] }}>
+                                            <Link
+                                                to="/students"
+                                                state={{ subject: subjects[i] }}
+                                            >
                                                 <span
                                                     className="material-icons"
                                                     onClick={() =>
-                                                        handleIconClick('school', i)
+                                                        handleIconClick(
+                                                            'school',
+                                                            i,
+                                                        )
                                                     }
                                                 >
                                                     school
@@ -270,8 +389,112 @@ function HomeForm() {
                     </div>
                 </form>
             </dialog>
+
+            <dialog
+                ref={profDialogRef}
+                id="professors-dialog"
+                onCancel={closeDialog}
+            >
+                <form id="professors-form">
+                    <div class="dialog-header">
+                        <h3>Dodavanje predavača</h3>
+                        <button
+                            type="button"
+                            id="close-professors-dialog"
+                            class="close-btn"
+                            onClick={closeDialog}
+                        >
+                            <span class="material-icons">close</span>
+                        </button>
+                    </div>
+
+                    <div class="add-professor-row">
+                        <label for="professor-select">Predavač</label>
+                        <select
+                            id="professor-select"
+                            value={selectedUsername}
+                            onChange={(e) =>
+                                setSelectedUsername(e.target.value)
+                            }
+                        >
+                            <option value="" disabled>
+                                Izaberite predavača
+                            </option>
+                            {users.map((user) => (
+                                <option key={user.id} value={user.username}>
+                                    {user.firstName} {user.lastName}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            type="button"
+                            id="add-professor"
+                            onClick={handleAddProfessor}
+                        >
+                            Dodaj
+                        </button>
+                    </div>
+
+                    {subjectUsers.length === 0 ? (
+                        <p id="no-professors" className="no-data-msg">
+                            Trenutno nema ni jedan predavač na predmetu
+                        </p>
+                    ) : (
+                        <div className="professor-table-container">
+                            <table id="professor-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ime</th>
+                                        <th>Prezime</th>
+                                        <th>Email</th>
+                                        <th>Akcija</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="professor-body">
+                                    {subjectUsers.map((p) => (
+                                        <tr key={p.username}>
+                                            <td>{p.firstName}</td>
+                                            <td>{p.lastName}</td>
+                                            <td>{p.email}</td>
+                                            <td>
+                                                <span
+                                                    className="material-icons delete-professor"
+                                                    onClick={() =>
+                                                        handleRemoveProfessor(
+                                                            p.username,
+                                                        )
+                                                    }
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    delete
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {/* <div class="buttons bottom-buttons"> */}
+                    {/*     <button */}
+                    {/*         type="button" */}
+                    {/*         class="cancel-btn" */}
+                    {/*         id="cancel-professors" */}
+                    {/*         onClick={closeDialog} */}
+                    {/*     > */}
+                    {/*         Otkaži */}
+                    {/*     </button> */}
+                    {/*     <button type="submit" class="confirm-btn"> */}
+                    {/*         Sačuvaj */}
+                    {/*     </button> */}
+                    {/* </div> */}
+                </form>
+            </dialog>
             {/* )} */}
-        </div >
+        </div>
     );
 }
 

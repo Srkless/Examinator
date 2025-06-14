@@ -33,6 +33,40 @@ export async function addSubject(name, code) {
     return data;
 }
 
+export async function getUsersOnSubject(code) {
+    const res = await fetch(`${API_URL}/${code}/users`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
+        },
+    });
+
+    const contentType = res.headers.get('Content-Type');
+    const isJson = contentType && contentType.includes('application/json');
+
+    const bodyText = await res.text();
+
+    let data;
+    try {
+        data = isJson ? JSON.parse(bodyText) : bodyText;
+    } catch {
+        data = bodyText;
+    }
+
+    console.log('Response:', res);
+
+    if (!res.ok) {
+        const message =
+            typeof data === 'string'
+                ? data
+                : data.message || JSON.stringify(data);
+        throw new Error(`Greška pri dobijanju predmeta: ${message}`);
+    }
+
+    console.log(data);
+    return data;
+}
+
 export async function getUserSubjects() {
     const res = await fetch(`${API_URL}`, {
         method: 'GET',
@@ -66,7 +100,6 @@ export async function getUserSubjects() {
     console.log(data);
     return data;
 }
-
 export async function getSubjectActivities(code) {
     const res = await fetch(`${API_URL}/${code}`, {
         method: 'GET',
@@ -74,7 +107,38 @@ export async function getSubjectActivities(code) {
             Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
         },
     });
-    console.log(res)
+
+    const contentType = res.headers.get('Content-Type');
+    const isJson = contentType && contentType.includes('application/json');
+
+    const bodyText = await res.text();
+
+    let data;
+    try {
+        data = isJson ? JSON.parse(bodyText) : bodyText;
+    } catch {
+        data = bodyText;
+    }
+
+    if (!res.ok) {
+        const message =
+            typeof data === 'string'
+                ? data
+                : data.message || JSON.stringify(data);
+        throw new Error(`Greška pri dobijanju podataka o predmeta: ${message}`);
+    }
+    console.log(data);
+    return data;
+}
+export async function addUserToSubject(username, subjectCode) {
+    const res = await fetch(`${API_URL}/addProfessor`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
+        },
+        body: JSON.stringify({ username, subjectCode }),
+    });
 
     const contentType = res.headers.get('Content-Type');
     const isJson = contentType && contentType.includes('application/json');
@@ -89,12 +153,51 @@ export async function getSubjectActivities(code) {
     }
 
     console.log('Response:', res);
-
     if (!res.ok) {
         const message =
             typeof data === 'string'
                 ? data
                 : data.message || JSON.stringify(data);
-        throw new Error(`Greška pri dobijanju podataka o predmeta: ${message}`);
-    } console.log(data); return data;
+        throw new Error(
+            `Greška pri dodavanju korisnika na predmet: ${message}`,
+        );
+    }
+
+    return data;
+}
+
+export async function removeUserFromSubject(username, subjectCode) {
+    const res = await fetch(`${API_URL}/removeProfessor`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
+        },
+        body: JSON.stringify({ username, subjectCode }),
+    });
+
+    const contentType = res.headers.get('Content-Type');
+    const isJson = contentType && contentType.includes('application/json');
+
+    const bodyText = await res.text();
+
+    let data;
+    try {
+        data = isJson ? JSON.parse(bodyText) : bodyText;
+    } catch {
+        data = bodyText;
+    }
+
+    console.log('Response:', res);
+    if (!res.ok) {
+        const message =
+            typeof data === 'string'
+                ? data
+                : data.message || JSON.stringify(data);
+        throw new Error(
+            `Greška pri dodavanju korisnika na predmet: ${message}`,
+        );
+    }
+
+    return data;
 }

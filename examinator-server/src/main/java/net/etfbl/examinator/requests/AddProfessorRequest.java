@@ -6,6 +6,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 public class AddProfessorRequest {
-  private Integer subjectId;
-  private String username;
+    private Integer subjectCode;
+    private String username;
 }
