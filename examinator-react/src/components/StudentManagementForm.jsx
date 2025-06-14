@@ -4,16 +4,17 @@ import '../styles/studentManagement.scss';
 import { useEffect } from 'react'
 import { getSubjectActivities } from "../services/SubjectManagementService";
 import { useState } from "react";
+import { getStudents } from "../services/StudentManagementService";
 
 const StudentManagementForm = () => {
 
-    const [subjectData, setSubjectData] = useState([]);
-    const [subjectStudents, setSubjectStudents] = useState([]);
+    const [data, setData] = useState([])
+    const [content, setContent] = useState([])
     const [schoolYears, setSchoolYears] = useState(new Set());
     const [selectedYear, setSelectedYear] = useState(0)
+    const [selectedLength, setSelectedLength] = useState(10)
     const location = useLocation();
     const subject = location.state?.subject
-    console.log(subject)
 
     useEffect(() => {
         document.body.classList.forEach((className) => {
@@ -32,21 +33,24 @@ const StudentManagementForm = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const subjectData = await getSubjectActivities(code);
-                setSubjectData(subjectData);
-                setSubjectStudents(subjectData.studentSubjects)
+                console.log('fetching students')
+                const students = await getStudents(code, 1, selectedLength, 'asc')
+                setData(students)
+                setContent(students.content)
+                console.log(students)
             } catch (error) {
                 console.log('Error fetching subject data: ', error)
 
             }
         };
         fetchStudents();
-        console.log(subjectData)
-    }, [code])
+    }, [selectedLength])
 
     useEffect(() => {
-        setSchoolYears([... new Set(subjectStudents.map(student => student.schoolYear))].sort((a, b) => b - a));
-    }, [subjectStudents])
+        setSchoolYears([... new Set(content.map(student => student.schoolYear))].sort((a, b) => b - a));
+
+
+    }, [content])
 
     useEffect(() => {
         setSelectedYear(schoolYears[0])
@@ -56,6 +60,14 @@ const StudentManagementForm = () => {
     const schoolYearChange = (event) => {
         setSelectedYear(event.target.value)
     }
+
+    const selectedLengthChange = (event) => {
+        setSelectedLength(event.target.value)
+        console.log("promijenjen select")
+    }
+
+
+
 
 
 
@@ -67,7 +79,7 @@ const StudentManagementForm = () => {
                 <div class="subject-row">
                     <div class="field field-subject">
                         <label for="subject">Naziv predmeta</label>
-                        <input type="text" id="subject" value={subjectData.name} readonly />
+                        <input type="text" id="subject" value={subject} readonly />
                     </div>
 
                     <div class="field field-year">
@@ -99,7 +111,7 @@ const StudentManagementForm = () => {
                         </div>
 
                         <div id="studentsContainer">
-                            {subjectStudents.length > 0 ? (
+                            {content.length > 0 ? (
 
                                 <table>
                                     <thead>
@@ -115,7 +127,7 @@ const StudentManagementForm = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {subjectStudents.filter(student => student.schoolYear == selectedYear).map((student, i) => (
+                                        {content.filter(student => student.schoolYear == selectedYear).map((student) => (
                                             <tr>
                                                 <td>{student.index}</td>
                                                 <td>{student.firstName}</td>
@@ -135,13 +147,25 @@ const StudentManagementForm = () => {
                             )}
                         </div>
 
-                        <div id="paginationWrapper" class="hidden">
+                        <div id="paginationWrapper" >
                             <div id="paginationCenter">
-                                <div id="paginationControls"></div>
-                                <div id="paginationInfo">1 / 1</div>
+                                {data.totalPages > 1 ?
+                                    <div id="paginationControls">
+                                        <span class="material-icons" style={{ cursor: "pointer" }}>first_page</span>
+                                        <span class="material-icons" style={{ cursor: "pointer" }} >navigate_before</span>
+                                        <div id="paginationInfo" style={{ cursor: "pointer" }}>1 / {data.totalPages}</div>
+                                        <span class="material-icons" style={{ cursor: "pointer" }} >navigate_next</span>
+                                        <span class="material-icons" style={{ cursor: "pointer" }} >last_page</span>
+                                    </div>
+                                    :
+                                    <div id="paginationControls">
+                                        <div id="paginationInfo">1 / 1</div>
+                                    </div>
+
+                                }
                             </div>
 
-                            <select id="rowsPerPage">
+                            <select id="rowsPerPage" onChange={selectedLengthChange}>
                                 <option value="10">10</option>
                                 <option value="20">20</option>
                                 <option value="30">30</option>
@@ -153,7 +177,7 @@ const StudentManagementForm = () => {
                     </section>
                 </section>
             </main>
-        </div>
+        </div >
     )
 }
 

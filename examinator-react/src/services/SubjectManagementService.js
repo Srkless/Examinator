@@ -1,5 +1,4 @@
 const API_URL = 'http://localhost:8080/api/subjects';
-
 export async function addSubject(name, code) {
     const res = await fetch(`${API_URL}/add`, {
         method: 'POST',
