@@ -47,7 +47,7 @@ const StudentManagementForm = () => {
 
         return debouncedValue;
     }
-    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+    const debouncedSearchTerm = useDebounce(searchTerm, 400);
 
     const fetchStudents = useCallback(async (page = currentPage, resetPage = false) => {
         if (schoolYears.length === 0) return;
