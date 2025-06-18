@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import net.etfbl.examinator.models.StudentSubject;
 import net.etfbl.examinator.services.StudentSubjectService;
 
+import org.hibernate.boot.jaxb.SourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
@@ -52,6 +53,13 @@ public class StudentSubjectController {
 
         Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         List<StudentSubject> list = studentSubjectService.getAllBySubjectCode(subjectCode);
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/subject/years/{subjectCode}")
+    public ResponseEntity<List<Integer>> getAllResultYears(@PathVariable Integer subjectCode) {
+        System.out.println("controller");
+        List<Integer> list = studentSubjectService.getAllSubjectStudentYears(subjectCode);
         return ResponseEntity.ok(list);
     }
 
@@ -125,12 +133,14 @@ public class StudentSubjectController {
     })
     @GetMapping("/subject/{subjectCode}/paged")
     public ResponseEntity<Page<StudentSubject>> getPagedFilteredBySubject(
+
             @Parameter(description = "Subject Code", required = true) @PathVariable Integer subjectCode,
             @Parameter(description = "Page number, default 0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size, default 20") @RequestParam(defaultValue = "20") int size,
             @Parameter(description = "Sort field, default 'index'") @RequestParam(defaultValue = "index") String sortBy,
             @Parameter(description = "Sort direction 'asc' or 'desc', default 'asc'") @RequestParam(defaultValue = "asc") String direction,
             @Parameter(description = "Search query for filtering, optional") @RequestParam(defaultValue = "") String searchQuery) {
+        System.out.println("paged controller");
 
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()

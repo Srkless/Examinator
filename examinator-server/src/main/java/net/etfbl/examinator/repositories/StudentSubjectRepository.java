@@ -14,13 +14,16 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface StudentSubjectRepository extends JpaRepository<StudentSubject, Integer> {
 
-  Optional<StudentSubject> findByIndexAndSubjectId(String index, Integer subjectId);
+    Optional<StudentSubject> findByIndexAndSubjectId(String index, Integer subjectId);
 
-  List<StudentSubject> findAllBySubjectId(Integer subjectId);
+    List<StudentSubject> findAllBySubjectId(Integer subjectId);
 
-  @Query("SELECT ss FROM StudentSubject ss WHERE ss.subject.code = :code")
-  List<StudentSubject> findAllBySubjectCode(@Param("code") Integer code);
+    @Query("SELECT ss FROM StudentSubject ss WHERE ss.subject.code = :code")
+    List<StudentSubject> findAllBySubjectCode(@Param("code") Integer code);
 
-  Page<StudentSubject> findAllBySubjectId(Integer subjectId, Pageable pageable);
+    Page<StudentSubject> findAllBySubjectId(Integer subjectId, Pageable pageable);
+
+    @Query("SELECT DISTINCT ss.schoolYear FROM StudentSubject ss WHERE ss.subject.id = :subjectId ORDER BY ss.schoolYear")
+    List<Integer> findDistinctSchoolYearsBySubjectId(@Param("subjectId") Integer subjectId);
 
 }

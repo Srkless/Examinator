@@ -1,10 +1,10 @@
 import HeaderComponent from "./HeaderComponent"
 import { useLocation } from "react-router-dom"
 import '../styles/studentManagement.scss';
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { getSubjectActivities } from "../services/SubjectManagementService";
 import { useState } from "react";
-import { getStudents } from "../services/StudentManagementService";
+import { getStudents, getYears } from "../services/StudentManagementService";
 
 const StudentManagementForm = () => {
 
@@ -13,6 +13,9 @@ const StudentManagementForm = () => {
     const [schoolYears, setSchoolYears] = useState(new Set());
     const [selectedYear, setSelectedYear] = useState(0)
     const [selectedLength, setSelectedLength] = useState(10)
+    const [currentPage, setCurrentPage] = useState(0)
+    const [totalPages, setTotalPages] = useState(0)
+    const [searchTerm, setSearchTerm] = useState('')
     const location = useLocation();
     const subject = location.state?.subject
 
@@ -29,33 +32,77 @@ const StudentManagementForm = () => {
 
     const code = subject.match(/\((\d+)\)/)[1];
 
+    function useDebounce(value, delay) {
+        const [debouncedValue, setDebouncedValue] = useState(value);
+
+        useEffect(() => {
+            const handler = setTimeout(() => {
+                setDebouncedValue(value);
+            }, delay);
+
+            return () => {
+                clearTimeout(handler);
+            };
+        }, [value, delay]);
+
+        return debouncedValue;
+    }
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+    const fetchStudents = useCallback(async (page = currentPage, resetPage = false) => {
+        if (schoolYears.length === 0) return;
+
+        try {
+            const formattedSearch = debouncedSearchTerm.replace(/ /g, '_');
+            const students = await getStudents(
+                code,
+                resetPage ? 0 : page,
+                selectedLength,
+                'asc',
+                selectedYear,
+                formattedSearch
+            );
+
+            setData(students);
+            setContent(students.content);
+            setTotalPages(students.totalPages);
+
+            if (resetPage) {
+                setCurrentPage(0);
+            }
+        } catch (error) {
+            console.error('Error fetching students:', error);
+        }
+    }, [code, currentPage, selectedLength, selectedYear, debouncedSearchTerm]);
 
     useEffect(() => {
-        const fetchStudents = async () => {
-            try {
-                console.log('fetching students')
-                const students = await getStudents(code, 1, selectedLength, 'asc')
-                setData(students)
-                setContent(students.content)
-                console.log(students)
-            } catch (error) {
-                console.log('Error fetching subject data: ', error)
+        const fetchYears = async () => {
+            if (!code) return;
 
+            try {
+                const years = await getYears(code);
+                setSchoolYears(years);
+                if (years.length > 0) {
+                    setSelectedYear(years[0]);
+                }
+            } catch (error) {
+                console.error('Error fetching years:', error);
             }
         };
-        fetchStudents();
-    }, [selectedLength])
+
+        fetchYears();
+    }, [code]);
+
 
     useEffect(() => {
-        setSchoolYears([... new Set(content.map(student => student.schoolYear))].sort((a, b) => b - a));
-
-
-    }, [content])
+        fetchStudents(0, true);
+    }, [debouncedSearchTerm, selectedLength, selectedYear]);
 
     useEffect(() => {
-        setSelectedYear(schoolYears[0])
-    }, [schoolYears])
-
+        if (currentPage > 0) {
+            fetchStudents(currentPage, false);
+        }
+    }, [currentPage]);
 
     const schoolYearChange = (event) => {
         setSelectedYear(event.target.value)
@@ -63,8 +110,22 @@ const StudentManagementForm = () => {
 
     const selectedLengthChange = (event) => {
         setSelectedLength(event.target.value)
-        console.log("promijenjen select")
     }
+
+    const changePage = (next = true) => {
+
+        if (next === true) {
+            if ((currentPage + 1) != totalPages) {
+                setCurrentPage(currentPage + 1)
+            }
+        } else {
+            if (currentPage != 0) {
+                setCurrentPage(currentPage - 1)
+            }
+        }
+    }
+
+
 
 
 
@@ -106,7 +167,7 @@ const StudentManagementForm = () => {
                         <div class="section-header">
                             <h2>Studenti</h2>
                             <div class="search-bar">
-                                <input type="text" id="searchInput" placeholder="Pretraga studenata..." />
+                                <input type="text" id="searchInput" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Pretraga studenata..." />
                             </div>
                         </div>
 
@@ -151,11 +212,11 @@ const StudentManagementForm = () => {
                             <div id="paginationCenter">
                                 {data.totalPages > 1 ?
                                     <div id="paginationControls">
-                                        <span class="material-icons" style={{ cursor: "pointer" }}>first_page</span>
-                                        <span class="material-icons" style={{ cursor: "pointer" }} >navigate_before</span>
-                                        <div id="paginationInfo" style={{ cursor: "pointer" }}>1 / {data.totalPages}</div>
-                                        <span class="material-icons" style={{ cursor: "pointer" }} >navigate_next</span>
-                                        <span class="material-icons" style={{ cursor: "pointer" }} >last_page</span>
+                                        <span class="material-icons" style={{ cursor: "pointer" }} onClick={() => setCurrentPage(0)}>first_page</span>
+                                        <span class="material-icons" style={{ cursor: "pointer" }} onClick={() => changePage(false)} >navigate_before</span>
+                                        <div id="paginationInfo" style={{ cursor: "pointer" }}>{currentPage + 1} / {data.totalPages}</div>
+                                        <span class="material-icons" style={{ cursor: "pointer" }} onClick={() => changePage()} >navigate_next</span>
+                                        <span class="material-icons" style={{ cursor: "pointer" }} onClick={() => setCurrentPage(totalPages - 1)} >last_page</span>
                                     </div>
                                     :
                                     <div id="paginationControls">
@@ -165,7 +226,7 @@ const StudentManagementForm = () => {
                                 }
                             </div>
 
-                            <select id="rowsPerPage" onChange={selectedLengthChange}>
+                            <select id="rowsPerPage" onChange={selectedLengthChange} value={selectedLength}>
                                 <option value="10">10</option>
                                 <option value="20">20</option>
                                 <option value="30">30</option>
