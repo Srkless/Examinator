@@ -58,7 +58,6 @@ public class StudentSubjectController {
 
     @GetMapping("/subject/years/{subjectCode}")
     public ResponseEntity<List<Integer>> getAllResultYears(@PathVariable Integer subjectCode) {
-        System.out.println("controller");
         List<Integer> list = studentSubjectService.getAllSubjectStudentYears(subjectCode);
         return ResponseEntity.ok(list);
     }

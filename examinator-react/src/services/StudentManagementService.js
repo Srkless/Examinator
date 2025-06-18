@@ -39,6 +39,11 @@ export async function getStudents(code, pageNumber, pageSize, sortDirection, yea
 }
 
 
+export async function addStudent() {
+
+}
+
+
 export async function getYears(code) {
 
     const res = await fetch(`${API_URL}/years/${code}`, {

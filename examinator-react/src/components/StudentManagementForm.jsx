@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom"
 import '../styles/studentManagement.scss';
 import { useEffect, useCallback } from 'react'
 import { getSubjectActivities } from "../services/SubjectManagementService";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { getStudents, getYears } from "../services/StudentManagementService";
 
 const StudentManagementForm = () => {
@@ -16,6 +16,27 @@ const StudentManagementForm = () => {
     const [currentPage, setCurrentPage] = useState(0)
     const [totalPages, setTotalPages] = useState(0)
     const [searchTerm, setSearchTerm] = useState('')
+    const [dialogText, setDialogText] = useState('')
+    const [isEdit, setIsEdit] = useState(false)
+    const [subjectJson, setSubjectJson] = useState('')
+    const [studentName, setStudentName] = useState('')
+    const [studentLastName, setStudentLastName] = useState('')
+    const [studentIndex, setStudentIndex] = useState('')
+    const [studentGroup, setStudentGroup] = useState('')
+    const [studentNote, setStudentNote] = useState('')
+
+
+    useEffect(() => {
+
+        setSubjectJson({
+            code: code
+        })
+    }, [])
+
+    const studentDialogRef = useRef(null)
+
+
+
     const location = useLocation();
     const subject = location.state?.subject
 
@@ -28,6 +49,29 @@ const StudentManagementForm = () => {
         document.body.classList.add('students-body');
     }, []);
 
+    const openDialog = (ref, dText, edit = true, student = null) => {
+        setDialogText(dText)
+        setIsEdit(edit)
+
+        console.log(student)
+        if (student != null) {
+            setStudentName(student.firstName)
+            setStudentLastName(student.lastName)
+            setStudentGroup(student.group)
+            setStudentNote(student.note)
+            setStudentIndex(student.index)
+        }
+        ref.current?.showModal()
+    }
+
+    const closeDialog = (ref) => {
+        ref.current?.close()
+        setStudentName('')
+        setStudentLastName('')
+        setStudentGroup('')
+        setStudentNote('')
+        setStudentIndex('')
+    }
 
 
     const code = subject.match(/\((\d+)\)/)[1];
@@ -63,6 +107,7 @@ const StudentManagementForm = () => {
                 formattedSearch
             );
 
+            console.log(students)
             setData(students);
             setContent(students.content);
             setTotalPages(students.totalPages);
@@ -125,6 +170,15 @@ const StudentManagementForm = () => {
         }
     }
 
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        if (isEdit) {
+            console.log('edit mode')
+        } else {
+            console.log('add mode')
+
+        }
+    }
 
 
 
@@ -156,7 +210,7 @@ const StudentManagementForm = () => {
                         <button id="importStudents" data-tooltip="Uvezi spisak studenata">
                             <span class="material-icons">upload</span>
                         </button>
-                        <button id="addStudentBtn" data-tooltip="Dodaj studenta">
+                        <button id="addStudentBtn" data-tooltip="Dodaj studenta" onClick={() => openDialog(studentDialogRef, 'Dodavanje novog studenta na predmet', false)}>
                             <span class="material-icons">person_add</span>
                         </button>
                     </div>
@@ -196,7 +250,7 @@ const StudentManagementForm = () => {
                                                 <td>{student.group}</td>
                                                 <td>{student.note}</td>
                                                 <td className='action-column'>
-                                                    <span className="material-icons">edit</span>
+                                                    <span className="material-icons" onClick={() => openDialog(studentDialogRef, 'Izmjena podataka o studentu', true, student)}>edit</span>
                                                     <span className="material-icons">delete</span>
                                                 </td>
                                             </tr>
@@ -238,6 +292,36 @@ const StudentManagementForm = () => {
                     </section>
                 </section>
             </main>
+            <dialog ref={studentDialogRef} id="studentDialog" onCancel={() => closeDialog(studentDialogRef)}>
+                <form method="dialog" id="studentForm" onSubmit={handleSubmit}>
+                    <div class="dialog-header">
+                        <h3>{dialogText}</h3>
+                        <button type="button" class="close-btn" id="closeStudentDialog" onClick={() => closeDialog(studentDialogRef)}>
+                            <span class="material-icons">close</span>
+                        </button>
+                    </div>
+
+                    <label>Ime *</label>
+                    <input type="text" name="ime" required value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+
+                    <label>Prezime *</label>
+                    <input type="text" name="prezime" required value={studentLastName} onChange={(e) => setStudentLastName(e.target.value)} />
+
+                    <label>Indeks</label>
+                    <input type="text" name="indeks" value={studentIndex} onChange={(e) => setStudentIndex(e.target.value)} />
+
+                    <label>Grupa</label>
+                    <input type="text" name="grupa" value={studentGroup} onChange={(e) => setStudentGroup(e.target.value)} />
+
+                    <label>Napomena</label>
+                    <textarea name="napomena" value={studentNote} onChange={(e) => setStudentNote(e.target.value)}></textarea>
+
+                    <div class="buttons">
+                        <button type="button" class="cancel-btn" onClick={() => closeDialog(studentDialogRef)}>Otkaži</button>
+                        <button type="submit" class="confirm-btn">Sačuvaj</button>
+                    </div>
+                </form>
+            </dialog>
         </div >
     )
 }

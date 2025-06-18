@@ -22,10 +22,10 @@ public class StudentSubjectService {
     private SubjectRepository subjectRepository;
 
     public StudentSubject addStudentToSubject(StudentSubject studentSubject) {
-        Integer subjectId = studentSubject.getSubject().getId();
+        Integer subjectCode = studentSubject.getSubject().getCode();
 
-        Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new IllegalArgumentException("Subject with ID " + subjectId + " not found"));
+        Subject subject = subjectRepository.findByCode(subjectCode)
+                .orElseThrow(() -> new IllegalArgumentException("Subject with code " + subjectCode + " not found"));
 
         studentSubject.setSubject(subject);
 
@@ -41,7 +41,6 @@ public class StudentSubjectService {
     }
 
     public List<Integer> getAllSubjectStudentYears(Integer subjectCode) {
-        System.out.println("u service sam ");
 
         Subject subj = subjectRepository.findByCode(subjectCode)
                 .orElseThrow(() -> new IllegalArgumentException("Subject with ID " + subjectCode + " not found"));
