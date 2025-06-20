@@ -302,16 +302,29 @@ const ResultsForm = () => {
                   <td>{student.firstName}</td>
                   <td>{student.lastName}</td>
                   <td>{student.group}</td>
-                  <td>
-                    <input
-                      type="number"
-                      step="1"
-                      min="0"
-                      max={activityData?.maxPoints || 0}
-                      value={results[student.index] || ''}
-                      onChange={e => handleScoreChange(student.index, e.target.value)}
-                      placeholder={`0-${activityData?.maxPoints || 0}`}
-                    />
+                  <td className="score-cell">
+                    <div className="score-input-wrapper">
+                      <button
+                        type="button"
+                        className="score-btn"
+                        onClick={() => handleScoreChange(student.index, (parseInt(results[student.index] || 0) - 1))}
+                      >−</button>
+                      <input
+                        type="number"
+                        step="1"
+                        min="0"
+                        max={activityData?.maxPoints || 0}
+                        value={results[student.index] || ''}
+                        onChange={e => handleScoreChange(student.index, e.target.value)}
+                        placeholder={`0-${activityData?.maxPoints || 0}`}
+                        className="score-input"
+                      />
+                      <button
+                        type="button"
+                        className="score-btn"
+                        onClick={() => handleScoreChange(student.index, (parseInt(results[student.index] || 0) + 1))}
+                      >+</button>
+                    </div>
                   </td>
                 </tr>
               ))

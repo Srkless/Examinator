@@ -172,6 +172,42 @@
     }
   }
 
+
+.score-cell {
+  .score-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .score-input {
+    width: 60px;
+    text-align: center;
+    appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+  }
+
+  .score-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    line-height: 1;
+
+    &:hover {
+      background-color: #e0e0e0;
+    }
+  }
+}
   
   .status-message {
     padding: 1rem;
