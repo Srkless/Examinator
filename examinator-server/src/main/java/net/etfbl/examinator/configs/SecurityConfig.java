@@ -33,6 +33,8 @@ public class SecurityConfig implements WebMvcConfigurer {
         registry.addViewController("/register").setViewName("forward:/index.html");
         registry.addViewController("/activities").setViewName("forward:/index.html");
         registry.addViewController("/settings").setViewName("forward:/index.html");
+        registry.addViewController("/students").setViewName("forward:/index.html");
+        registry.addViewController("/results").setViewName("forward:/index.html");
         registry.addViewController("/logout").setViewName("forward:/index.html");
     }
 
@@ -41,17 +43,18 @@ public class SecurityConfig implements WebMvcConfigurer {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/login", "/register", "/activities", "/settings", "/logout",
+                                "/", "/login", "/register", "/activities", "/activities/**",
+                                "/settings", "/settings/**", "/logout", "/students", "/students/**",
+                                "/results", "/results/**",
                                 "/index.html", "/favicon.ico", "/manifest.json", "/static/**", "/assets/**",
                                 "/js/**", "/css/**", "/images/**",
                                 "/api/users/login", "/api/users/register",
                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-ui/index.html")
                         .permitAll()
                         .anyRequest().authenticated())
-                .exceptionHandling(eh -> eh.authenticationEntryPoint(jwtAuthenticationEntryPoint)) // Add this
+                .exceptionHandling(eh -> eh.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

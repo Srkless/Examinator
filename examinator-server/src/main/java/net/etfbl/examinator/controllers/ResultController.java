@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import net.etfbl.examinator.requests.AddResultRequest;
 import net.etfbl.examinator.requests.UpdateResultRequest;
 import net.etfbl.examinator.services.ResultService;
 import net.etfbl.examinator.services.SubjectService;
+import net.etfbl.examinator.requests.BatchResultRequest;
 
 /**
  * REST controller for managing results of activities for student subjects.
@@ -147,6 +149,75 @@ public class ResultController {
   }
 
   /**
+   * Batch saves multiple results for an activity.
+   *
+   * @param activityId ID of the activity.
+   * @param requests   List of result requests containing student indices and
+   *                   points.
+   * @return Response with saved results and any errors.
+   */
+  @Operation(summary = "Batch save results for an activity")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Results processed", content = @Content(schema = @Schema(implementation = Map.class))),
+      @ApiResponse(responseCode = "400", description = "Invalid activity ID", content = @Content(schema = @Schema(implementation = Map.class)))
+  })
+  @PostMapping("/batch/{activityId}")
+  public ResponseEntity<?> batchSaveResults(
+      @Parameter(description = "Activity ID", required = true) @PathVariable Integer activityId,
+      @Parameter(description = "List of results to save", required = true) @RequestBody List<BatchResultRequest> requests) {
+
+    Optional<Activity> activityOpt = activityRepository.findById(activityId);
+    if (activityOpt.isEmpty()) {
+      Map<String, String> error = new HashMap<>();
+      error.put("error", "Activity with ID " + activityId + " not found");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    Activity activity = activityOpt.get();
+    List<Result> savedResults = new ArrayList<>();
+    List<String> errors = new ArrayList<>();
+
+    for (BatchResultRequest request : requests) {
+      try {
+        // Find student by index
+        Optional<StudentSubject> studentOpt = studentSubjectRepository
+            .findByIndexAndSubject_Code(request.getStudentIndex(), request.getSubjectCode());
+
+        if (studentOpt.isEmpty()) {
+          errors.add("Student with index " + request.getStudentIndex() + " not found");
+          continue;
+        }
+
+        StudentSubject studentSubject = studentOpt.get();
+
+        Optional<Result> existingResult = resultService.getById(studentSubject.getId(), activityId);
+
+        if (existingResult.isPresent()) {
+          Result existing = existingResult.get();
+          existing.setPoints(request.getPoints());
+          Result updated = resultService.updateResult(existing);
+          savedResults.add(updated);
+        } else {
+          Result newResult = resultService.addResult(studentSubject, activity, request.getPoints());
+          savedResults.add(newResult);
+        }
+
+      } catch (Exception e) {
+        errors.add("Error processing student " + request.getStudentIndex() + ": " + e.getMessage());
+      }
+    }
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("savedResults", savedResults);
+    response.put("errors", errors);
+    response.put("totalProcessed", requests.size());
+    response.put("successCount", savedResults.size());
+    response.put("errorCount", errors.size());
+
+    return ResponseEntity.ok(response);
+  }
+
+  /**
    * Updates an existing Result.
    *
    * @param request The request body containing updated result data.
@@ -226,4 +297,5 @@ public class ResultController {
 
     return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
   }
+
 }

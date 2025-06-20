@@ -1,4 +1,6 @@
 // Variables
+@import 'resultsForm';
+
 $primary-color: #F88E4A;
 $text-color: #333;
 $light-gray: #f5f5f5;
@@ -362,7 +364,7 @@ dialog {
   background-color: var(--background-color);
   font-family: "Roboto", sans-serif;
 
-  form#subject-form {
+form#subject-form, form#results-form {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -378,7 +380,7 @@ dialog {
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 0.5rem;
       height: 30px;
-      box-sizing: border-box; // da padding ne poveca ukupnu visinu
+      box-sizing: border-box;
 
       h3 {
         margin: 0;
@@ -394,6 +396,7 @@ dialog {
 
         .material-icons {
           font-size: 1.5rem;
+          color: var(--text-color); // Add this for dark theme
         }
       }
     }
@@ -405,7 +408,7 @@ dialog {
       color: var(--text-color);
       font-weight: 500;
 
-      input {
+      input, select { // Add select here
         margin-top: 0.4rem;
         padding: 0.5rem 0.8rem;
         border: 1px solid $border-color;
@@ -413,18 +416,28 @@ dialog {
         font-size: 0.9rem;
         background-color: var(--background-color);
         color: var(--text-color);
+        font-family: "Roboto", sans-serif; // Ensure same font
 
         &:focus {
           outline: none;
           border-color: var(--accent-color);
         }
       }
+
+      select {
+        cursor: pointer; // Add cursor pointer for selects
+        
+        option {
+          background-color: var(--background-color);
+          color: var(--text-color);
+        }
+      }
     }
 
     .buttons {
       display: flex;
-      justify-content: center; // centriraj dugmad
-      gap: 1.5rem; // razmak izmedju dugmadi
+      justify-content: center;
+      gap: 1.5rem;
       margin-top: 1rem;
 
       button {

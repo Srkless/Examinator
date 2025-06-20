@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext'; // adjust the path as needed
 
 const LoginForm = () => {
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext); // <-- get login from context
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -17,7 +20,7 @@ const LoginForm = () => {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password }),
-                },
+                }
             );
 
             if (!response.ok) {
@@ -26,8 +29,7 @@ const LoginForm = () => {
             }
 
             const data = await response.json();
-            localStorage.setItem('token', data.token);
-
+            login(data.token); // <--- sets token to localStorage + context
             navigate('/');
         } catch (err) {
             setError(err.message || 'Login failed');
@@ -50,9 +52,7 @@ const LoginForm = () => {
 
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="username" className="form-label">
-                            Korisničko ime
-                        </label>
+                        <label htmlFor="username" className="form-label">Korisničko ime</label>
                         <input
                             type="text"
                             id="username"
@@ -64,9 +64,7 @@ const LoginForm = () => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password" className="form-label">
-                            Lozinka
-                        </label>
+                        <label htmlFor="password" className="form-label">Lozinka</label>
                         <input
                             type="password"
                             id="password"
@@ -77,22 +75,16 @@ const LoginForm = () => {
                         />
                     </div>
 
-                    <a href="#" className="forgot-password">
-                        Zaboravili ste lozinku?
-                    </a>
+                    <a href="#" className="forgot-password">Zaboravili ste lozinku?</a>
 
-                    <button type="submit" className="login-button">
-                        Prijavi se
-                    </button>
+                    <button type="submit" className="login-button">Prijavi se</button>
 
                     {error && <p className="error-message">{error}</p>}
                 </form>
 
                 <p className="register-prompt">
                     Još uvijek nemate nalog?{' '}
-                    <Link to="/register" className="register-link">
-                        Kreiraj
-                    </Link>
+                    <Link to="/register" className="register-link">Kreiraj</Link>
                 </p>
             </div>
         </main>

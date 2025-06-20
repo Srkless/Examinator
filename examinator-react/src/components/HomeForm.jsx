@@ -1,26 +1,48 @@
 import { useState, useRef, useEffect } from 'react';
 import HeaderComponent from './HeaderComponent';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     addSubject,
     getUserSubjects,
 } from '../services/SubjectManagementService';
 
 function HomeForm() {
+    const navigate = useNavigate();
     const [subjects, setSubjects] = useState([]);
+    const [rawSubjects, setRawSubjects] = useState([]); // Store original subject objects
     const [subjectName, setSubjectName] = useState('');
     const [subjectCode, setSubjectCode] = useState('');
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [isResultsDialogOpen, setResultsDialogOpen] = useState(false);
     const [editingIndex, setEditingIndex] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedSubjectIndex, setSelectedSubjectIndex] = useState(null);
+    const [selectedSchoolYear, setSelectedSchoolYear] = useState('');
+    const [selectedActivity, setSelectedActivity] = useState('');
 
     const dialogRef = useRef(null);
+    const resultsDialogRef = useRef(null);
+
+    // Get the raw subject object for activities
+    const selectedSubject = rawSubjects[selectedSubjectIndex] || {};
+
+    // Get all school years from the selected subject's activities
+    const activitySchoolYears = Array.from(
+        new Set(selectedSubject.activities?.map(activity => activity.schoolYear))
+    ).sort((a, b) => b - a);
+
+    // Filter activities based on selected school year
+    const filteredActivities = selectedSubject.activities?.filter(
+        activity => selectedSchoolYear ? activity.schoolYear == selectedSchoolYear : true
+    ) || [];
 
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
                 const res = await getUserSubjects();
                 if (!res) return;
+
+                setRawSubjects(res);
 
                 const newSubjects = res.map((item) => {
                     const name = item.name.trim();
@@ -36,6 +58,7 @@ function HomeForm() {
 
         fetchSubjects();
     }, []);
+
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (!e.target.closest('.user-icon')) {
@@ -51,6 +74,12 @@ function HomeForm() {
             dialogRef.current.showModal();
         }
     }, [isDialogOpen]);
+
+    useEffect(() => {
+        if (isResultsDialogOpen && resultsDialogRef.current) {
+            resultsDialogRef.current.showModal();
+        }
+    }, [isResultsDialogOpen]);
 
     useEffect(() => {
         document.body.classList.forEach((className) => {
@@ -71,6 +100,7 @@ function HomeForm() {
     const openDialog = () => {
         setDialogOpen(true);
     };
+
     const closeDialog = () => {
         setDialogOpen(false);
         if (dialogRef.current) {
@@ -79,6 +109,31 @@ function HomeForm() {
         setEditingIndex(null);
         setSubjectName('');
         setSubjectCode('');
+    };
+
+    const openResultsDialog = (subjectIndex) => {
+        setSelectedSubjectIndex(subjectIndex);
+
+        // Get the newest school year for this subject
+        const subject = rawSubjects[subjectIndex];
+        const schoolYears = Array.from(
+            new Set(subject?.activities?.map(activity => activity.schoolYear))
+        ).sort((a, b) => b - a);
+
+        const newestYear = schoolYears[0] || '';
+        setSelectedSchoolYear(newestYear);
+        setSelectedActivity('');
+        setResultsDialogOpen(true);
+    };
+
+    const closeResultsDialog = () => {
+        setResultsDialogOpen(false);
+        if (resultsDialogRef.current) {
+            resultsDialogRef.current.close();
+        }
+        setSelectedSubjectIndex(null);
+        setSelectedSchoolYear('');
+        setSelectedActivity('');
     };
 
     const handleSubmit = async (e) => {
@@ -98,11 +153,34 @@ function HomeForm() {
                 setSubjects(updatedSubjects);
             } else {
                 setSubjects([...subjects, newSubject]);
+                // Also add to rawSubjects for consistency
+                const newRawSubject = { name, code, activities: [] };
+                setRawSubjects([...rawSubjects, newRawSubject]);
             }
 
             closeDialog();
         } catch (error) {
             console.error(error.message);
+        }
+    };
+
+    const handleResultsSubmit = async (e) => {
+        e.preventDefault();
+        if (!selectedSchoolYear || !selectedActivity) return;
+
+        try {
+            // Navigate to Results page with the selected data
+            navigate('/results', {
+                state: {
+                    subject: subjects[selectedSubjectIndex], // Pass the formatted subject string
+                    selectedSchoolYear: selectedSchoolYear,
+                    selectedActivity: selectedActivity
+                }
+            });
+
+            closeResultsDialog();
+        } catch (error) {
+            console.error('Error navigating to results:', error.message);
         }
     };
 
@@ -117,15 +195,21 @@ function HomeForm() {
             }
         } else if (text === 'display_settings') {
             // window.location.href = 'activities';
-
         } else if (text === 'school') {
-
+        } else if (text === 'grid_on') {
+            openResultsDialog(index);
         } else {
             window.location.href = '.html';
         }
     };
-    return (
 
+    // Reset activity when school year changes
+    const handleSchoolYearChange = (e) => {
+        setSelectedSchoolYear(e.target.value);
+        setSelectedActivity(''); // Reset activity selection
+    };
+
+    return (
         <div>
             <HeaderComponent />
             <main className="main-content">
@@ -166,9 +250,7 @@ function HomeForm() {
                                                     display_settings
                                                 </span>
                                             </Link>
-
                                         </td>
-
                                         <td>
                                             <Link to='/students' state={{ subject: subjects[i] }}>
                                                 <span
@@ -221,7 +303,7 @@ function HomeForm() {
                 <span className="material-icons">add</span>
             </button>
 
-            {/* {isDialogOpen && ( */}
+            {/* Subject Add/Edit Dialog */}
             <dialog ref={dialogRef} id="dialog" onCancel={closeDialog}>
                 <form id="subject-form" onSubmit={handleSubmit}>
                     <div className="dialog-header">
@@ -271,8 +353,82 @@ function HomeForm() {
                     </div>
                 </form>
             </dialog>
-            {/* )} */}
-        </div >
+
+            {/* Results Dialog */}
+            <dialog ref={resultsDialogRef} id="results-dialog" onCancel={closeResultsDialog}>
+                <form id="results-form" onSubmit={handleResultsSubmit}>
+                    <div className="dialog-header">
+                        <h3 id="results-dialog-title">
+                            Dodavanje rezultata
+                            {selectedSubjectIndex !== null && (
+                                <span>
+                                    {' - '}
+                                    {rawSubjects[selectedSubjectIndex]?.name} ({rawSubjects[selectedSubjectIndex]?.code})
+                                </span>
+                            )}
+                        </h3>
+                        <button
+                            type="button"
+                            id="close-results-dialog"
+                            className="close-btn"
+                            onClick={closeResultsDialog}
+                        >
+                            <span className="material-icons">close</span>
+                        </button>
+                    </div>
+
+                    {/* Show School Year selection first */}
+                    <label>
+                        Školska godina
+                        <select
+                            id="school-year"
+                            value={selectedSchoolYear}
+                            onChange={handleSchoolYearChange}
+                            required
+                        >
+                            <option value="">Izaberite školsku godinu</option>
+                            {activitySchoolYears.map((year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
+                    {/* Show Activity selection second, only after school year is selected */}
+                    <label>
+                        Aktivnost
+                        <select
+                            id="activity"
+                            value={selectedActivity}
+                            onChange={(e) => setSelectedActivity(e.target.value)}
+                            required
+                            disabled={!selectedSchoolYear}
+                        >
+                            <option value="">
+                                {selectedSchoolYear ? "Izaberite aktivnost" : "Prvo izaberite školsku godinu"}
+                            </option>
+                            {filteredActivities.map((activity) => (
+                                <option key={activity.id} value={activity.name}>
+                                    {activity.name} ({activity.maxPoints} poena)
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
+                    <div className="buttons">
+                        <button
+                            type="button"
+                            onClick={closeResultsDialog}
+                            id="cancel-results-btn"
+                        >
+                            Otkaži
+                        </button>
+                        <button type="submit">Potvrdi</button>
+                    </div>
+                </form>
+            </dialog>
+        </div>
     );
 }
 
