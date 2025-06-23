@@ -36,6 +36,10 @@ public class StudentSubjectService {
     return studentSubjectRepository.findAllBySubjectId(subjectId);
   }
 
+  public List<StudentSubject> getAllBySubjectCode(Integer subjectCode) {
+    return studentSubjectRepository.findAllBySubjectCode(subjectCode);
+  }
+
   public List<StudentSubject> addStudentsToSubject(List<StudentSubject> students) {
     for (StudentSubject studentSubject : students) {
       Integer subjectId = studentSubject.getSubject().getId();
@@ -63,8 +67,8 @@ public class StudentSubjectService {
   // the search query is provided in the following format:
   // "index_query name_query group_query"
   // The filter parameters are separated by a space
-  public Page<StudentSubject> getFilteredAndPaged(Integer subjectId, Pageable pageable, String searchQuery) {
-    List<StudentSubject> all = studentSubjectRepository.findAllBySubjectId(subjectId);
+  public Page<StudentSubject> getFilteredAndPaged(Integer subjectCode, Pageable pageable, String searchQuery) {
+    List<StudentSubject> all = studentSubjectRepository.findAllBySubjectCode(subjectCode);
 
     String[] parts = searchQuery != null ? searchQuery.split(" ") : new String[0];
     String indexQuery = parts.length > 0 ? parts[0] : "";

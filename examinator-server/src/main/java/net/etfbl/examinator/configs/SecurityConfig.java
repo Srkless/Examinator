@@ -1,6 +1,7 @@
 package net.etfbl.examinator.configs;
 
 import net.etfbl.examinator.security.JwtAuthFilter;
+import net.etfbl.examinator.security.JwtAuthenticationEntryPoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    @Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("forward:/index.html");
@@ -35,34 +39,19 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        auth -> auth.requestMatchers(
-                                "/",
-                                "/login",
-                                "/register",
-                                "/activities",
-                                "/settings",
-                                "/logout",
-                                "/index.html",
-                                "/favicon.ico",
-                                "/manifest.json",
-                                "/static/**",
-                                "/assets/**", // for vite/webpack bundled assets
-                                "/js/**",
-                                "/css/**",
-                                "/images/**", // More general image folder
-                                "/api/users/login",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/index.html",
-                                "/api/users/register")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated())
-                .sessionManagement(
-                        sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/", "/login", "/register", "/activities", "/settings", "/logout",
+                                "/index.html", "/favicon.ico", "/manifest.json", "/static/**", "/assets/**",
+                                "/js/**", "/css/**", "/images/**",
+                                "/api/users/login", "/api/users/register",
+                                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-ui/index.html")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .exceptionHandling(eh -> eh.authenticationEntryPoint(jwtAuthenticationEntryPoint)) // Add this
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

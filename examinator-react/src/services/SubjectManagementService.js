@@ -34,44 +34,33 @@ export async function addSubject(name, code) {
 }
 
 export async function getUserSubjects() {
-    const res = await fetch(`${API_URL}`, {
+    const token = localStorage.getItem('token');
+
+    const res = await fetch('/api/subjects', {
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
         },
     });
 
-    const contentType = res.headers.get('Content-Type');
-    const isJson = contentType && contentType.includes('application/json');
-
-    const bodyText = await res.text();
-
-    let data;
-    try {
-        data = isJson ? JSON.parse(bodyText) : bodyText;
-    } catch {
-        data = bodyText;
+    if (res.status === 401) {
+        window.location.href = '/login';
+        return;
     }
-
-    console.log('Response:', res);
 
     if (!res.ok) {
-        const message =
-            typeof data === 'string'
-                ? data
-                : data.message || JSON.stringify(data);
-        throw new Error(`Greška pri dobijanju predmeta: ${message}`);
+        throw new Error(`HTTP error! status: ${res.status}`);
     }
 
-    console.log(data);
-    return data;
+    return await res.json();
 }
 
 export async function getSubjectActivities(code) {
     const res = await fetch(`${API_URL}/${code}`, {
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
     });
     console.log(res)

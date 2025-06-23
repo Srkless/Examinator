@@ -35,23 +35,23 @@ public class StudentSubjectController {
   /**
    * Retrieves all students associated with a subject without pagination.
    *
-   * @param subjectId ID of the subject.
-   * @param sortBy    Field to sort by (default: "index").
-   * @param direction Sort direction: "asc" or "desc" (default: "asc").
+   * @param subjectCode code of the subject.
+   * @param sortBy      Field to sort by (default: "index").
+   * @param direction   Sort direction: "asc" or "desc" (default: "asc").
    * @return List of StudentSubject entities.
    */
   @Operation(summary = "Get all students for a subject without pagination")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "List of students", content = @Content(schema = @Schema(implementation = StudentSubject.class)))
   })
-  @GetMapping("/subject/{subjectId}")
+  @GetMapping("/subject/{subjectCode}")
   public ResponseEntity<List<StudentSubject>> getAllBySubject(
-      @Parameter(description = "Subject ID", required = true) @PathVariable Integer subjectId,
+      @Parameter(description = "Subject ID", required = true) @PathVariable Integer subjectCode,
       @Parameter(description = "Sort field, default is 'index'") @RequestParam(defaultValue = "index") String sortBy,
       @Parameter(description = "Sort direction: 'asc' or 'desc', default is 'asc'") @RequestParam(defaultValue = "asc") String direction) {
 
     Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-    List<StudentSubject> list = studentSubjectService.getAllBySubjectId(subjectId);
+    List<StudentSubject> list = studentSubjectService.getAllBySubjectCode(subjectCode);
     return ResponseEntity.ok(list);
   }
 
@@ -110,7 +110,7 @@ public class StudentSubjectController {
    * Retrieves students for a subject with pagination, sorting, and optional
    * search query.
    *
-   * @param subjectId   ID of the subject.
+   * @param subjectCode code of the subject.
    * @param page        Page number (default: 0).
    * @param size        Page size (default: 20).
    * @param sortBy      Field to sort by (default: "index").
@@ -122,9 +122,9 @@ public class StudentSubjectController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Paged list of students", content = @Content(schema = @Schema(implementation = Page.class)))
   })
-  @GetMapping("/subject/{subjectId}/paged")
+  @GetMapping("/subject/{subjectCode}/paged")
   public ResponseEntity<Page<StudentSubject>> getPagedFilteredBySubject(
-      @Parameter(description = "Subject ID", required = true) @PathVariable Integer subjectId,
+      @Parameter(description = "Subject Code", required = true) @PathVariable Integer subjectCode,
       @Parameter(description = "Page number, default 0") @RequestParam(defaultValue = "0") int page,
       @Parameter(description = "Page size, default 20") @RequestParam(defaultValue = "20") int size,
       @Parameter(description = "Sort field, default 'index'") @RequestParam(defaultValue = "index") String sortBy,
@@ -137,7 +137,7 @@ public class StudentSubjectController {
 
     Pageable pageable = PageRequest.of(page, size, sort);
 
-    Page<StudentSubject> result = studentSubjectService.getFilteredAndPaged(subjectId, pageable, searchQuery);
+    Page<StudentSubject> result = studentSubjectService.getFilteredAndPaged(subjectCode, pageable, searchQuery);
 
     return ResponseEntity.ok(result);
   }
