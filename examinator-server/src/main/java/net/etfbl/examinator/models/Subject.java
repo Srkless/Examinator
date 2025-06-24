@@ -37,6 +37,7 @@ public class Subject {
     @JsonManagedReference("subject-studentSubjects")
     private List<StudentSubject> studentSubjects = new ArrayList<>();
 
+
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("subject-formulas")
     private List<Formula> formulas = new ArrayList<>();

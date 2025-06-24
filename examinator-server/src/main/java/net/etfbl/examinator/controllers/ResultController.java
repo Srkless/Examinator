@@ -226,4 +226,31 @@ public class ResultController {
 
     return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
   }
+
+  /**
+   * Generates a CSV report of results for a given activity.
+   *
+   * @param id Activity ID.
+   * @return CSV file as byte array with content disposition attachment.
+   */
+  @Operation(summary = "Generate CSV report of activity results")
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "CSV generated", content = @Content(mediaType = "text/csv")),
+          @ApiResponse(responseCode = "404", description = "Activity or results not found")
+  })
+  @GetMapping(value = "/activities/{id}/results.csv", produces = "text/csv")
+  public ResponseEntity<byte[]> getActivityResultsCsv(
+          @Parameter(description = "Activity ID", required = true) @PathVariable Integer id) {
+
+    byte[] csv = resultService.generateActivityResultsCsv(id);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.parseMediaType("text/csv"));
+    headers.setContentDisposition(ContentDisposition.attachment()     // preuzimanje CSV fajla!
+            .filename("activity-" + id + "-results.csv")
+            .build());
+
+    return new ResponseEntity<>(csv, headers, HttpStatus.OK);
+  }
+
 }
