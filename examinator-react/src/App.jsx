@@ -5,10 +5,11 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RequireAuth from './components/RequireAuth';
 import SettingsPage from './pages/SettingsPage';
-import LogoutPage from './pages/LogoutPage.jsx'
-import ActivitiesPage from './pages/ActivitiesPage.jsx'
+import LogoutPage from './pages/LogoutPage.jsx';
+import ActivitiesPage from './pages/ActivitiesPage.jsx';
 import StudentManagementPage from './pages/StudentManagementPage.jsx';
 import './styles/styles.scss';
+import GenerateResultsPage from './pages/GenerateResultsPage.jsx';
 
 const App = () => {
     useEffect(() => {
@@ -36,7 +37,14 @@ const App = () => {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/activities" element={<ActivitiesPage />} />
-                    <Route path="/students" element={<StudentManagementPage />} />
+                    <Route
+                        path="/students"
+                        element={<StudentManagementPage />}
+                    />
+                    <Route
+                        path="/generate-results"
+                        element={<GenerateResultsPage />}
+                    />
                 </Route>
             </Routes>
         </Router>

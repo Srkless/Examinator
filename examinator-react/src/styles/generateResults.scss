@@ -1,0 +1,284 @@
+@import url('https://fonts.googleapis.com/css2?family=Fondamento&display=swap');
+
+// Variables
+$primary-color: #F88E4A;
+$select-color: #f66f19;
+$bg-color: #fff;
+$text-color: #333;
+$label-text-color: #444;
+$dialog-header-color: #888;
+$light-gray: #f5f5f5;
+$white: #fff;
+$border-radius: 8px;
+$box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+$border-color: #dcdcdc;
+$logo-size: 32px;
+$logo-color: #000;
+$table-border-color: #333;
+$table-color: #1f1f1f;
+$text-color-bright: #666;
+$tooltip-color: #444;
+
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: $bg-color;
+}
+
+.container {
+  max-width: calc(100% - 500px); // 250px sa svake strane
+  margin: 0 auto;
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.subject-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+  margin-bottom: 3rem;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: $text-color;
+      font-size: 1rem;
+    }
+
+    input,
+    select {
+      padding: 0.5rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      line-height: 1.2;
+      background-color: $bg-color;
+    }
+
+    select {
+      appearance: none; // uklanja nativni izgled selektora
+      background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      background-size: 1rem;
+      padding-right: 2rem; // da tekst ne ide preko strelice
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+      }
+    }
+  }
+
+  .field-subject {
+    width: 400px;
+  }
+
+  .field-year {
+    width: 140px;
+  }
+}
+
+.no-data {
+  text-align: center;
+  margin-top: 5rem;
+  font-size: 1.1rem;
+  color: $text-color-bright;
+}
+
+.checkbox-section .section {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  gap: 1rem; // razmak između strong i checkboxova
+  flex-wrap: wrap; // ako ne stane sve u jedan red
+}
+
+#activityOptionsContainer,
+#formulaOptionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  label {
+    margin: 0;
+  }
+}
+
+.checkbox-section .section label {
+  display: inline-block;
+  margin-right: 1rem; // horizontalni razmak između checkboxova
+  margin-bottom: 0.1rem; // vertikalni razmak ako pređu u novi red
+}
+
+.checkbox-section input[type="checkbox"] {
+  transform: scale(1.3);
+  accent-color: $select-color;
+}
+
+.checkbox-section input[type="radio"] {
+  transform: scale(1.1);
+  margin-right: 0.5rem;
+  accent-color: $select-color;
+}
+
+.selected-columns {
+  font-size: 1.1rem;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid $border-color;
+}
+
+.generate-button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.generate-button {
+  width: 150px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: $border-radius;
+  cursor: pointer;
+  background-color: $primary-color;
+  color: $white;
+
+  &:hover {
+    background-color: $select-color;
+  }
+}
+
+.generated-results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    border: 1px solid $border-color;
+    text-align: center;
+  }
+
+  th {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  td {
+    padding: 1.2rem 1rem;
+  }
+}
+
+// paginacija
+#paginationWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $border-color; // <---- da li da ostane ili ne pitanje je sada ????
+
+  &.hidden {
+    display: none;
+  }
+
+  #paginationCenter {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem; // veći razmak između strelica i broja
+    justify-content: center;
+    flex: 1;
+  }
+
+  #paginationControls {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    .material-icons {
+      font-size: 24px;
+      cursor: pointer;
+      color: $text-color;
+      transition: color 0.3s;
+
+      &:hover {
+        color: $select-color;
+      }
+    }
+  }
+
+  #paginationInfo {
+    font-weight: 500;
+    color: $text-color;
+  }
+
+  #rowsPerPage {
+    padding: 0.4rem 0.8rem;
+    font-size: 1rem;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    background-color: $bg-color;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 1rem;
+    padding-right: 2rem;
+    cursor: pointer;
+    margin-left: auto;
+    width: 110px;
+
+    &:focus {
+      border-color: $select-color;
+      outline: none;
+    }
+  }
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center; // centriraj dugmad
+  gap: 2.5rem; // razmak izmedju dugmadi
+  margin-top: 3.5rem;
+  // posto je ruzno centrirano, ne moze bolje ako se ne uradi "rucno", ja ne znam ali bode mi oci!!!
+  // justify-content: left; 
+  // margin-left: 12.5rem; // <- ovo centrira samo kod mene, po mojim dimenzijama ekrana
+
+  button {
+    width: 210px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: $border-radius;
+    cursor: pointer;
+    background-color: $primary-color;
+    color: $white;
+
+    &:hover {
+      background-color: $select-color;
+    }
+  }
+}

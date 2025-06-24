@@ -300,17 +300,22 @@ function HomeForm() {
                                             </Link>
                                         </td>
                                         <td>
-                                            <span
-                                                className="material-icons"
-                                                onClick={() =>
-                                                    handleIconClick(
-                                                        'description',
-                                                        i,
-                                                    )
-                                                }
+                                            <Link
+                                                to="/generate-results"
+                                                state={{ subject: subjects[i] }}
                                             >
-                                                description
-                                            </span>
+                                                <span
+                                                    className="material-icons"
+                                                    onClick={() =>
+                                                        handleIconClick(
+                                                            'description',
+                                                            i,
+                                                        )
+                                                    }
+                                                >
+                                                    description
+                                                </span>
+                                            </Link>
                                         </td>
                                         <td>
                                             <span
