@@ -24,13 +24,12 @@ public class UserService {
     public List<UserDTO> getAll() {
         return userRepository.findAll().stream()
                 .map(
-                        user ->
-                                new UserDTO(
-                                        user.getIdKorisnika(),
-                                        user.getFirstName(),
-                                        user.getLastName(),
-                                        user.getUsername(),
-                                        user.getEmail()))
+                        user -> new UserDTO(
+                                user.getIdKorisnika(),
+                                user.getFirstName(),
+                                user.getLastName(),
+                                user.getUsername(),
+                                user.getEmail()))
                 .toList();
     }
 
