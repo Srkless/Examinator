@@ -23,7 +23,7 @@ public interface StudentSubjectRepository extends JpaRepository<StudentSubject, 
 
     Page<StudentSubject> findAllBySubjectId(Integer subjectId, Pageable pageable);
 
-    @Query("SELECT DISTINCT ss.schoolYear FROM StudentSubject ss WHERE ss.subject.id = :subjectId ORDER BY ss.schoolYear")
+    @Query("SELECT DISTINCT ss.schoolYear FROM StudentSubject ss WHERE ss.subject.id = :subjectId ORDER BY ss.schoolYear DESC")
     List<Integer> findDistinctSchoolYearsBySubjectId(@Param("subjectId") Integer subjectId);
 
 }

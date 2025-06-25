@@ -117,21 +117,35 @@ function ActivitiesForm() {
 
         fetchActivities();
     }, [code]); // Include 'code' since it's used inside the effect
-    useEffect(() => {
 
+    useEffect(() => {
         subjectRef.current.value = subject
     }, [])
 
     useEffect(() => {
-        setSchoolYears([...new Set(activities.map(activity => activity.schoolYear))].sort((a, b) => b - a))
+        const years = [...new Set(activities.map(activity => activity.schoolYear))].sort((a, b) => b - a)
+        console.log(years)
+        if (years.length == 0) {
+            const month = new Date().getMonth();
+            const newYear = new Date().getFullYear()
+            if (month < 5) {
+                years.push(newYear - 1)
+            } else {
+                years.push(newYear)
+            }
+        } else {
+            years.push(years[0] + 1)
+        }
+
+        years.sort((a, b) => b - a)
+        setSchoolYears(years)
     }, [activities])
 
     useEffect(() => {
-        setSelectedYear(schoolYears[0])
+        if (schoolYears.length > 0) {
+            setSelectedYear(schoolYears[0])
+        }
     }, [schoolYears])
-
-
-
 
     const schoolYearChange = (event) => {
         setSelectedYear(event.target.value)
@@ -203,9 +217,9 @@ function ActivitiesForm() {
 
                     <div className="field field-year">
                         <label for="schoolYear">Školska godina</label>
-                        <select id="schoolYear" onChange={schoolYearChange}>
+                        <select id="schoolYear" value={selectedYear} onChange={schoolYearChange}>
                             {Array.from(schoolYears).map(year => (
-                                <option key={year} value={year}>{year}</option>
+                                <option key={year} value={year}>{year} / {year + 1}</option>
                             ))}
                         </select>
                     </div>
@@ -217,7 +231,7 @@ function ActivitiesForm() {
                         <button id="addActivityBtn" className="add-activity-button" onClick={() => openDialog(activityDialogRef)}>Nova aktivnost</button>
                     </div>
                     <div id="activitiesContainer">
-                        {activities.length > 0 ? (
+                        {activities.filter(activity => activity.schoolYear == selectedYear).length > 0 ? (
                             <table className="activities-page-table">
 
                                 <thead>
@@ -230,12 +244,12 @@ function ActivitiesForm() {
                                 </thead>
                                 <tbody>
                                     {activities.filter(activity => activity.schoolYear == selectedYear).map((activity, i) => (
-                                        <tr>
+                                        <tr key={activity.id}>
                                             <td>{activity.shortName}</td>
                                             <td>{activity.name}</td>
                                             <td>{activity.maxPoints}</td>
                                             <td className="action-column">
-                                                <span className="material-icons" onClick={() => handleIconClick(activity, update)}>edit</span>
+                                                <span className="material-icons" onClick={() => handleIconClick(activity, null, true)}>edit</span>
                                                 <span className="material-icons" onClick={() => handleIconClick(activity)}>delete</span>
                                             </td>
                                         </tr>
@@ -266,7 +280,7 @@ function ActivitiesForm() {
                                 </thead>
                                 <tbody>
                                     {formulas.filter(formula => formula.schoolYear == selectedYear).map(formula => (
-                                        <tr>
+                                        <tr key={formula.id}>
                                             <td>{formula.name}</td>
                                             <td>{formula.expression}</td>
                                             <td className="action-column">

@@ -10,8 +10,8 @@ const StudentManagementForm = () => {
 
     const [data, setData] = useState([])
     const [content, setContent] = useState([])
-    const [schoolYears, setSchoolYears] = useState(new Set());
-    const [selectedYear, setSelectedYear] = useState(0)
+    const [schoolYears, setSchoolYears] = useState([]);  // Changed from Set to array
+    const [selectedYear, setSelectedYear] = useState(null)  // Changed to null initially
     const [selectedLength, setSelectedLength] = useState(10)
     const [currentPage, setCurrentPage] = useState(0)
     const [totalPages, setTotalPages] = useState(0)
@@ -25,18 +25,16 @@ const StudentManagementForm = () => {
     const [studentGroup, setStudentGroup] = useState('')
     const [studentNote, setStudentNote] = useState('')
     const [studentId, setStudentId] = useState('')
+    const [isYearsLoaded, setIsYearsLoaded] = useState(false)  // New state to track years loading
 
 
     useEffect(() => {
-
         setSubjectJson({
             code: code
         })
     }, [])
 
     const studentDialogRef = useRef(null)
-
-
 
     const location = useLocation();
     const subject = location.state?.subject
@@ -76,7 +74,6 @@ const StudentManagementForm = () => {
         setStudentId('')
     }
 
-
     const code = subject.match(/\((\d+)\)/)[1];
 
     const hasNumbers = (str) => /\d/.test(str);
@@ -99,7 +96,8 @@ const StudentManagementForm = () => {
     const debouncedSearchTerm = useDebounce(searchTerm, 400);
 
     const fetchStudents = useCallback(async (page = currentPage, resetPage = false) => {
-        if (schoolYears.length === 0) return;
+        // Don't fetch if years aren't loaded yet or no year is selected
+        if (!isYearsLoaded || selectedYear === null) return;
 
         try {
             let formattedSearch = debouncedSearchTerm.replace(/ /g, '_');
@@ -108,7 +106,6 @@ const StudentManagementForm = () => {
                 console.log("ima brojeva")
                 indexSearchTerm = formattedSearch
                 formattedSearch = ''
-
             }
 
             const students = await getStudents(
@@ -132,9 +129,7 @@ const StudentManagementForm = () => {
         } catch (error) {
             console.error('Error fetching students:', error);
         }
-    }, [code, currentPage, selectedLength, selectedYear, debouncedSearchTerm]);
-
-
+    }, [code, currentPage, selectedLength, selectedYear, debouncedSearchTerm, isYearsLoaded]);
 
     useEffect(() => {
         const fetchYears = async () => {
@@ -152,34 +147,42 @@ const StudentManagementForm = () => {
                         validYears.push(newYear)
                     }
                 } else {
-                    validYears.push(validYears[validYears.length - 1] + 1)
+                    validYears.push(validYears[0] + 1)
                 }
                 console.log(validYears)
+
+                validYears.sort((a, b) => b - a)
                 setSchoolYears(validYears);
+
+                // Set the selected year and mark years as loaded
                 if (validYears.length > 0) {
                     setSelectedYear(validYears[0]);
                 }
+                setIsYearsLoaded(true);  // Mark years as loaded
             } catch (error) {
                 console.error('Error fetching years:', error);
+                setIsYearsLoaded(true);  // Still mark as loaded even on error
             }
         };
 
         fetchYears();
     }, [code]);
 
+    // Only fetch students after years are loaded and selectedYear is set
+    useEffect(() => {
+        if (isYearsLoaded && selectedYear !== null) {
+            fetchStudents(0, true);
+        }
+    }, [debouncedSearchTerm, selectedLength, selectedYear, isYearsLoaded]);
 
     useEffect(() => {
-        fetchStudents(0, true);
-    }, [debouncedSearchTerm, selectedLength, selectedYear]);
-
-    useEffect(() => {
-        if (currentPage > 0) {
+        if (currentPage > 0 && isYearsLoaded && selectedYear !== null) {
             fetchStudents(currentPage, false);
         }
     }, [currentPage]);
 
     const schoolYearChange = (event) => {
-        setSelectedYear(event.target.value)
+        setSelectedYear(parseInt(event.target.value))  // Ensure it's a number
     }
 
     const selectedLengthChange = (event) => {
@@ -187,7 +190,6 @@ const StudentManagementForm = () => {
     }
 
     const changePage = (next = true) => {
-
         if (next === true) {
             if ((currentPage + 1) != totalPages) {
                 setCurrentPage(currentPage + 1)
@@ -195,15 +197,11 @@ const StudentManagementForm = () => {
         } else {
             if (currentPage != 0) {
                 setCurrentPage(currentPage - 1)
-
             }
         }
     }
 
-
-
     const handleDelete = async (id) => {
-
         try {
             await deleteStudent(id)
             fetchStudents(currentPage, false)
@@ -211,7 +209,6 @@ const StudentManagementForm = () => {
             console.log(error)
         }
     }
-
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -222,69 +219,62 @@ const StudentManagementForm = () => {
                 closeDialog(studentDialogRef)
                 fetchStudents(currentPage, false)
             } catch (error) {
-
                 console.log(error)
             }
         } else {
             try {
                 await addStudent(studentIndex, selectedYear, studentName, studentLastName, studentGroup, studentNote, subjectJson);
-
                 closeDialog(studentDialogRef)
-
+                fetchStudents(currentPage, false)  // Refresh the list after adding
             } catch (error) {
                 console.log(error)
             }
         }
     }
 
-
-
-
-
-
-
     return (
         <div>
             <HeaderComponent />
 
-            <main class="main-content students-container">
-                <div class="subject-row">
-                    <div class="field field-subject">
-                        <label for="subject">Naziv predmeta</label>
-                        <input type="text" id="subject" value={subject} readonly />
+            <main className="main-content students-container">
+                <div className="subject-row">
+                    <div className="field field-subject">
+                        <label htmlFor="subject">Naziv predmeta</label>
+                        <input type="text" id="subject" value={subject} readOnly />
                     </div>
 
-                    <div class="field field-year">
-                        <label for="schoolYear">Školska godina</label>
-                        <select id="schoolYear" onChange={schoolYearChange}>
-                            {Array.from(schoolYears).map(year => (
+                    <div className="field field-year">
+                        <label htmlFor="schoolYear">Školska godina</label>
+                        <select id="schoolYear" onChange={schoolYearChange} value={selectedYear || ''}>
+                            {schoolYears.map(year => (
                                 <option key={year} value={year}>{year}/{year + 1}</option>
                             ))}
                         </select>
                     </div>
 
-                    <div class="student-buttons">
+                    <div className="student-buttons">
                         <button id="importStudents" data-tooltip="Uvezi spisak studenata">
-                            <span class="material-icons">upload</span>
+                            <span className="material-icons">upload</span>
                         </button>
                         <button id="addStudentBtn" data-tooltip="Dodaj studenta" onClick={() => openDialog(studentDialogRef, 'Dodavanje novog studenta na predmet', false)}>
-                            <span class="material-icons">person_add</span>
+                            <span className="material-icons">person_add</span>
                         </button>
                     </div>
                 </div>
 
                 <section>
                     <section>
-                        <div class="section-header">
+                        <div className="section-header">
                             <h2>Studenti</h2>
-                            <div class="search-bar">
+                            <div className="search-bar">
                                 <input type="text" id="searchInput" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Pretraga studenata..." />
                             </div>
                         </div>
 
                         <div id="studentsContainer">
-                            {content.length > 0 ? (
-
+                            {!isYearsLoaded ? (
+                                <p className="no-data">Učitavanje...</p>
+                            ) : content.length > 0 ? (
                                 <table>
                                     <thead>
                                         <tr>
@@ -299,8 +289,8 @@ const StudentManagementForm = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {content.filter(student => student.schoolYear == selectedYear).map((student) => (
-                                            <tr>
+                                        {content.map((student) => (
+                                            <tr key={student.id}>
                                                 <td>{student.index}</td>
                                                 <td>{student.firstName}</td>
                                                 <td>{student.lastName}</td>
@@ -315,7 +305,7 @@ const StudentManagementForm = () => {
                                     </tbody>
                                 </table>
                             ) : (
-                                <p class="no-data">Trenutno nema ni jednog studenta na predmetu</p>
+                                <p className="no-data">Trenutno nema ni jednog studenta na predmetu</p>
                             )}
                         </div>
 
@@ -323,17 +313,16 @@ const StudentManagementForm = () => {
                             <div id="paginationCenter">
                                 {data.totalPages > 1 ?
                                     <div id="paginationControls">
-                                        <span class="material-icons" style={{ cursor: "pointer" }} onClick={() => setCurrentPage(0)}>first_page</span>
-                                        <span class="material-icons" style={{ cursor: "pointer" }} onClick={() => changePage(false)} >navigate_before</span>
+                                        <span className="material-icons" style={{ cursor: "pointer" }} onClick={() => setCurrentPage(0)}>first_page</span>
+                                        <span className="material-icons" style={{ cursor: "pointer" }} onClick={() => changePage(false)} >navigate_before</span>
                                         <div id="paginationInfo" style={{ cursor: "pointer" }}>{currentPage + 1} / {data.totalPages}</div>
-                                        <span class="material-icons" style={{ cursor: "pointer" }} onClick={() => changePage()} >navigate_next</span>
-                                        <span class="material-icons" style={{ cursor: "pointer" }} onClick={() => setCurrentPage(totalPages - 1)} >last_page</span>
+                                        <span className="material-icons" style={{ cursor: "pointer" }} onClick={() => changePage()} >navigate_next</span>
+                                        <span className="material-icons" style={{ cursor: "pointer" }} onClick={() => setCurrentPage(totalPages - 1)} >last_page</span>
                                     </div>
                                     :
                                     <div id="paginationControls">
                                         <div id="paginationInfo">1 / 1</div>
                                     </div>
-
                                 }
                             </div>
 
@@ -351,10 +340,10 @@ const StudentManagementForm = () => {
             </main>
             <dialog ref={studentDialogRef} id="studentDialog" onCancel={() => closeDialog(studentDialogRef)}>
                 <form method="dialog" id="studentForm" onSubmit={handleSubmit}>
-                    <div class="dialog-header">
+                    <div className="dialog-header">
                         <h3>{dialogText}</h3>
-                        <button type="button" class="close-btn" id="closeStudentDialog" onClick={() => closeDialog(studentDialogRef)}>
-                            <span class="material-icons">close</span>
+                        <button type="button" className="close-btn" id="closeStudentDialog" onClick={() => closeDialog(studentDialogRef)}>
+                            <span className="material-icons">close</span>
                         </button>
                     </div>
 
@@ -373,9 +362,9 @@ const StudentManagementForm = () => {
                     <label>Napomena</label>
                     <textarea name="napomena" value={studentNote} onChange={(e) => setStudentNote(e.target.value)}></textarea>
 
-                    <div class="buttons">
-                        <button type="button" class="cancel-btn" onClick={() => closeDialog(studentDialogRef)}>Otkaži</button>
-                        <button type="submit" class="confirm-btn">Sačuvaj</button>
+                    <div className="buttons">
+                        <button type="button" className="cancel-btn" onClick={() => closeDialog(studentDialogRef)}>Otkaži</button>
+                        <button type="submit" className="confirm-btn">Sačuvaj</button>
                     </div>
                 </form>
             </dialog>
