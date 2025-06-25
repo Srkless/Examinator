@@ -1,11 +1,11 @@
-const API_URL = 'http://localhost:8080/api/students/subject';
+const API_URL = 'http://localhost:8080/api/students';
 
 
 
 
-export async function getStudents(code, pageNumber, pageSize, sortDirection, year, searchTerm) {
+export async function getStudents(code, pageNumber, pageSize, sortDirection, year, searchTerm, indexSearchTerm) {
 
-    const res = await fetch(`${API_URL}/${code}/paged?page=${pageNumber}&size=${pageSize}&searchQuery= ${searchTerm}  ${year}`, {
+    const res = await fetch(`${API_URL}/subject/${code}/paged?page=${pageNumber}&size=${pageSize}&searchQuery=${indexSearchTerm} ${searchTerm}  ${year}`, {
 
         method: 'GET',
         headers: {
@@ -13,7 +13,7 @@ export async function getStudents(code, pageNumber, pageSize, sortDirection, yea
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
     })
-    console.log(`${API_URL}/${code}/paged?page=${pageNumber}&size=${pageSize}&searchQuery= ${searchTerm}  ${year}`)
+    console.log(`${API_URL}/subject/${code}/paged?page=${pageNumber}&size=${pageSize}&searchQuery=${indexSearchTerm} ${searchTerm}  ${year}`)
     const contentType = res.headers.get('Content-Type');
     const isJson = contentType && contentType.includes('application/json');
 
@@ -39,14 +39,79 @@ export async function getStudents(code, pageNumber, pageSize, sortDirection, yea
 }
 
 
-export async function addStudent() {
+export async function addStudent(index, schoolYear, firstName, lastName, group, note, subject) {
+    const res = await fetch(`${API_URL}/add`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
+        },
+        body: JSON.stringify({ index, schoolYear: Number(schoolYear), firstName, lastName, group, note, subject })
+    })
+    console.log(JSON.stringify({ index, schoolYear: Number(schoolYear), firstName, lastName, group, note, subject }))
+    const contentType = res.headers.get('Content-Type')
+    const isJson = contentType && contentType.includes('application/json')
+
+    const bodyText = await res.text()
+
+    let data
+    try {
+        data = isJson ? JSON.parse(bodyText) : bodyText
+    } catch {
+        data = bodyText
+    }
+
+    if (!res.ok) {
+        console.log(res)
+        const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
+        throw new Error(`Greška pri dodavanju studenta: ${message}`)
+
+    }
+    console.log(data)
+    return data;
+}
+
+
+export async function updateStudent(id, index, schoolYear, firstName, lastName, group, note, subject) {
+    const res = await fetch(`${API_URL}/update`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
+        },
+        body: JSON.stringify({ id, index, schoolYear: Number(schoolYear), firstName, lastName, group, note, subject })
+    })
+    const bodyText = await res.text()
+    if (!res.ok) {
+        const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
+        throw new Eror(`Greska pri azuriranju studenta: ${message}`)
+    }
+}
+
+
+export async function deleteStudent(id) {
+    const res = await fetch(`${API_URL}/delete/${id}`, {
+
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
+        }
+    })
+
+    if (!res.ok) {
+        const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
+        throw new Error(`Greška pri brisanju studenta: ${message}`)
+
+    }
+
 
 }
 
 
 export async function getYears(code) {
 
-    const res = await fetch(`${API_URL}/years/${code}`, {
+    const res = await fetch(`${API_URL}/subject/years/${code}`, {
 
         method: 'GET',
         headers: {

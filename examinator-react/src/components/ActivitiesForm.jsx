@@ -131,6 +131,8 @@ function ActivitiesForm() {
     }, [schoolYears])
 
 
+
+
     const schoolYearChange = (event) => {
         setSelectedYear(event.target.value)
     }

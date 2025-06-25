@@ -4,7 +4,7 @@ import '../styles/studentManagement.scss';
 import { useEffect, useCallback } from 'react'
 import { getSubjectActivities } from "../services/SubjectManagementService";
 import { useState, useRef } from "react";
-import { getStudents, getYears } from "../services/StudentManagementService";
+import { addStudent, getStudents, getYears, updateStudent, deleteStudent } from "../services/StudentManagementService";
 
 const StudentManagementForm = () => {
 
@@ -24,6 +24,7 @@ const StudentManagementForm = () => {
     const [studentIndex, setStudentIndex] = useState('')
     const [studentGroup, setStudentGroup] = useState('')
     const [studentNote, setStudentNote] = useState('')
+    const [studentId, setStudentId] = useState('')
 
 
     useEffect(() => {
@@ -60,6 +61,7 @@ const StudentManagementForm = () => {
             setStudentGroup(student.group)
             setStudentNote(student.note)
             setStudentIndex(student.index)
+            setStudentId(student.id)
         }
         ref.current?.showModal()
     }
@@ -71,10 +73,13 @@ const StudentManagementForm = () => {
         setStudentGroup('')
         setStudentNote('')
         setStudentIndex('')
+        setStudentId('')
     }
 
 
     const code = subject.match(/\((\d+)\)/)[1];
+
+    const hasNumbers = (str) => /\d/.test(str);
 
     function useDebounce(value, delay) {
         const [debouncedValue, setDebouncedValue] = useState(value);
@@ -97,14 +102,23 @@ const StudentManagementForm = () => {
         if (schoolYears.length === 0) return;
 
         try {
-            const formattedSearch = debouncedSearchTerm.replace(/ /g, '_');
+            let formattedSearch = debouncedSearchTerm.replace(/ /g, '_');
+            let indexSearchTerm = ''
+            if (hasNumbers(formattedSearch)) {
+                console.log("ima brojeva")
+                indexSearchTerm = formattedSearch
+                formattedSearch = ''
+
+            }
+
             const students = await getStudents(
                 code,
                 resetPage ? 0 : page,
                 selectedLength,
                 'asc',
                 selectedYear,
-                formattedSearch
+                formattedSearch,
+                indexSearchTerm
             );
 
             console.log(students)
@@ -120,12 +134,16 @@ const StudentManagementForm = () => {
         }
     }, [code, currentPage, selectedLength, selectedYear, debouncedSearchTerm]);
 
+
+
     useEffect(() => {
         const fetchYears = async () => {
             if (!code) return;
 
             try {
                 const years = await getYears(code);
+                years.push(years[years.length - 1] + 1)
+                console.log(years)
                 setSchoolYears(years);
                 if (years.length > 0) {
                     setSelectedYear(years[0]);
@@ -166,17 +184,45 @@ const StudentManagementForm = () => {
         } else {
             if (currentPage != 0) {
                 setCurrentPage(currentPage - 1)
+
             }
         }
     }
+
+
+
+    const handleDelete = async (id) => {
+
+        try {
+            await deleteStudent(id)
+            fetchStudents(currentPage, false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         if (isEdit) {
             console.log('edit mode')
-        } else {
-            console.log('add mode')
+            try {
+                await updateStudent(studentId, studentIndex, selectedYear, studentName, studentLastName, studentGroup, studentNote, subjectJson)
+                closeDialog(studentDialogRef)
+                fetchStudents(currentPage, false)
+            } catch (error) {
 
+                console.log(error)
+            }
+        } else {
+            try {
+                await addStudent(studentIndex, selectedYear, studentName, studentLastName, studentGroup, studentNote, subjectJson);
+
+                closeDialog(studentDialogRef)
+
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 
@@ -201,7 +247,7 @@ const StudentManagementForm = () => {
                         <label for="schoolYear">Školska godina</label>
                         <select id="schoolYear" onChange={schoolYearChange}>
                             {Array.from(schoolYears).map(year => (
-                                <option key={year} value={year}>{year}</option>
+                                <option key={year} value={year}>{year}/{year + 1}</option>
                             ))}
                         </select>
                     </div>
@@ -251,7 +297,7 @@ const StudentManagementForm = () => {
                                                 <td>{student.note}</td>
                                                 <td className='action-column'>
                                                     <span className="material-icons" onClick={() => openDialog(studentDialogRef, 'Izmjena podataka o studentu', true, student)}>edit</span>
-                                                    <span className="material-icons">delete</span>
+                                                    <span className="material-icons" onClick={() => handleDelete(student.id)}>delete</span>
                                                 </td>
                                             </tr>
                                         ))}

@@ -151,4 +151,27 @@ public class StudentSubjectController {
 
         return ResponseEntity.ok(result);
     }
+
+    /**
+     * Deletes an Activity by its ID.
+     *
+     * @param id the ID of the Activity to delete.
+     * @return 200 OK if deletion successful; 400 Bad Request otherwise.
+     */
+    @Operation(summary = "Delete an Student by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Student deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Error during deletion", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteActivity(
+            @Parameter(description = "ID of the Student to delete", required = true) @PathVariable Integer id) {
+        try {
+            studentSubjectService.delete(id);
+            return ResponseEntity.ok("Student deleted successfully");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
 }

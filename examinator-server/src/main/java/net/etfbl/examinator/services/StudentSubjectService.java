@@ -64,8 +64,25 @@ public class StudentSubjectService {
         StudentSubject existing = studentSubjectRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("StudentSubject with ID " + id + " not found"));
 
+        // existing.setIndex(updated.getIndex());
+        // existing.setSubject(updated.getSubject());
+        //
+        // return studentSubjectRepository.save(existing);
+        // Update all relevant fields
         existing.setIndex(updated.getIndex());
-        existing.setSubject(updated.getSubject());
+        existing.setSchoolYear(updated.getSchoolYear());
+        existing.setFirstName(updated.getFirstName());
+        existing.setLastName(updated.getLastName());
+        existing.setGroup(updated.getGroup());
+        existing.setNote(updated.getNote());
+
+        // Handle Subject by code
+        if (updated.getSubject() != null && updated.getSubject().getCode() != null) {
+            Subject subject = subjectRepository.findByCode(updated.getSubject().getCode())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Subject with code " + updated.getSubject().getCode() + " not found"));
+            existing.setSubject(subject);
+        }
 
         return studentSubjectRepository.save(existing);
     }
@@ -96,5 +113,13 @@ public class StudentSubjectService {
         List<StudentSubject> pageContent = start > end ? List.of() : filtered.subList(start, end);
 
         return new PageImpl<>(pageContent, pageable, filtered.size());
+    }
+
+    public void delete(Integer id) {
+        if (!studentSubjectRepository.existsById(id)) {
+            throw new RuntimeException("Student with ID " + id + " does not exist");
+        }
+
+        studentSubjectRepository.deleteById(id);
     }
 }

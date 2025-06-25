@@ -47,13 +47,11 @@ export async function updateActivity(id, name, shortName, maxPoints, schoolYear,
         body: JSON.stringify({ id, name, shortName, maxPoints: Number(maxPoints), schoolYear, subject })
 
     })
-    console.log(JSON.stringify({ name, shortName, maxPoints: Number(maxPoints), schoolYear, subject }))
-    console.log(res)
     const bodyText = await res.text();
     console.log(bodyText)
     if (!res.ok) {
         const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
-        throw new Error(`Greška pri dodavanju aktivnosti: ${message}`)
+        throw new Error(`Greška pri azuriranju aktivnosti: ${message}`)
 
     }
 
