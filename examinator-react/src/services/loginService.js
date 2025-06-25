@@ -1,5 +1,6 @@
 const API_URL = 'http://localhost:8080/api/users';
 
+
 export async function registerUser(firstName, lastName, username, email, password) {
   const res = await fetch(`${API_URL}/register`, {
     method: 'POST',

@@ -8,9 +8,13 @@ import SettingsPage from './pages/SettingsPage';
 import LogoutPage from './pages/LogoutPage.jsx'
 import ActivitiesPage from './pages/ActivitiesPage.jsx'
 import StudentManagementPage from './pages/StudentManagementPage.jsx';
+import ResultsPage from './pages/ResultsPage.jsx'
+import { AuthContext } from './contexts/AuthContext.jsx';
+import { useContext } from 'react';
 import './styles/styles.scss';
 
 const App = () => {
+    const { token, loading } = useContext(AuthContext);
     useEffect(() => {
         const storedAccentColor = localStorage.getItem('accentColor');
         if (storedAccentColor) {
@@ -26,6 +30,8 @@ const App = () => {
         }
     }, []);
 
+    if (loading) return <div>Loading...</div>;
+
     return (
         <Router>
             <Routes>
@@ -37,6 +43,7 @@ const App = () => {
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/activities" element={<ActivitiesPage />} />
                     <Route path="/students" element={<StudentManagementPage />} />
+                    <Route path="/results" element={<ResultsPage />} />
                 </Route>
             </Routes>
         </Router>
