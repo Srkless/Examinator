@@ -170,6 +170,28 @@ public class ResultService {
     return byteArrayOutputStream.toByteArray();
   }
 
+  public byte[] generateActivityResultsCsv(Integer activityId) {
+    List<Result> results = resultRepository.findAll().stream()
+            .filter(r -> r.getActivity().getId().equals(activityId))
+            .sorted(getStudentIndexComparator())
+            .collect(Collectors.toList());
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("Indeks,Ime i prezime,Bodovi\n");
+
+    for (Result result : results) {
+      StudentSubject ss = result.getStudentSubject();
+      String index = ss.getIndex();
+      String name = ss.getFirstName() + " " + ss.getLastName();
+      String points = result.getPoints().toString();
+
+      builder.append(index).append(",").append(name).append(",").append(points).append("\n");
+    }
+
+    return builder.toString().getBytes();
+  }
+
+
   // TODO implement service for generating finals results
   public byte[] generateSubjectResultsPdf(Integer subjectId, List<Integer> students) {
     if (students.size() == 0) {
