@@ -30,6 +30,7 @@ function HomeForm() {
         const fetchSubjects = async () => {
             try {
                 const res = await getUserSubjects();
+                if (!res) return;
 
                 const newSubjects = res.map((item) => {
                     const name = item.name.trim();
@@ -39,7 +40,7 @@ function HomeForm() {
 
                 setSubjects(newSubjects);
             } catch (err) {
-                console.error('Greška:', err.message);
+                console.error('Greška u fetchSubjects:', err.message);
             }
         };
 
