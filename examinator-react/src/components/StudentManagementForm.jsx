@@ -142,11 +142,22 @@ const StudentManagementForm = () => {
 
             try {
                 const years = await getYears(code);
-                years.push(years[years.length - 1] + 1)
-                console.log(years)
-                setSchoolYears(years);
-                if (years.length > 0) {
-                    setSelectedYear(years[0]);
+                const validYears = years.filter(item => !isNaN(item));
+                if (validYears.length == 0) {
+                    const month = new Date().getMonth();
+                    const newYear = new Date().getFullYear()
+                    if (month < 5) {
+                        validYears.push(newYear - 1)
+                    } else {
+                        validYears.push(newYear)
+                    }
+                } else {
+                    validYears.push(validYears[validYears.length - 1] + 1)
+                }
+                console.log(validYears)
+                setSchoolYears(validYears);
+                if (validYears.length > 0) {
+                    setSelectedYear(validYears[0]);
                 }
             } catch (error) {
                 console.error('Error fetching years:', error);
