@@ -2,7 +2,6 @@ import HeaderComponent from "./HeaderComponent"
 import { useLocation } from "react-router-dom"
 import '../styles/studentManagement.scss';
 import { useEffect, useCallback } from 'react'
-import { getSubjectActivities } from "../services/SubjectManagementService";
 import { useState, useRef } from "react";
 import { addStudent, getStudents, getYears, updateStudent, deleteStudent } from "../services/StudentManagementService";
 
@@ -99,6 +98,7 @@ const StudentManagementForm = () => {
         // Don't fetch if years aren't loaded yet or no year is selected
         if (!isYearsLoaded || selectedYear === null) return;
 
+
         try {
             let formattedSearch = debouncedSearchTerm.replace(/ /g, '_');
             let indexSearchTerm = ''
@@ -154,21 +154,19 @@ const StudentManagementForm = () => {
                 validYears.sort((a, b) => b - a)
                 setSchoolYears(validYears);
 
-                // Set the selected year and mark years as loaded
                 if (validYears.length > 0) {
                     setSelectedYear(validYears[0]);
                 }
-                setIsYearsLoaded(true);  // Mark years as loaded
+                setIsYearsLoaded(true);
             } catch (error) {
                 console.error('Error fetching years:', error);
-                setIsYearsLoaded(true);  // Still mark as loaded even on error
+                setIsYearsLoaded(true);
             }
         };
 
         fetchYears();
     }, [code]);
 
-    // Only fetch students after years are loaded and selectedYear is set
     useEffect(() => {
         if (isYearsLoaded && selectedYear !== null) {
             fetchStudents(0, true);
@@ -182,7 +180,7 @@ const StudentManagementForm = () => {
     }, [currentPage]);
 
     const schoolYearChange = (event) => {
-        setSelectedYear(parseInt(event.target.value))  // Ensure it's a number
+        setSelectedYear(parseInt(event.target.value))
     }
 
     const selectedLengthChange = (event) => {
@@ -198,6 +196,7 @@ const StudentManagementForm = () => {
             if (currentPage != 0) {
                 setCurrentPage(currentPage - 1)
             }
+
         }
     }
 
@@ -225,7 +224,7 @@ const StudentManagementForm = () => {
             try {
                 await addStudent(studentIndex, selectedYear, studentName, studentLastName, studentGroup, studentNote, subjectJson);
                 closeDialog(studentDialogRef)
-                fetchStudents(currentPage, false)  // Refresh the list after adding
+                fetchStudents(currentPage, false)
             } catch (error) {
                 console.log(error)
             }

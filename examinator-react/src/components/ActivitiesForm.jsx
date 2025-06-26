@@ -36,6 +36,8 @@ function ActivitiesForm() {
     const [isDelete, setIsDelete] = useState(false)
     const [editingActivity, setEditingActivity] = useState(null)
     const [warningDialogText, setWarningDialogText] = useState('')
+    const [formulaExpression, setFormulaExpression] = useState('')
+    const [formulaName, setFormulaName] = useState('')
 
 
 
@@ -188,7 +190,6 @@ function ActivitiesForm() {
                 );
                 closeDialog(warningDialogRef)
             } else {
-
                 console.log(subjectId)
                 await addActivity(activityName, activityShortName, activityMaxPoints, selectedYear, subjectJson);
             }
@@ -201,6 +202,12 @@ function ActivitiesForm() {
             console.log(error)
         }
     }
+
+    const insertIntoExpression = (shortName) => {
+        setFormulaExpression(formulaExpression + shortName);
+    }
+
+
 
 
     return (
@@ -269,7 +276,7 @@ function ActivitiesForm() {
                         <button id="addFormulaBtn" className="add-activity-button" onClick={() => openDialog(formulaDialogRef)}>Nova formula</button>
                     </div>
                     <div id="formulasContainer">
-                        {formulas.length > 0 ? (
+                        {formulas.filter(formula => formula.schoolYear == selectedYear).length > 0 ? (
                             <table>
                                 <thead>
                                     <tr>
@@ -329,22 +336,26 @@ function ActivitiesForm() {
                         </button>
                     </div>
                     <label>Naziv</label>
-                    <input type="text" name="naziv" required />
+                    <input type="text" name="naziv" onChange={(e) => setFormulaName(e.target.value)} required />
                     <label>Izraz</label>
-                    <textarea name="izraz" required></textarea>
+                    <textarea name="izraz" value={formulaExpression} required></textarea>
                     <div className="inline-buttons">
                         <span>Aktivnosti</span>
-                        <div className="group" id="activityTags"></div>
+                        <div className="group" id="activityTags">
+                            {activities.filter(activity => activity.schoolYear == selectedYear).map((activity, i) => (
+                                <button type="button" className='inline-buttons' onClick={() => insertIntoExpression(activity.shortName)}>{activity.shortName}</button>
+                            ))}
+                        </div>
                     </div>
                     <div className="inline-buttons">
                         <span>Operatori</span>
                         <div className="group" id="operators">
-                            <button type="button">+</button>
-                            <button type="button">*</button>
-                            <button type="button">&lt;</button>
-                            <button type="button">&gt;</button>
-                            <button type="button">AND</button>
-                            <button type="button">OR</button>
+                            <button type="button" onClick={() => insertIntoExpression('+')}>+</button>
+                            <button type="button" onClick={() => insertIntoExpression('*')}>*</button>
+                            <button type="button" onClick={() => insertIntoExpression('<')}>&lt;</button>
+                            <button type="button" onClick={() => insertIntoExpression('>')}>&gt;</button>
+                            <button type="button" onClick={() => insertIntoExpression('&')}>AND</button>
+                            <button type="button" onClick={() => insertIntoExpression('|')}>OR</button>
                         </div>
                     </div>
                     <div className="buttons">
