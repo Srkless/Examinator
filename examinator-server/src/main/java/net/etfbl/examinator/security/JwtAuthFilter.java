@@ -29,25 +29,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-    String path = request.getServletPath(); // safer than getRequestURI()
-    return path.equals("/") ||
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+
+    String path = request.getRequestURI();
+    if (path.startsWith("/v3/api-docs") ||
+        path.startsWith("/swagger-ui") ||
+        path.equals("/") ||
         path.equals("/index.html") ||
         path.equals("/login") ||
         path.equals("/register") ||
         path.equals("/api/users/login") ||
-        path.equals("/api/users/register") ||
-        path.startsWith("/v3/api-docs") ||
-        path.startsWith("/swagger-ui") ||
-        path.startsWith("/static/") ||
-        path.startsWith("/assets/") ||
-        path.startsWith("/css/") ||
-        path.startsWith("/js/");
-  }
-
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
+        path.equals("/api/users/register")) {
+      System.out.println("Skipping JWT for path: " + path);
+      filterChain.doFilter(request, response);
+      return;
+    }
 
     final String authHeader = request.getHeader("Authorization");
 
