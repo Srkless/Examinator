@@ -27,6 +27,20 @@ const StudentManagementForm = () => {
     const [isYearsLoaded, setIsYearsLoaded] = useState(false)  // New state to track years loading
     const [sortingQuery, setSortingQuery] = useState('index')
 
+    const fileInputRef = useRef(null);
+
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            console.log('Selected file:', file);
+            // Handle your file here
+        }
+    };
+
 
     useEffect(() => {
         setSubjectJson({
@@ -216,6 +230,9 @@ const StudentManagementForm = () => {
         }
     }
 
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         if (isEdit) {
@@ -259,9 +276,15 @@ const StudentManagementForm = () => {
                     </div>
 
                     <div className="student-buttons">
-                        <button id="importStudents" data-tooltip="Uvezi spisak studenata">
+                        <button id="importStudents" data-tooltip="Uvezi spisak studenata" onClick={handleButtonClick}>
                             <span className="material-icons">upload</span>
-                        </button>
+                        </button><input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                            accept=".csv, .txt" // Optional: restrict file types
+                        />
                         <button id="addStudentBtn" data-tooltip="Dodaj studenta" onClick={() => openDialog(studentDialogRef, 'Dodavanje novog studenta na predmet', false)}>
                             <span className="material-icons">person_add</span>
                         </button>
