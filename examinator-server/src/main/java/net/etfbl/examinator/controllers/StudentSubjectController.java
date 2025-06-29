@@ -146,6 +146,7 @@ public class StudentSubjectController {
                 : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
+        System.out.println(pageable.getSort());
 
         Page<StudentSubject> result = studentSubjectService.getFilteredAndPaged(subjectCode, pageable, searchQuery);
 

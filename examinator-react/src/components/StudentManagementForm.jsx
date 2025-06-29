@@ -25,6 +25,7 @@ const StudentManagementForm = () => {
     const [studentNote, setStudentNote] = useState('')
     const [studentId, setStudentId] = useState('')
     const [isYearsLoaded, setIsYearsLoaded] = useState(false)  // New state to track years loading
+    const [sortingQuery, setSortingQuery] = useState('index')
 
 
     useEffect(() => {
@@ -112,6 +113,7 @@ const StudentManagementForm = () => {
                 code,
                 resetPage ? 0 : page,
                 selectedLength,
+                sortingQuery,
                 'asc',
                 selectedYear,
                 formattedSearch,
@@ -129,7 +131,12 @@ const StudentManagementForm = () => {
         } catch (error) {
             console.error('Error fetching students:', error);
         }
-    }, [code, currentPage, selectedLength, selectedYear, debouncedSearchTerm, isYearsLoaded]);
+    }, [code, currentPage, selectedLength, selectedYear, debouncedSearchTerm, isYearsLoaded, sortingQuery]);
+
+
+    useEffect(() => {
+        console.log(sortingQuery)
+    }, [sortingQuery])
 
     useEffect(() => {
         const fetchYears = async () => {
@@ -171,7 +178,7 @@ const StudentManagementForm = () => {
         if (isYearsLoaded && selectedYear !== null) {
             fetchStudents(0, true);
         }
-    }, [debouncedSearchTerm, selectedLength, selectedYear, isYearsLoaded]);
+    }, [debouncedSearchTerm, selectedLength, selectedYear, isYearsLoaded, sortingQuery]);
 
     useEffect(() => {
         if (currentPage > 0 && isYearsLoaded && selectedYear !== null) {
@@ -277,11 +284,11 @@ const StudentManagementForm = () => {
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Indeks</th>
-                                            <th>Ime</th>
-                                            <th>Prezime</th>
-                                            <th>Grupa</th>
-                                            <th>Napomena</th>
+                                            <th onClick={() => setSortingQuery("index")}>Indeks</th>
+                                            <th onClick={() => setSortingQuery("firstName")}>Ime</th>
+                                            <th onClick={() => setSortingQuery("lastName")}>Prezime</th>
+                                            <th onClick={() => setSortingQuery("group")}>Grupa</th>
+                                            <th onClick={() => setSortingQuery("note")}>Napomena</th>
                                             <th className='action-column'>
                                                 Akcija
                                             </th>

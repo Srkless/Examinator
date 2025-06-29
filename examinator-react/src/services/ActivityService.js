@@ -13,8 +13,6 @@ export async function addActivity(name, shortName, maxPoints, schoolYear, subjec
         },
         body: JSON.stringify({ name, shortName, maxPoints: Number(maxPoints), schoolYear: Number(schoolYear), subjectCode })
     })
-    console.log(res)
-    console.log(JSON.stringify({ name, shortName, maxPoints: Number(maxPoints), schoolYear, subjectCode }))
 
     const contentType = res.headers.get('Content-Type')
     const isJson = contentType && contentType.includes('application/json')

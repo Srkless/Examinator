@@ -13,8 +13,6 @@ export async function addFormula(name, expression, schoolYear, subjectCode) {
         },
         body: JSON.stringify({ name, expression, schoolYear: Number(schoolYear), subjectCode })
     })
-    console.log(res)
-    console.log(JSON.stringify({ name, expression, schoolYear, subjectCode }))
 
     const contentType = res.headers.get('Content-Type')
     const isJson = contentType && contentType.includes('application/json')
@@ -50,7 +48,6 @@ export async function updateFormula(id, name, expression, schoolYear, subject) {
         body: JSON.stringify({ id, name, expression, schoolYear, subject })
 
     })
-    console.log(JSON.stringify({ id, name, expression, schoolYear, subject }))
     const bodyText = await res.text();
     const contentType = res.headers.get('Content-Type')
     const isJson = contentType && contentType.includes('application/json')

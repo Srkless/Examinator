@@ -150,7 +150,6 @@ function ActivitiesForm() {
                     name: act.name,
                     code: act.code
                 });
-                setSubjectId(act.id);
             } catch (error) {
                 console.error('Error fetching activities:', error);
             }
@@ -194,23 +193,7 @@ function ActivitiesForm() {
         subjectRef.current.value = subject
     })
 
-    // useEffect(() => {
-    //     const years = [...new Set(activities.map(activity => activity.schoolYear))].sort((a, b) => b - a)
-    //     if (years.length == 0) {
-    //         const month = new Date().getMonth();
-    //         const newYear = new Date().getFullYear()
-    //         if (month < 5) {
-    //             years.push(newYear - 1)
-    //         } else {
-    //             years.push(newYear)
-    //         }
-    //     } else {
-    //         years.push(years[0] + 1)
-    //     }
-    //
-    //     years.sort((a, b) => b - a)
-    //     setSchoolYears(years)
-    // }, [activities])
+
 
     useEffect(() => {
         if (schoolYears.length > 0) {
@@ -222,24 +205,7 @@ function ActivitiesForm() {
         setSelectedYear(event.target.value)
     }
 
-    // const handleIconClick = (activity = null, formula = null, update = false) => {
-    //
-    //     if (activity && update) {
-    //         openActivityDialog(activity)
-    //         return
-    //     } else {
-    //         if (activity.results.length !== 0) {
-    //
-    //
-    //             setWarningDialogText(`Neki studenti imaju već unesene bodove za ovu aktivnost.\nAko nastavite, svi bodovi će biti trajno obrisani.`);
-    //         } else setWarningDialogText("Jeste li sigurni?")
-    //         openWarningDialog(activity)
-    //     }
-    //     if (formula && update) {
-    //
-    //     }
-    //
-    // }
+
 
     const handleSubmitActivity = async (e) => {
         e.preventDefault()
@@ -293,7 +259,6 @@ function ActivitiesForm() {
         try {
 
             if (isEditFormula) {
-                console.log('edit formula')
 
                 try {
 
@@ -307,7 +272,6 @@ function ActivitiesForm() {
                 }
                 setReload(true)
             } else if (isDeleteFormula) {
-                console.log('delete formula')
                 try {
                     await deleteFormula(editingFormula.id)
                     setIsEditFormula(false)
@@ -320,7 +284,6 @@ function ActivitiesForm() {
                 closeDialog(warningDialogRef)
             } else {
                 try {
-                    console.log('add formual')
                     await addFormula(formulaName, formulaExpression, selectedYear, code);
                     setIsEditFormula(false)
                     setEditingFormula(null)
@@ -332,7 +295,6 @@ function ActivitiesForm() {
 
                 setReload(true)
                 closeDialog(formulaDialogRef)
-                console.log('formula add')
             }
 
         } catch (error) {

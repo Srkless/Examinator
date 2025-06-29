@@ -107,6 +107,16 @@ public class StudentSubjectService {
                         s.getGroup().contains(groupQuery) && s.getSchoolYear().toString().contains(schoolYearQuery))
                 .collect(Collectors.toList());
 
+        if (pageable.getSort().isSorted()) {
+            String sortField = pageable.getSort().iterator().next().getProperty();
+            boolean isDesc = pageable.getSort().iterator().next().isDescending();
+            filtered.sort((a, b) -> {
+                Comparable valueA = getFieldValue(a, sortField);
+                Comparable valueB = getFieldValue(b, sortField);
+                int result = valueA.compareTo(valueB);
+                return isDesc ? -result : result;
+            });
+        }
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), filtered.size());
 
@@ -121,5 +131,17 @@ public class StudentSubjectService {
         }
 
         studentSubjectRepository.deleteById(id);
+    }
+
+    private Comparable getFieldValue(StudentSubject student, String field) {
+        return switch (field) {
+            case "firstName" -> student.getFirstName();
+            case "lastName" -> student.getLastName();
+            case "index" -> student.getIndex();
+            case "group" -> student.getGroup();
+            case "schoolYear" -> student.getSchoolYear();
+            case "id" -> student.getId();
+            default -> student.getIndex();
+        };
     }
 }

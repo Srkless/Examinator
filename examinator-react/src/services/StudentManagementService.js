@@ -3,9 +3,9 @@ const API_URL = 'http://localhost:8080/api/students';
 
 
 
-export async function getStudents(code, pageNumber, pageSize, sortDirection, year, searchTerm, indexSearchTerm) {
+export async function getStudents(code, pageNumber, pageSize, sortingQuery, sortDirection, year, searchTerm, indexSearchTerm) {
 
-    const res = await fetch(`${API_URL}/subject/${code}/paged?page=${pageNumber}&size=${pageSize}&searchQuery=${indexSearchTerm} ${searchTerm}  ${year}`, {
+    const res = await fetch(`${API_URL}/subject/${code}/paged?page=${pageNumber}&size=${pageSize}&sortBy=${sortingQuery}&searchQuery=${indexSearchTerm} ${searchTerm}  ${year}`, {
 
         method: 'GET',
         headers: {
@@ -13,7 +13,7 @@ export async function getStudents(code, pageNumber, pageSize, sortDirection, yea
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }
     })
-    console.log(`${API_URL}/subject/${code}/paged?page=${pageNumber}&size=${pageSize}&searchQuery=${indexSearchTerm} ${searchTerm}  ${year}`)
+    console.log(`${API_URL}/subject/${code}/paged?page=${pageNumber}&size=${pageSize}&sortBy=${sortingQuery}&searchQuery=${indexSearchTerm} ${searchTerm}  ${year}`)
     const contentType = res.headers.get('Content-Type');
     const isJson = contentType && contentType.includes('application/json');
 
