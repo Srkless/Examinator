@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -87,6 +88,30 @@ public class StudentSubjectController {
       @Parameter(description = "List of StudentSubjects to add", required = true) @RequestBody List<StudentSubject> studentSubjects) {
     List<StudentSubject> saved = studentSubjectService.addStudentsToSubject(studentSubjects);
     return ResponseEntity.ok(saved);
+  }
+
+  /**
+   * Adds multiple students to a subject from a CSV file.
+   *
+   * @param file CSV file containing students.
+   * @return List of saved StudentSubject entities.
+   */
+  @Operation(summary = "Add multiple students to a subject from CSV")
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "Students added", content = @Content(schema = @Schema(implementation = StudentSubject.class))),
+          @ApiResponse(responseCode = "400", description = "Invalid CSV or bad request")
+  })
+  @PostMapping("/subject/{subjectCode}/add-multiple-from-csv")
+  public ResponseEntity<List<StudentSubject>> addStudentsToSubjectFromCsv(
+          @Parameter(description = "Subject ID", required = true) @PathVariable Integer subjectCode,
+          @Parameter(description = "CSV file with students", required = true) @RequestParam("file") MultipartFile file) {
+
+    try {
+      List<StudentSubject> saved = studentSubjectService.addStudentsFromCsv(file, subjectCode);
+      return ResponseEntity.ok(saved);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().build();
+    }
   }
 
   /**
