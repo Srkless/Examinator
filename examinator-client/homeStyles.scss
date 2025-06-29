@@ -9,16 +9,15 @@ $label-text-color: #444;
 $dialog-header-color: #888;
 $light-gray: #f5f5f5;
 $white: #fff;
-$border-radius: 8px;
-$box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+$border-radius: 0.5rem;
+$box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
 $border-color: #dcdcdc;
-$logo-size: 32px;
+$logo-size: 2rem;
 $logo-color: #000;
 $table-border-color: #333;
 $table-color: #1f1f1f;
 $text-color-bright: #666;
 $tooltip-color: #444;
-
 
 body {
   margin: 0;
@@ -33,16 +32,16 @@ body {
   background-color: $bg-color;
   border-bottom: 1px solid $border-color;
   position: relative;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 0.7%;
+  padding-bottom: 0.7%;
 }
 
 .logo {
   font-family: 'Fondamento', cursive;
-  font-size: $logo-size;
+  font-size: clamp(1.2rem, 4vw, $logo-size);
   color: $logo-color;
-  margin-left: 30px;
-  text-decoration: none; // da ne bude podvucen kao link
+  margin-left: 2%;
+  text-decoration: none;
 }
 
 .user-menu {
@@ -52,7 +51,7 @@ body {
     display: flex;
     align-items: center;
     background-color: inherit;
-    border-radius: 50px;
+    border-radius: 50rem;
     padding: 0.6rem 1rem;
     gap: 0.4rem;
     cursor: pointer;
@@ -67,13 +66,13 @@ body {
     }
 
     .material-icons {
-      font-size: 32px;
+      font-size: clamp(1.2rem, 4vw, 2rem);
       color: $text-color;
       transition: color 0.3s ease;
     }
 
     .arrow {
-      font-size: 26px;
+      font-size: clamp(1rem, 4vw, 1.7rem);
     }
   }
 
@@ -88,22 +87,23 @@ body {
     border-radius: $border-radius;
     list-style: none;
     padding: 0.3rem 0;
-    min-width: 140px;
+    min-width: 8.75rem;
     box-shadow: $box-shadow;
     z-index: 10;
+    font-size: clamp(0.85rem, 1.5vw, 1rem);
 
   li {
     a {
       display: flex;
-      justify-content: space-between; // tekst levo, ikonica desno
+      justify-content: space-between;
       align-items: center;
       padding: 0.5rem 1rem;
       text-decoration: none;
       color: $text-color;
     
       .material-icons {
-        font-size: 20px;
-        margin-left: 3rem; // razmak izmedju teksta i ikonice
+        font-size: clamp(1rem, 4vw, 1.25rem);
+        margin-left: 3rem;
       }
 
       &:hover {
@@ -127,53 +127,49 @@ body {
   display: none;
 }
 
-h2 {
-  max-width: calc(100% - 300px);
-  font-size: 26px;
-  margin: 4rem auto 1rem auto;
-  color: $text-color;
+.content-wrapper {
+  padding-left: 10%;
+  padding-right: 10%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-// #no-subjects {
-//   max-width: calc(100% - 300px);
-//   margin: 0 auto;
-//   color: #909090;
-//   font-size: 1rem;
-//   font-weight: 400;
-// }
+h2 {
+  margin: 4rem 0 1rem 0;
+  color: $text-color;
+  font-size: clamp(1.2rem, 2.5vw, 1.625rem);
+}
 
 #no-subjects {
   text-align: center;
   margin-top: 5rem;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
   color: $text-color-bright;
 }
 
 table {
-  max-width: calc(100% - 300px); // ukupno 150px sa leve i 150px sa desne strane
-  margin: 0 auto;               // centriranje horizontalno
-  border-collapse: collapse;
   width: 100%;
+  border-collapse: collapse;
 
   td, th {
     padding: 0.75rem;
     border: 1px solid $table-border-color;
     text-align: center;
-    // font-weight: bold;
     color: $table-color;
+    font-size: clamp(0.9rem, 2vw, 1rem);
   }
 
   .material-icons {
     color: $text-color;
     cursor: pointer;
     transition: color 0.2s ease;
+    font-size: clamp(1.05rem, 2vw, 1.5rem);
 
     &:hover {
       color: $select-color;
     }
   }
 
-  // Tooltip na ikonicama
   .material-icons[data-tooltip] {
     position: relative;
 
@@ -185,11 +181,11 @@ table {
       transform: translateX(-50%);
       background-color: $tooltip-color;
       color: $white;
-      padding: 6px 10px;
-      border-radius: 6px;
+      padding: 0.375rem 0.625rem;
+      border-radius: 0.375rem;
       white-space: nowrap;
       font-family: "Roboto", sans-serif;
-      font-size: 0.8rem;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.2s ease-in-out, visibility 0s linear;
@@ -204,7 +200,7 @@ table {
       bottom: 115%;
       left: 50%;
       transform: translateX(-50%);
-      border-width: 5px;
+      border-width: 0.3125rem;
       border-style: solid;
       border-color: $tooltip-color transparent transparent transparent;
       opacity: 0;
@@ -219,23 +215,23 @@ table {
     &:hover::before {
       opacity: 1;
       visibility: visible;
-      transition-delay: 0.6s; // Tooltip se pojavi nakon 0.6s
+      transition-delay: 0.6s;
     }
   }
 }
-
+// dugme za dodavanje predmeta
 .add-button {
   position: fixed;
-  bottom: 4rem;
-  right: 5rem;
+  bottom: 8%;
+  right: 5%;
   background-color: $primary-color;
-  border: 2.5px solid $white;
+  border: 0.09375rem solid $white;
   border-radius: 50%;
   padding: 0.5rem;
   cursor: pointer;
 
   .material-icons {
-    font-size: 36px;
+    font-size: clamp(1.5rem, 4vw, 2.3rem);
     color: $white;
   }
 
@@ -244,20 +240,21 @@ table {
   }
 }
 
+// dialog za dodavanje/izmjenu predmeta
 dialog {
-  width: 500px;
-  min-height: 250px;
+  width: clamp(18.75rem, 40vw, 31rem); 
+  min-height: clamp(15rem, 25vw, 15.625rem);  
   padding: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   box-shadow: $box-shadow;
   font-family: "Roboto", sans-serif;
 
   form#subject-form {
-    padding: 1.5rem;
+    padding: clamp(1rem, 2vw, 1.5rem);     
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: clamp(0.8rem, 2vw, 1.2rem);
     color: $text-color;
     font-weight: 300;
 
@@ -265,15 +262,15 @@ dialog {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid $border-color;
-      padding-bottom: 0.5rem;
-      height: 30px;             
-      box-sizing: border-box;   // da padding ne poveca ukupnu visinu
+      margin-bottom: clamp(0.5rem, 1vw, 1rem);
+      border-bottom: 0.0625rem solid $border-color; 
+      padding-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+      height: clamp(1.5rem, 3vw, 1.875rem);   
+      box-sizing: border-box;
 
       h3 {
         margin: 0;
-        font-size: 0.92rem; 
+        font-size: clamp(0.75rem, 1.5vw, 0.92rem); 
         color: $dialog-header-color;   
         font-weight: 400;
       }
@@ -284,7 +281,7 @@ dialog {
         cursor: pointer;
 
         .material-icons {
-          font-size: 1.5rem;
+          font-size: clamp(1.2rem, 2vw, 1.5rem); 
         }
       }
     }
@@ -292,16 +289,16 @@ dialog {
     label {
       display: flex;
       flex-direction: column;
-      font-size: 1rem;
+      font-size: clamp(0.85rem, 1.8vw, 1rem); 
       color: $label-text-color;
       font-weight: 500;
 
       input {
-        margin-top: 0.4rem;
-        padding: 0.5rem 0.8rem;
-        border: 1px solid $border-color;
-        border-radius: 5px;
-        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        padding: clamp(0.4rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.8rem);
+        border: 0.0625rem solid $border-color; 
+        border-radius: 0.3125rem; 
+        font-size: clamp(0.75rem, 1.5vw, 0.9rem);  
 
         &:focus {
           outline: none;
@@ -312,14 +309,14 @@ dialog {
 
     .buttons {
       display: flex;
-      justify-content: center; // centriraj dugmad
-      gap: 1.5rem;              // razmak izmedju dugmadi
-      margin-top: 1rem;
+      justify-content: center;
+      gap: clamp(0.8rem, 2vw, 1.5rem);
+      margin-top: clamp(0.8rem, 2vw, 1rem);
 
       button {
-        width: 120px;
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
+        width: clamp(100px, 15vw, 120px);       
+        padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+        font-size: clamp(0.85rem, 1.6vw, 1rem);  
         font-weight: 500;
         border: none;
         border-radius: $border-radius;
@@ -335,36 +332,35 @@ dialog {
   }
 }
 
+
 // dialog box za dodavanje predavaca na predmetu
 dialog#professors-dialog {
-  width: 650px;
-  border: none;
-  border-radius: 10px;
+  width: clamp(18.75rem, 40vw, 40rem); 
+  border-radius: 0.625rem;
   box-shadow: $box-shadow;
   font-family: "Roboto", sans-serif;
   padding: 0;
 
   form#professors-form {
-    padding: 1.5rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: clamp(0.8rem, 2vw, 1.2rem);
     color: $text-color;
 
     .dialog-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid $border-color;
-      padding-bottom: 0.5rem;
-      height: 30px;             
-      box-sizing: border-box;   // da padding ne poveca ukupnu visinu
-      font-family: "Roboto", sans-serif;
+      margin-bottom: clamp(0.5rem, 1vw, 1rem);
+      border-bottom: 0.0625rem solid $border-color; 
+      padding-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+      height: clamp(1.5rem, 3vw, 1.875rem);    
+      box-sizing: border-box;
 
       h3 {
         margin: 0;
-        font-size: 0.92rem; 
+        font-size: clamp(0.75rem, 1.5vw, 0.92rem); 
         color: $dialog-header-color;   
         font-weight: 400;
       }
@@ -375,7 +371,7 @@ dialog#professors-dialog {
         cursor: pointer;
 
         .material-icons {
-          font-size: 1.5rem;
+          font-size: clamp(1.2rem, 2vw, 1.5rem);
         }
       }
     }
@@ -383,19 +379,20 @@ dialog#professors-dialog {
     .add-professor-row {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: clamp(0.6rem, 2vw, 1rem);
 
       label {
         font-weight: 500;
         color: $label-text-color;
+        font-size: clamp(0.85rem, 1.8vw, 1rem);
       }
 
       select {
         flex-grow: 1;
-        padding: 0.5rem 0.8rem;
-        font-size: 1rem;
-        border: 1px solid $border-color;
-        border-radius: 5px;
+        padding: clamp(0.4rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.8rem);
+        font-size: clamp(0.85rem, 1.8vw, 1rem);
+        border: 0.0625rem solid $border-color;
+        border-radius: 0.3125rem;
         appearance: none;
 
         &:focus {
@@ -405,9 +402,9 @@ dialog#professors-dialog {
       }
 
       button {
-        width: 100px;
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
+        width: clamp(5.625rem, 20%, 8.75rem);
+        padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+        font-size: clamp(0.85rem, 1.8vw, 1rem);
         font-weight: 500;
         border: none;
         border-radius: $border-radius;
@@ -423,29 +420,33 @@ dialog#professors-dialog {
 
     .no-data-msg {
       text-align: center;
-      font-size: 1rem;
+      font-size: clamp(0.85rem, 1.8vw, 1rem);
       color: $text-color-bright;
       margin-top: 1rem;
     }
 
     .professor-table-container {
       margin-top: 1rem;
-      table {
-        max-width: calc(100% - 20px); // ukupno 10px sa leve i 10px sa desne strane
-        margin: 0 auto;               // centriranje horizontalno
-        border-collapse: collapse;
-        width: 100%;
 
-        td{
-          padding: 0.4rem 0.4rem;
+      table {
+        padding-left: 10%;     
+        padding-right: 10%;
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+
+        td {
+          padding: clamp(0.3rem, 1vw, 0.4rem);
+          font-size: clamp(0.75rem, 1.5vw, 0.9rem);
         }
-        
-        th{
-          padding: 0.5rem;
+
+        th {
+          padding: clamp(0.4rem, 1vw, 0.5rem);
+          font-size: clamp(0.75rem, 1.5vw, 0.9rem);
         }
 
         td, th {
-          border: 0.4px solid $table-border-color;
+          border: 0.025rem solid $table-border-color; 
           text-align: center;
           color: $table-color;
         }
@@ -453,7 +454,8 @@ dialog#professors-dialog {
         .material-icons {
           cursor: pointer;
           color: $text-color;
-        
+          font-size: clamp(1rem, 2vw, 1.2rem);
+
           &:hover {
             color: $select-color;
           }
@@ -461,17 +463,16 @@ dialog#professors-dialog {
       }
     }
 
-
     .bottom-buttons {
       display: flex;
-      justify-content: center; // centriraj dugmad
-      gap: 1.5rem;              // razmak izmedju dugmadi
-      margin-top: 1rem;
+      justify-content: center;
+      gap: clamp(1rem, 2vw, 1.5rem);
+      margin-top: clamp(0.8rem, 2vw, 1rem);
 
       button {
-        width: 120px;
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
+        width: clamp(5.25rem, 25vw, 8rem);
+        padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+        font-size: clamp(0.85rem, 1.8vw, 1rem);
         font-weight: 500;
         border: none;
         border-radius: $border-radius;
@@ -490,33 +491,33 @@ dialog#professors-dialog {
 
 // dialog box za unos rezultata na predmetu
 dialog#results-dialog {
-  width: 500px;
+  width: clamp(18.75rem, 30vw, 28.125rem);
   border: none;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   box-shadow: $box-shadow;
   font-family: "Roboto", sans-serif;
   padding: 0;
 
   form#results-form {
-    padding: 1.5rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: clamp(0.8rem, 2vw, 1.2rem);
     color: $text-color;
 
     .dialog-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid $border-color;
-      padding-bottom: 0.5rem;
-      height: 30px;
+      margin-bottom: clamp(0.5rem, 1vw, 1rem);
+      border-bottom: 0.0625rem solid $border-color;
+      padding-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+      height: clamp(1.5rem, 3vw, 1.875rem);
       box-sizing: border-box;
 
       h3 {
         margin: 0;
-        font-size: 0.92rem;
+        font-size: clamp(0.75rem, 1.5vw, 0.92rem);
         color: $dialog-header-color;
         font-weight: 400;
       }
@@ -527,7 +528,7 @@ dialog#results-dialog {
         cursor: pointer;
 
         .material-icons {
-          font-size: 1.5rem;
+          font-size: clamp(1.2rem, 2vw, 1.5rem);
         }
       }
     }
@@ -535,19 +536,20 @@ dialog#results-dialog {
     .results-row {
       display: flex;
       flex-direction: column;
-      gap: 0.3rem;
+      gap: clamp(0.2rem, 1vw, 0.4rem);
 
       label {
         font-weight: 500;
         color: $label-text-color;
+        font-size: clamp(0.85rem, 1.8vw, 1rem);
       }
 
       select,
       input {
-        padding: 0.5rem 0.8rem;
-        font-size: 1rem;
-        border: 1px solid $border-color;
-        border-radius: 5px;
+        padding: clamp(0.4rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.8rem);
+        font-size: clamp(0.85rem, 1.8vw, 1rem);
+        border: 0.0625rem solid $border-color;
+        border-radius: 0.3125rem;
         appearance: none;
 
         &:focus {
@@ -555,33 +557,27 @@ dialog#results-dialog {
           border-color: $primary-color;
         }
       }
+
       select {
-        appearance: none; // uklanja nativni izgled selektora
         background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 0.8rem center;
         background-size: 1rem;
-        padding-right: 2rem; // da tekst ne ide preko strelice
+        padding-right: 2rem;
         cursor: pointer;
-        // width: 230px;
-
-        &:focus {
-          outline: none;
-          border-color: $primary-color;
-        }
       }
     }
 
     .bottom-buttons {
       display: flex;
       justify-content: center;
-      gap: 1.5rem;
-      margin-top: 1rem;
+      gap: clamp(0.8rem, 2vw, 1.5rem);
+      margin-top: clamp(0.8rem, 2vw, 1rem);
 
       button {
-        width: 120px;
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
+        width: clamp(6.25rem, 25vw, 10rem);
+        padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+        font-size: clamp(0.85rem, 1.8vw, 1rem);
         font-weight: 500;
         border: none;
         border-radius: $border-radius;

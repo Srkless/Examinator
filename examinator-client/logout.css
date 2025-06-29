@@ -7,43 +7,51 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  flex-direction: column;
+  text-align: center;
+  padding: 1rem;
 }
 
 .logout-container {
-  text-align: center;
+  max-width: clamp(18.75rem, 90vw, 62.5rem);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .logout-gif {
-  max-width: 1000px;
-  width: 100%;
+  width: 50%;
   height: auto;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1rem, 3vw, 2rem);
+  border-radius: 0.5rem;
 }
 
 .login-button {
   display: inline-block;
-  padding: 0.8rem 1.5rem;
+  padding: clamp(0.6rem, 1.5vw, 0.8rem) clamp(1.2rem, 3vw, 1.5rem);
   background-color: white;
   color: #777;
   border: 2px solid #777;
   text-decoration: none;
-  border-radius: 5px;
-  font-size: 1rem;
+  border-radius: 0.3125rem;
+  font-size: clamp(0.9rem, 1.6vw, 1rem);
   font-weight: 500;
   transition: all 0.3s ease;
-}
 
-.login-button:hover {
-  color: #000000;
-  border: 2px solid #000000;
+  &:hover {
+    color: #000000;
+    border-color: #000000;
+  }
 }
 
 .page-footer {
   position: fixed;
   bottom: 0;
   right: 0;
-  padding: 1rem 1rem;
-  font-size: 1rem;
+  padding: clamp(0.6rem, 2vw, 1rem);
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
   color: #444;
-  background-color: transparent; 
+  background-color: transparent;
+  z-index: 50;
 }

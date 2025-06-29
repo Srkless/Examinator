@@ -6,19 +6,21 @@ body {
 }
 
 .container {
-  max-width: calc(100% - 500px);
-  margin: 0 auto;
+  padding-left: 25%;
+  padding-right: 25%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .main-content {
-  padding: 2rem;
+  padding: 3% 15%;
 }
 
 .subject-row {
   display: flex;
   align-items: flex-start;
-  gap: 3rem;
-  margin-bottom: 3rem;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  margin-bottom: clamp(1.5rem, 3vw, 3rem);
 }
 .subject-row .field {
   display: flex;
@@ -28,14 +30,14 @@ body {
   font-weight: 500;
   margin-bottom: 0.4rem;
   color: #333;
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
 }
 .subject-row .field input,
 .subject-row .field select {
   padding: 0.5rem 0.8rem;
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
   border: 1px solid #dcdcdc;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   line-height: 1.2;
   background-color: #fff;
 }
@@ -55,28 +57,30 @@ body {
   border-color: #F88E4A;
 }
 .subject-row .field-subject {
-  width: 400px;
+  width: clamp(18.75rem, 30vw, 25rem);
 }
 .subject-row .field-year {
-  width: 140px;
+  width: clamp(6.25rem, 10vw, 8.75rem);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.5rem, 1vw, 1rem);
 }
 .section-header h2 {
   margin: 0;
+  color: #333;
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
 }
 .section-header .add-button {
-  width: 150px;
+  width: clamp(100px, 15vw, 150px);
   padding: 0.6rem 1.2rem;
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
   font-weight: 500;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
   background-color: #F88E4A;
   color: #fff;
@@ -86,32 +90,33 @@ body {
 }
 
 .formule-section {
-  margin-top: 6rem;
+  margin-top: clamp(3rem, 6vw, 6rem);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1rem 0;
+  margin: clamp(0.5rem, 1vw, 1rem) 0;
 }
 table th, table td {
-  padding: 0.75rem 1rem;
+  padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.75rem, 1.5vw, 1rem);
   border: 1px solid #dcdcdc;
   text-align: center;
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
 }
 table .action-column {
-  width: 150px;
+  width: clamp(6.25rem, 15vw, 9.375rem);
   text-align: center;
   white-space: nowrap;
 }
 table .action-column .material-icons {
-  font-size: 20px;
-  margin: 0 15px;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  margin: 0 clamp(0.5rem, 1vw, 0.9rem);
   color: #333;
   cursor: pointer;
   transition: color 0.2s ease, background-color 0.2s ease;
-  padding: 4px;
-  border-radius: 4px;
+  padding: clamp(0.125rem, 0.5vw, 0.25rem);
+  border-radius: clamp(0.125rem, 0.5vw, 0.25rem);
 }
 table .action-column .material-icons:hover {
   color: #F88E4A;
@@ -119,41 +124,41 @@ table .action-column .material-icons:hover {
 
 .no-data {
   color: #666;
-  font-size: 1rem;
-  margin: 1rem 0;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  margin: clamp(0.5rem, 1vw, 1rem) 0;
 }
 
 dialog {
-  width: 500px;
-  min-height: 250px;
+  width: clamp(18.75rem, 40vw, 31.25rem);
+  min-height: clamp(15rem, 25vw, 15.625rem);
   padding: 0;
   border: none;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.625rem;
+  box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
   font-family: "Roboto", sans-serif;
 }
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.3);
 }
 dialog form {
-  padding: 1.5rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: clamp(0.3rem, 1vw, 0.5rem);
 }
 dialog form label {
   display: flex;
   flex-direction: column;
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
   color: #444;
   font-weight: 500;
 }
 dialog form input, dialog form textarea {
   margin-top: 0.1rem;
-  padding: 0.5rem 0.8rem;
+  padding: clamp(0.4rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.8rem);
   border: 1px solid #dcdcdc;
-  border-radius: 5px;
-  font-size: 0.9rem;
+  border-radius: 0.3125rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
 }
 dialog form input:focus, dialog form textarea:focus {
   outline: none;
@@ -162,16 +167,16 @@ dialog form input:focus, dialog form textarea:focus {
 dialog form .buttons {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  gap: clamp(0.8rem, 2vw, 1.5rem);
+  margin-top: clamp(0.8rem, 2vw, 1rem);
 }
 dialog form .buttons button {
-  width: 120px;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
+  width: clamp(100px, 15vw, 120px);
+  padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
   font-weight: 500;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
   background-color: #F88E4A;
   color: #fff;
@@ -183,15 +188,15 @@ dialog form .dialog-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.5rem, 1vw, 1rem);
   border-bottom: 1px solid #dcdcdc;
-  padding-bottom: 0.5rem;
-  height: 30px;
+  padding-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+  height: clamp(1.5rem, 3vw, 1.875rem);
   box-sizing: border-box;
 }
 dialog form .dialog-header h3 {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.92rem);
   color: #888;
   font-weight: 400;
 }
@@ -201,26 +206,26 @@ dialog form .dialog-header .close-btn {
   cursor: pointer;
 }
 dialog form .dialog-header .close-btn .material-icons {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
 }
 
 .inline-buttons span {
   display: block;
   font-weight: 500;
-  margin-bottom: 0.4rem;
+  margin-bottom: clamp(0.25rem, 0.5vw, 0.4rem);
 }
 .inline-buttons .group {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: clamp(0.25rem, 0.5vw, 0.5rem);
 }
 .inline-buttons .group button {
-  width: 60px;
-  padding: 0.4rem 0.4rem;
-  font-size: 1rem;
+  width: clamp(2.5rem, 8vw, 3.75rem);
+  padding: clamp(0.25rem, 0.5vw, 0.4rem);
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
   font-weight: 500;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
   background-color: #F88E4A;
   color: #fff;
@@ -230,10 +235,10 @@ dialog form .dialog-header .close-btn .material-icons {
 }
 
 .warning-dialog {
-  width: 500px;
+  width: clamp(18.75rem, 40vw, 31.25rem);
   border: none;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border-radius: clamp(0.5rem, 1vw, 0.625rem);
+  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.2);
   font-family: "Roboto", sans-serif;
   padding: 0;
 }
@@ -241,23 +246,23 @@ dialog form .dialog-header .close-btn .material-icons {
   background: rgba(0, 0, 0, 0.3);
 }
 .warning-dialog .warning-form {
-  padding: 1.5rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: clamp(0.8rem, 2vw, 1.2rem);
   color: #1f1f1f;
 }
 .warning-dialog .warning-form .dialog-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid #dcdcdc;
-  padding-bottom: 0.5rem;
+  margin-bottom: clamp(0.3rem, 1vw, 0.5rem);
+  border-bottom: 0.0625rem solid #dcdcdc;
+  padding-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
 }
 .warning-dialog .warning-form .dialog-header h3 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.8vw, 0.95rem);
   color: #e53935;
   font-weight: 500;
 }
@@ -267,37 +272,37 @@ dialog form .dialog-header .close-btn .material-icons {
   cursor: pointer;
 }
 .warning-dialog .warning-form .dialog-header .close-btn .material-icons {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
 }
 .warning-dialog .warning-form .warning-content {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
 }
 .warning-dialog .warning-form .warning-content .warning-icon {
-  font-size: 52px;
+  font-size: clamp(2.25rem, 6vw, 3.25rem);
   color: #e53935;
   flex-shrink: 0;
 }
 .warning-dialog .warning-form .warning-content p {
   margin: 0;
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
   color: #444;
   line-height: 1.4;
 }
 .warning-dialog .warning-form .buttons {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  gap: clamp(0.8rem, 2vw, 1.5rem);
+  margin-top: clamp(0.8rem, 2vw, 1rem);
 }
 .warning-dialog .warning-form .buttons button {
-  width: 120px;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
+  width: clamp(6.25rem, 15vw, 7.5rem);
+  padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
   font-weight: 500;
   border: none;
-  border-radius: 10px;
+  border-radius: clamp(0.5rem, 1vw, 0.625rem);
   cursor: pointer;
 }
 .warning-dialog .warning-form .buttons .cancel-btn {
