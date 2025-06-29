@@ -5,6 +5,7 @@ import HeaderComponent from "./HeaderComponent";
 
 import '../styles/activities.scss';
 import { addActivity, deleteActivity, getYears, updateActivity } from "../services/ActivityService";
+import { addFormula, deleteFormula, updateFormula } from "../services/FormulaService";
 
 function ActivitiesForm() {
 
@@ -22,8 +23,6 @@ function ActivitiesForm() {
     const [activities, setActivities] = useState([])
     const [formulas, setFormulas] = useState([])
 
-    const [activityDialogOpen, setActivityDialogOpen] = useState(false)
-    const [formulaDialogOpen, setFormulaDialogOpen] = useState(false)
     const [schoolYears, setSchoolYears] = useState(new Set())
     const [selectedYear, setSelectedYear] = useState(0)
     const [subjectJson, setSubjectJson] = useState('')
@@ -31,7 +30,6 @@ function ActivitiesForm() {
     const [activityName, setActivityName] = useState('')
     const [activityShortName, setActivityShortName] = useState('')
     const [activityMaxPoints, setActivityMaxPoints] = useState('')
-    const [subjectId, setSubjectId] = useState(null)
     const [isEditActivity, setIsEditActivity] = useState(false)
     const [isDeleteActivity, setIsDeleteActivity] = useState(false)
     const [isEditFormula, setIsEditFormula] = useState(false)
@@ -42,6 +40,8 @@ function ActivitiesForm() {
     const [formulaExpression, setFormulaExpression] = useState('')
     const [formulaName, setFormulaName] = useState('')
     const [reload, setReload] = useState(false)
+    const [activityDialogText, setActivityDialogText] = useState('Dodavanje nove aktivnosti')
+    const [formulaDialogText, setFormulaDialogText] = useState('Dodavanje nove formule')
 
 
 
@@ -59,9 +59,7 @@ function ActivitiesForm() {
         if (form) {
             form.reset();
         }
-        setIsEditActivity(false)
-        setIsDeleteActivity(false)
-        setEditingActivity(null)
+
     }
     const openActivityDialog = () => {
         setIsEditActivity(false)
@@ -70,6 +68,7 @@ function ActivitiesForm() {
         setActivityName('')
         setActivityShortName('')
         setActivityMaxPoints('')
+        setActivityDialogText('Dodavanje nove aktivnosti')
         activityDialogRef.current?.showModal()
     }
 
@@ -78,6 +77,7 @@ function ActivitiesForm() {
         setEditingFormula(null)
         setFormulaName('')
         setFormulaExpression('')
+        setFormulaDialogText("Dodavanje nove formule")
         formulaDialogRef.current?.showModal()
     }
 
@@ -92,6 +92,7 @@ function ActivitiesForm() {
             setActivityName(activity.name)
             setActivityShortName(activity.shortName)
             setActivityMaxPoints(activity.maxPoints)
+            setActivityDialogText("Uređivanje aktivnosti")
             activityDialogRef.current?.showModal()
         } else {
             setIsDeleteActivity(true)
@@ -113,8 +114,10 @@ function ActivitiesForm() {
             setEditingFormula(formula)
             setFormulaName(formula.name)
             setFormulaExpression(formula.expression)
+            setFormulaDialogText("Uređivanje formule")
             formulaDialogRef.current?.showModal()
         } else {
+            setEditingFormula(formula)
             setIsDeleteFormula(true)
             setWarningDialogText("Jeste li sigurni ?")
 
@@ -242,28 +245,39 @@ function ActivitiesForm() {
         e.preventDefault()
         try {
             if (isEditActivity) {
-                await updateActivity(activityId, activityName, activityShortName, activityMaxPoints, selectedYear, subjectJson)
-                const updatedActivites = [...activities]
-                // setActivities(prev => prev.map(act =>
-                //     act.id === editingActivity.id
-                //         ? { ...act, name: activityName, shortName: activityShortName, maxPoints: parseInt(activityMaxPoints) }
-                //         : act
-                // ))
+                try {
+                    await updateActivity(activityId, activityName, activityShortName, activityMaxPoints, selectedYear, subjectJson)
+                    setIsEditActivity(false)
+                    setIsDeleteActivity(false)
+                    setEditingActivity(null)
 
-                console.log('editing activity')
+                } catch (error) {
+                    console.log(error)
+                }
+
                 setReload(true)
                 closeDialog(activityDialogRef)
 
             } else if (isDeleteActivity) {
-                console.log('deleting activity')
-                await deleteActivity(editingActivity.id)
-                // setActivities(prev =>
-                //     prev.filter(act => act.id !== editingActivity.id));
+                try {
+                    await deleteActivity(editingActivity.id)
+                    setIsEditActivity(false)
+                    setIsDeleteActivity(false)
+                    setEditingActivity(null)
+                } catch (error) {
+                    console.log(error)
+                }
                 setReload(true)
                 closeDialog(warningDialogRef)
             } else {
-                console.log('adding activity')
-                await addActivity(activityName, activityShortName, activityMaxPoints, selectedYear, code);
+                try {
+                    await addActivity(activityName, activityShortName, activityMaxPoints, selectedYear, code);
+                    setIsEditActivity(false)
+                    setIsDeleteActivity(false)
+                    setEditingActivity(null)
+                } catch (error) {
+                    console.log(error)
+                }
                 setReload(true)
                 closeDialog(activityDialogRef)
             }
@@ -279,12 +293,45 @@ function ActivitiesForm() {
         try {
 
             if (isEditFormula) {
-                console.log('formula edit')
+                console.log('edit formula')
+
+                try {
+
+                    await updateFormula(editingFormula.id, formulaName, formulaExpression, selectedYear, subjectJson)
+                    closeDialog(formulaDialogRef)
+                    setIsEditFormula(false)
+                    setEditingFormula(null)
+                    setIsDeleteFormula(false)
+                } catch (error) {
+                    console.log(error)
+                }
+                setReload(true)
             } else if (isDeleteFormula) {
-                console.log('formula delete')
+                console.log('delete formula')
+                try {
+                    await deleteFormula(editingFormula.id)
+                    setIsEditFormula(false)
+                    setEditingFormula(null)
+                    setIsDeleteFormula(false)
+                } catch (error) {
+                    console.log(error)
+                }
+                setReload(true)
                 closeDialog(warningDialogRef)
             } else {
+                try {
+                    console.log('add formual')
+                    await addFormula(formulaName, formulaExpression, selectedYear, code);
+                    setIsEditFormula(false)
+                    setEditingFormula(null)
+                    setIsDeleteFormula(false)
 
+                } catch (error) {
+                    console.log(error)
+                }
+
+                setReload(true)
+                closeDialog(formulaDialogRef)
                 console.log('formula add')
             }
 
@@ -399,7 +446,7 @@ function ActivitiesForm() {
             <dialog id="activityDialog" ref={activityDialogRef}>
                 <form method="dialog" id="activityForm" onSubmit={handleSubmitActivity}>
                     <div className="dialog-header">
-                        <h3>Dodavanje nove aktivnosti</h3>
+                        <h3>{activityDialogText}</h3>
                         <button type="button" id="closeActivityDialog" className="close-btn" onClick={() => closeDialog(activityDialogRef)}>
                             <span className="material-icons">close</span>
                         </button>
@@ -420,7 +467,7 @@ function ActivitiesForm() {
             <dialog id="formulaDialog" ref={formulaDialogRef} onCancel={() => closeDialog(formulaDialogRef)}>
                 <form method="dialog" id="formulaForm" onSubmit={handleSubmitFormula}>
                     <div className="dialog-header">
-                        <h3>Dodavanje nove formule</h3>
+                        <h3>{formulaDialogText}</h3>
                         <button type="button" id="closeFormulaDialog" className="close-btn" onClick={() => closeDialog(formulaDialogRef)}>
                             <span className="material-icons">close</span>
                         </button>

@@ -1,7 +1,7 @@
-const API_URL = 'http://localhost:8080/api/activity';
+const API_URL = 'http://localhost:8080/api/formula';
 
 
-export async function addActivity(name, shortName, maxPoints, schoolYear, subjectCode) {
+export async function addFormula(name, expression, schoolYear, subjectCode) {
 
 
 
@@ -11,10 +11,10 @@ export async function addActivity(name, shortName, maxPoints, schoolYear, subjec
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
         },
-        body: JSON.stringify({ name, shortName, maxPoints: Number(maxPoints), schoolYear: Number(schoolYear), subjectCode })
+        body: JSON.stringify({ name, expression, schoolYear: Number(schoolYear), subjectCode })
     })
     console.log(res)
-    console.log(JSON.stringify({ name, shortName, maxPoints: Number(maxPoints), schoolYear, subjectCode }))
+    console.log(JSON.stringify({ name, expression, schoolYear, subjectCode }))
 
     const contentType = res.headers.get('Content-Type')
     const isJson = contentType && contentType.includes('application/json')
@@ -30,22 +30,27 @@ export async function addActivity(name, shortName, maxPoints, schoolYear, subjec
 
     if (!res.ok) {
         const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
-        throw new Error(`Greška pri dodavanju aktivnosti: ${message}`)
+        throw new Error(`Greška pri dodavanju formule: ${message}`)
 
     }
     console.log(data)
     return data;
 }
-export async function updateActivity(id, name, shortName, maxPoints, schoolYear, subject) {
+
+
+
+
+export async function updateFormula(id, name, expression, schoolYear, subject) {
     const res = await fetch(`${API_URL}/update`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
         },
-        body: JSON.stringify({ id, name, shortName, maxPoints: Number(maxPoints), schoolYear, subject })
+        body: JSON.stringify({ id, name, expression, schoolYear, subject })
 
     })
+    console.log(JSON.stringify({ id, name, expression, schoolYear, subject }))
     const bodyText = await res.text();
     const contentType = res.headers.get('Content-Type')
     const isJson = contentType && contentType.includes('application/json')
@@ -59,13 +64,12 @@ export async function updateActivity(id, name, shortName, maxPoints, schoolYear,
     console.log(bodyText)
     if (!res.ok) {
         const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
-        throw new Error(`Greška pri azuriranju aktivnosti: ${message}`)
+        throw new Error(`Greška pri azuriranju formule: ${message}`)
 
     }
 
 }
-
-export async function deleteActivity(id) {
+export async function deleteFormula(id) {
     console.log('pozvan delete')
     const res = await fetch(`${API_URL}/delete/${id}`, {
 
@@ -87,44 +91,9 @@ export async function deleteActivity(id) {
 
     if (!res.ok) {
         const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
-        throw new Error(`Greška pri brisanju aktivnosti: ${message}`)
+        throw new Error(`Greška pri brisanju formule: ${message}`)
 
     }
 
 
 }
-export async function getYears(code) {
-
-    const res = await fetch(`${API_URL}/years/${code}`, {
-
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-    })
-    const contentType = res.headers.get('Content-Type');
-    const isJson = contentType && contentType.includes('application/json');
-
-    const bodyText = await res.text();
-
-    let data;
-    try {
-        data = isJson ? JSON.parse(bodyText) : bodyText;
-    } catch {
-        data = bodyText;
-    }
-
-    if (!res.ok) {
-        const message =
-            typeof data === 'string'
-                ? data
-                : data.message || JSON.stringify(data);
-        throw new Error(`Greška pri dohvatanju godina: ${message}`);
-    }
-
-    return data;
-
-}
-
-

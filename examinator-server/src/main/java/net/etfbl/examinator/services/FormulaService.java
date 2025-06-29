@@ -50,4 +50,55 @@ public class FormulaService {
         formulaRepository.save(formula);
         return Optional.of(formula);
     }
+
+    public void delete(Integer id) {
+        if (!formulaRepository.existsById(id)) {
+            throw new RuntimeException("Formula with ID " + id + " does not exist");
+        }
+        formulaRepository.deleteById(id);
+    }
+
+    public Optional<Formula> getById(Integer id) {
+        return formulaRepository.findById(id);
+    }
+
+    public Formula update(Formula updated) {
+
+        Integer id = updated.getId();
+        Integer subjectId = updated.getSubject().getId();
+        System.out.println(subjectId);
+
+        Optional<Formula> optionalFormula = formulaRepository.findById(id);
+
+        if (optionalFormula.isEmpty()) {
+            throw new RuntimeException("Formula not found");
+        }
+
+        Formula existingFormula = optionalFormula.get();
+
+        Optional<Subject> optionalSubject = subjectRepository.findById(subjectId);
+        if (optionalSubject.isEmpty()) {
+            throw new IllegalArgumentException("Subject not found");
+        }
+
+        Subject existingSubject = optionalSubject.get();
+        boolean nameConflict = formulaRepository.existsByNameAndSubjectIdAndSchoolYear(updated.getName(), subjectId,
+                updated.getSchoolYear());
+        boolean expressionConflict = formulaRepository.existsByExpressionAndSubjectIdAndSchoolYear(
+                updated.getExpression(), subjectId, updated.getSchoolYear());
+
+        // if (nameConflict) {
+        // throw new IllegalArgumentException("Formula with the same name already
+        // exists");
+        // }
+        if (expressionConflict) {
+            throw new IllegalArgumentException("Formula with the same expression already exists");
+        }
+
+        existingFormula.setName(updated.getName());
+        existingFormula.setExpression(updated.getExpression());
+
+        return formulaRepository.save(existingFormula);
+
+    }
 }
