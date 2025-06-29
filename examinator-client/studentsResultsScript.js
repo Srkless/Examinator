@@ -18,6 +18,10 @@ const paginationControls = document.getElementById("paginationControls");
 const paginationInfo = document.getElementById("paginationInfo");
 const rowsPerPageSelect = document.getElementById("rowsPerPage");
 
+const alertBox = document.getElementById("missingStudentsAlert");
+const alertMessage = document.getElementById("missingStudentsMessage");
+const closeAlert = document.querySelector(".close-alert");
+
 // Meni korisnika
 userIcon.addEventListener("click", () => {
   dropdownMenu.classList.toggle("show");
@@ -314,3 +318,73 @@ document.addEventListener("DOMContentLoaded", () => {
     createCheckbox(formula, formulaOptionsContainer);
   });
 });
+
+
+// Scroll funkcionalnost
+const goTopBtn = document.getElementById("goTopBtn");
+const goBottomBtn = document.getElementById("goBottomBtn");
+
+let lastScrollTop = 0;
+
+window.addEventListener("scroll", () => {
+  const st = window.pageYOffset || document.documentElement.scrollTop;
+
+  if (st > 100) {
+    if (st > lastScrollTop) {
+      // Scroll-uje se naniže
+      goTopBtn.style.display = "none";
+      goBottomBtn.style.display = "block";
+    } else {
+      // Scroll-uje se nagore
+      goBottomBtn.style.display = "none";
+      goTopBtn.style.display = "block";
+    }
+  } else {
+    // Vrh stranice - sakrij oba dugmeta
+    goTopBtn.style.display = "none";
+    goBottomBtn.style.display = "none";
+  }
+
+  lastScrollTop = st <= 0 ? 0 : st; 
+});
+
+goTopBtn.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+goBottomBtn.addEventListener("click", () => {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+});
+
+
+// Poruka kada nema studenata u bazi
+function showMissingStudentsAlert(indeksi) {
+  if (!indeksi.length) {
+    alertBox.classList.add("hidden");
+    return;
+  }
+
+  alertMessage.textContent = `Za sledeće studente nema informacija u bazi: ${indeksi.join(', ')}`;
+  alertBox.classList.remove("hidden");
+}
+
+// zatvaranje obavjestenja
+closeAlert.addEventListener("click", () => {
+  alertBox.classList.add("hidden");
+});
+
+generateBtn.addEventListener('click', () => {
+  currentPage = 1;
+
+  // Simulacija: validni indeksi su oni u studentsData
+  const validIndexes = studentsData.map(s => s.Indeks);
+  
+  // Simulacija svih studenata koji su "trebali biti u tabeli"
+  const allIndexes = ["201/23", "202/23", "203/23", "204/23", "250/23", "299/23"]; 
+
+  const missingIndexes = allIndexes.filter(indeks => !validIndexes.includes(indeks));
+  
+  showMissingStudentsAlert(missingIndexes);
+  renderTable();
+});
+
