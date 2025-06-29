@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:8080/api/activity';
 
 
-export async function addActivity(name, shortName, maxPoints, schoolYear, subject) {
+export async function addActivity(name, shortName, maxPoints, schoolYear, subjectCode) {
 
 
 
@@ -11,9 +11,10 @@ export async function addActivity(name, shortName, maxPoints, schoolYear, subjec
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
         },
-        body: JSON.stringify({ name, shortName, maxPoints: Number(maxPoints), schoolYear, subject })
+        body: JSON.stringify({ name, shortName, maxPoints: Number(maxPoints), schoolYear: Number(schoolYear), subjectCode })
     })
     console.log(res)
+    console.log(JSON.stringify({ name, shortName, maxPoints: Number(maxPoints), schoolYear, subjectCode }))
 
     const contentType = res.headers.get('Content-Type')
     const isJson = contentType && contentType.includes('application/json')
@@ -34,8 +35,6 @@ export async function addActivity(name, shortName, maxPoints, schoolYear, subjec
     }
     console.log(data)
     return data;
-
-
 }
 export async function updateActivity(id, name, shortName, maxPoints, schoolYear, subject) {
     const res = await fetch(`${API_URL}/update`, {
@@ -48,6 +47,15 @@ export async function updateActivity(id, name, shortName, maxPoints, schoolYear,
 
     })
     const bodyText = await res.text();
+    const contentType = res.headers.get('Content-Type')
+    const isJson = contentType && contentType.includes('application/json')
+    let data
+    try {
+        data = isJson ? JSON.parse(bodyText) : bodyText
+    } catch {
+        data = bodyText
+    }
+
     console.log(bodyText)
     if (!res.ok) {
         const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
@@ -58,6 +66,7 @@ export async function updateActivity(id, name, shortName, maxPoints, schoolYear,
 }
 
 export async function deleteActivity(id) {
+    console.log('pozvan delete')
     const res = await fetch(`${API_URL}/delete/${id}`, {
 
         method: 'DELETE',
@@ -66,6 +75,15 @@ export async function deleteActivity(id) {
             Authorization: `Bearer ${localStorage.getItem('token')}`, // <-- ispravljeno!
         }
     })
+    const bodyText = await res.text();
+    const contentType = res.headers.get('Content-Type')
+    const isJson = contentType && contentType.includes('application/json')
+    let data
+    try {
+        data = isJson ? JSON.parse(bodyText) : bodyText
+    } catch {
+        data = bodyText
+    }
 
     if (!res.ok) {
         const message = typeof data === 'string' ? data : data.message || JSON.stringify(data)
@@ -73,6 +91,39 @@ export async function deleteActivity(id) {
 
     }
 
+
+}
+export async function getYears(code) {
+
+    const res = await fetch(`${API_URL}/years/${code}`, {
+
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    })
+    const contentType = res.headers.get('Content-Type');
+    const isJson = contentType && contentType.includes('application/json');
+
+    const bodyText = await res.text();
+
+    let data;
+    try {
+        data = isJson ? JSON.parse(bodyText) : bodyText;
+    } catch {
+        data = bodyText;
+    }
+
+    if (!res.ok) {
+        const message =
+            typeof data === 'string'
+                ? data
+                : data.message || JSON.stringify(data);
+        throw new Error(`Greška pri dohvatanju godina: ${message}`);
+    }
+
+    return data;
 
 }
 
