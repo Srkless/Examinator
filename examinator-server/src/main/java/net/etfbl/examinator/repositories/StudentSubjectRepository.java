@@ -24,12 +24,12 @@ public interface StudentSubjectRepository extends JpaRepository<StudentSubject, 
     @Query("SELECT ss FROM StudentSubject ss WHERE ss.subject.code = :code")
     List<StudentSubject> findAllBySubjectCode(@Param("code") Integer code);
 
-    Page<StudentSubject> findAllBySubjectId(Integer subjectId, Pageable pageable);
-
     @Query(
             "SELECT DISTINCT ss.schoolYear FROM StudentSubject ss WHERE ss.subject.id = :subjectId"
-                    + " ORDER BY ss.schoolYear")
+                + " ORDER BY ss.schoolYear DESC")
     List<Integer> findDistinctSchoolYearsBySubjectId(@Param("subjectId") Integer subjectId);
+
+    Page<StudentSubject> findAllBySubjectId(Integer subjectId, Pageable pageable);
 
     List<StudentSubject> findByIndexInAndSubjectCode(List<String> indexes, Integer subjectCode);
 }

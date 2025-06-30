@@ -29,15 +29,15 @@ public class StudentSubjectService {
     @Autowired private SubjectRepository subjectRepository;
 
     public StudentSubject addStudentToSubject(StudentSubject studentSubject) {
-        Integer subjectId = studentSubject.getSubject().getId();
+        Integer subjectCode = studentSubject.getSubject().getCode();
 
         Subject subject =
                 subjectRepository
-                        .findById(subjectId)
+                        .findByCode(subjectCode)
                         .orElseThrow(
                                 () ->
                                         new IllegalArgumentException(
-                                                "Subject with ID " + subjectId + " not found"));
+                                                "Subject with code " + subjectCode + " not found"));
 
         studentSubject.setSubject(subject);
 
@@ -53,7 +53,6 @@ public class StudentSubjectService {
     }
 
     public List<Integer> getAllSubjectStudentYears(Integer subjectCode) {
-
         Subject subj =
                 subjectRepository
                         .findByCode(subjectCode)
@@ -91,8 +90,31 @@ public class StudentSubjectService {
                                         new IllegalArgumentException(
                                                 "StudentSubject with ID " + id + " not found"));
 
+        // existing.setIndex(updated.getIndex());
+        // existing.setSubject(updated.getSubject());
+        //
+        // return studentSubjectRepository.save(existing);
+        // Update all relevant fields
         existing.setIndex(updated.getIndex());
-        existing.setSubject(updated.getSubject());
+        existing.setSchoolYear(updated.getSchoolYear());
+        existing.setFirstName(updated.getFirstName());
+        existing.setLastName(updated.getLastName());
+        existing.setGroup(updated.getGroup());
+        existing.setNote(updated.getNote());
+
+        // Handle Subject by code
+        if (updated.getSubject() != null && updated.getSubject().getCode() != null) {
+            Subject subject =
+                    subjectRepository
+                            .findByCode(updated.getSubject().getCode())
+                            .orElseThrow(
+                                    () ->
+                                            new IllegalArgumentException(
+                                                    "Subject with code "
+                                                            + updated.getSubject().getCode()
+                                                            + " not found"));
+            existing.setSubject(subject);
+        }
 
         return studentSubjectRepository.save(existing);
     }
@@ -125,6 +147,17 @@ public class StudentSubjectService {
                                                         .contains(schoolYearQuery))
                         .collect(Collectors.toList());
 
+        if (pageable.getSort().isSorted()) {
+            String sortField = pageable.getSort().iterator().next().getProperty();
+            boolean isDesc = pageable.getSort().iterator().next().isDescending();
+            filtered.sort(
+                    (a, b) -> {
+                        Comparable valueA = getFieldValue(a, sortField);
+                        Comparable valueB = getFieldValue(b, sortField);
+                        int result = valueA.compareTo(valueB);
+                        return isDesc ? -result : result;
+                    });
+        }
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), filtered.size());
 
@@ -214,5 +247,25 @@ public class StudentSubjectService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload students: " + e.getMessage(), e);
         }
+    }
+
+    public void delete(Integer id) {
+        if (!studentSubjectRepository.existsById(id)) {
+            throw new RuntimeException("Student with ID " + id + " does not exist");
+        }
+
+        studentSubjectRepository.deleteById(id);
+    }
+
+    private Comparable getFieldValue(StudentSubject student, String field) {
+        return switch (field) {
+            case "firstName" -> student.getFirstName();
+            case "lastName" -> student.getLastName();
+            case "index" -> student.getIndex();
+            case "group" -> student.getGroup();
+            case "schoolYear" -> student.getSchoolYear();
+            case "id" -> student.getId();
+            default -> student.getIndex();
+        };
     }
 }

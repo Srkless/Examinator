@@ -4,7 +4,8 @@ import { useState, useEffect, use, useRef } from 'react'
 import HeaderComponent from "./HeaderComponent";
 
 import '../styles/activities.scss';
-import { addActivity, deleteActivity, updateActivity } from "../services/ActivityService";
+import { addActivity, deleteActivity, getYears, updateActivity } from "../services/ActivityService";
+import { addFormula, deleteFormula, updateFormula } from "../services/FormulaService";
 
 function ActivitiesForm() {
 
@@ -22,8 +23,6 @@ function ActivitiesForm() {
     const [activities, setActivities] = useState([])
     const [formulas, setFormulas] = useState([])
 
-    const [activityDialogOpen, setActivityDialogOpen] = useState(false)
-    const [formulaDialogOpen, setFormulaDialogOpen] = useState(false)
     const [schoolYears, setSchoolYears] = useState(new Set())
     const [selectedYear, setSelectedYear] = useState(0)
     const [subjectJson, setSubjectJson] = useState('')
@@ -31,11 +30,18 @@ function ActivitiesForm() {
     const [activityName, setActivityName] = useState('')
     const [activityShortName, setActivityShortName] = useState('')
     const [activityMaxPoints, setActivityMaxPoints] = useState('')
-    const [subjectId, setSubjectId] = useState(null)
-    const [isEdit, setIsEdit] = useState(false)
-    const [isDelete, setIsDelete] = useState(false)
+    const [isEditActivity, setIsEditActivity] = useState(false)
+    const [isDeleteActivity, setIsDeleteActivity] = useState(false)
+    const [isEditFormula, setIsEditFormula] = useState(false)
+    const [isDeleteFormula, setIsDeleteFormula] = useState(false)
     const [editingActivity, setEditingActivity] = useState(null)
+    const [editingFormula, setEditingFormula] = useState(null)
     const [warningDialogText, setWarningDialogText] = useState('')
+    const [formulaExpression, setFormulaExpression] = useState('')
+    const [formulaName, setFormulaName] = useState('')
+    const [reload, setReload] = useState(false)
+    const [activityDialogText, setActivityDialogText] = useState('Dodavanje nove aktivnosti')
+    const [formulaDialogText, setFormulaDialogText] = useState('Dodavanje nove formule')
 
 
 
@@ -53,40 +59,75 @@ function ActivitiesForm() {
         if (form) {
             form.reset();
         }
-        setIsEdit(false)
-        setIsDelete(false)
-        setEditingActivity(null)
-    }
-    const openActivityDialog = (activity = null) => {
 
-        if (activity) {
-            setIsEdit(true);
+    }
+    const openActivityDialog = () => {
+        setIsEditActivity(false)
+        setEditingActivity(null)
+        setActivityId('')
+        setActivityName('')
+        setActivityShortName('')
+        setActivityMaxPoints('')
+        setActivityDialogText('Dodavanje nove aktivnosti')
+        activityDialogRef.current?.showModal()
+    }
+
+    const openFormulaDialog = () => {
+        setIsEditFormula(false)
+        setEditingFormula(null)
+        setFormulaName('')
+        setFormulaExpression('')
+        setFormulaDialogText("Dodavanje nove formule")
+        formulaDialogRef.current?.showModal()
+    }
+
+
+    const handleActivityClick = (activity = null, update = true) => {
+
+        if (update) {
+            setIsEditActivity(true)
+            setIsDeleteActivity(false)
             setEditingActivity(activity)
             setActivityId(activity.id)
             setActivityName(activity.name)
             setActivityShortName(activity.shortName)
             setActivityMaxPoints(activity.maxPoints)
+            setActivityDialogText("Uređivanje aktivnosti")
+            activityDialogRef.current?.showModal()
         } else {
-            setIsEdit(false)
-            setEditingActivity(null)
-            setActivityId('')
-            setActivityName('')
-            setActivityShortName('')
-            setActivityMaxPoints('')
+            setIsDeleteActivity(true)
+            setEditingActivity(activity)
+            if (activity.results.length !== 0) {
+
+                setWarningDialogText(`Neki studenti imaju već unesene bodove za ovu aktivnost.\nAko nastavite, svi bodovi će biti trajno obrisani.`)
+            } else {
+                setWarningDialogText("Jeste li sigurni ?")
+            }
+            openWarningDialog(activity, null)
         }
-        activityDialogRef.current?.showModal()
+    }
+
+    const handleFormulaClick = (formula = null, update = true) => {
+        if (update) {
+            setIsEditFormula(true)
+            setIsDeleteFormula(false)
+            setEditingFormula(formula)
+            setFormulaName(formula.name)
+            setFormulaExpression(formula.expression)
+            setFormulaDialogText("Uređivanje formule")
+            formulaDialogRef.current?.showModal()
+        } else {
+            setEditingFormula(formula)
+            setIsDeleteFormula(true)
+            setWarningDialogText("Jeste li sigurni ?")
+
+            openWarningDialog(null, formula)
+        }
     }
 
 
-    const openWarningDialog = (activity) => {
-        setEditingActivity(activity)
-        setIsDelete(true)
-
-        if (activity.results.length === 0) {
-            console.log('nema rezultata za ovu aktivnost')
-        } else console.log('ima rezultata')
+    const openWarningDialog = (activity = null, formula = null) => {
         warningDialogRef.current?.showModal();
-
     }
 
 
@@ -109,82 +150,163 @@ function ActivitiesForm() {
                     name: act.name,
                     code: act.code
                 });
-                setSubjectId(act.id);
             } catch (error) {
                 console.error('Error fetching activities:', error);
             }
         };
 
+
         fetchActivities();
-    }, [code]); // Include 'code' since it's used inside the effect
+        setReload(false)
+    }, [code, reload]); // Include 'code' since it's used inside the effect
+
+
     useEffect(() => {
 
+        const fetchYears = async () => {
+            try {
+
+                const years = await getYears(code)
+                console.log(years)
+                if (years.length == 0) {
+                    const month = new Date().getMonth();
+                    const newYear = new Date().getFullYear()
+                    if (month < 5) {
+                        years.push(newYear - 1)
+                    } else {
+                        years.push(newYear)
+                    }
+                } else {
+                    years.push(years[0] + 1)
+                }
+
+                years.sort((a, b) => b - a)
+                setSchoolYears(years)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchYears()
+    }, [code])
+
+    useEffect(() => {
         subjectRef.current.value = subject
-    }, [])
+    })
+
+
 
     useEffect(() => {
-        setSchoolYears([...new Set(activities.map(activity => activity.schoolYear))].sort((a, b) => b - a))
-    }, [activities])
-
-    useEffect(() => {
-        setSelectedYear(schoolYears[0])
+        if (schoolYears.length > 0) {
+            setSelectedYear(schoolYears[1])
+        }
     }, [schoolYears])
-
 
     const schoolYearChange = (event) => {
         setSelectedYear(event.target.value)
     }
 
-    const handleIconClick = (activity = null, formula = null, update = false) => {
-
-        if (activity && update) {
-            openActivityDialog(activity)
-            return
-        } else {
-            if (activity.results.length !== 0) {
 
 
-                setWarningDialogText(`Neki studenti imaju već unesene bodove za ovu aktivnost.\nAko nastavite, svi bodovi će biti trajno obrisani.`);
-            } else setWarningDialogText("Jeste li sigurni?")
-            openWarningDialog(activity)
-
-        }
-
-    }
-
-    const handleSubmit = async (e) => {
+    const handleSubmitActivity = async (e) => {
         e.preventDefault()
         try {
-            if (isEdit) {
-                await updateActivity(activityId, activityName, activityShortName, activityMaxPoints, selectedYear, subjectJson)
-                const updatedActivites = [...activities]
-                setActivities(prev => prev.map(act =>
-                    act.id === editingActivity.id
-                        ? { ...act, name: activityName, shortName: activityShortName, maxPoints: parseInt(activityMaxPoints) }
-                        : act
-                ))
+            if (isEditActivity) {
+                try {
+                    await updateActivity(activityId, activityName, activityShortName, activityMaxPoints, selectedYear, subjectJson)
+                    setIsEditActivity(false)
+                    setIsDeleteActivity(false)
+                    setEditingActivity(null)
 
+                } catch (error) {
+                    console.log(error)
+                }
 
-            } else if (isDelete) {
-                await deleteActivity(editingActivity.id)
-                setActivities(prev =>
-                    prev.filter(act => act.id !== editingActivity.id) // Remove only after success
-                );
+                setReload(true)
+                closeDialog(activityDialogRef)
+
+            } else if (isDeleteActivity) {
+                try {
+                    await deleteActivity(editingActivity.id)
+                    setIsEditActivity(false)
+                    setIsDeleteActivity(false)
+                    setEditingActivity(null)
+                } catch (error) {
+                    console.log(error)
+                }
+                setReload(true)
                 closeDialog(warningDialogRef)
             } else {
-
-                console.log(subjectId)
-                await addActivity(activityName, activityShortName, activityMaxPoints, selectedYear, subjectJson);
+                try {
+                    await addActivity(activityName, activityShortName, activityMaxPoints, selectedYear, code);
+                    setIsEditActivity(false)
+                    setIsDeleteActivity(false)
+                    setEditingActivity(null)
+                } catch (error) {
+                    console.log(error)
+                }
+                setReload(true)
+                closeDialog(activityDialogRef)
             }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
 
+    const handleSubmitFormula = async (e) => {
 
-            // closeDialog(activityDialogRef)
+        e.preventDefault();
+        try {
+
+            if (isEditFormula) {
+
+                try {
+
+                    await updateFormula(editingFormula.id, formulaName, formulaExpression, selectedYear, subjectJson)
+                    closeDialog(formulaDialogRef)
+                    setIsEditFormula(false)
+                    setEditingFormula(null)
+                    setIsDeleteFormula(false)
+                } catch (error) {
+                    console.log(error)
+                }
+                setReload(true)
+            } else if (isDeleteFormula) {
+                try {
+                    await deleteFormula(editingFormula.id)
+                    setIsEditFormula(false)
+                    setEditingFormula(null)
+                    setIsDeleteFormula(false)
+                } catch (error) {
+                    console.log(error)
+                }
+                setReload(true)
+                closeDialog(warningDialogRef)
+            } else {
+                try {
+                    await addFormula(formulaName, formulaExpression, selectedYear, code);
+                    setIsEditFormula(false)
+                    setEditingFormula(null)
+                    setIsDeleteFormula(false)
+
+                } catch (error) {
+                    console.log(error)
+                }
+
+                setReload(true)
+                closeDialog(formulaDialogRef)
+            }
 
         } catch (error) {
             console.log(error)
         }
     }
+
+    const insertIntoExpression = (shortName) => {
+        setFormulaExpression(formulaExpression + shortName);
+    }
+
+
 
 
     return (
@@ -201,9 +323,9 @@ function ActivitiesForm() {
 
                     <div className="field field-year">
                         <label for="schoolYear">Školska godina</label>
-                        <select id="schoolYear" onChange={schoolYearChange}>
+                        <select id="schoolYear" value={selectedYear} onChange={schoolYearChange}>
                             {Array.from(schoolYears).map(year => (
-                                <option key={year} value={year}>{year}</option>
+                                <option key={year} value={year}>{year} / {year + 1}</option>
                             ))}
                         </select>
                     </div>
@@ -212,10 +334,10 @@ function ActivitiesForm() {
                 <section>
                     <div className="section-header">
                         <h2>Aktivnosti</h2>
-                        <button id="addActivityBtn" className="add-activity-button" onClick={() => openDialog(activityDialogRef)}>Nova aktivnost</button>
+                        <button id="addActivityBtn" className="add-activity-button" onClick={() => openActivityDialog()}>Nova aktivnost</button>
                     </div>
                     <div id="activitiesContainer">
-                        {activities.length > 0 ? (
+                        {activities.filter(activity => activity.schoolYear == selectedYear).length > 0 ? (
                             <table className="activities-page-table">
 
                                 <thead>
@@ -228,13 +350,13 @@ function ActivitiesForm() {
                                 </thead>
                                 <tbody>
                                     {activities.filter(activity => activity.schoolYear == selectedYear).map((activity, i) => (
-                                        <tr>
+                                        <tr key={activity.id}>
                                             <td>{activity.shortName}</td>
                                             <td>{activity.name}</td>
                                             <td>{activity.maxPoints}</td>
                                             <td className="action-column">
-                                                <span className="material-icons" onClick={() => handleIconClick(activity, update)}>edit</span>
-                                                <span className="material-icons" onClick={() => handleIconClick(activity)}>delete</span>
+                                                <span className="material-icons" onClick={() => handleActivityClick(activity)}>edit</span>
+                                                <span className="material-icons" onClick={() => handleActivityClick(activity, false)}>delete</span>
                                             </td>
                                         </tr>
                                     ))}
@@ -250,10 +372,10 @@ function ActivitiesForm() {
                 <section className="formule-section">
                     <div className="section-header">
                         <h2>Formule</h2>
-                        <button id="addFormulaBtn" className="add-activity-button" onClick={() => openDialog(formulaDialogRef)}>Nova formula</button>
+                        <button id="addFormulaBtn" className="add-activity-button" onClick={() => openFormulaDialog()}>Nova formula</button>
                     </div>
                     <div id="formulasContainer">
-                        {formulas.length > 0 ? (
+                        {formulas.filter(formula => formula.schoolYear == selectedYear).length > 0 ? (
                             <table>
                                 <thead>
                                     <tr>
@@ -264,12 +386,12 @@ function ActivitiesForm() {
                                 </thead>
                                 <tbody>
                                     {formulas.filter(formula => formula.schoolYear == selectedYear).map(formula => (
-                                        <tr>
+                                        <tr key={formula.id}>
                                             <td>{formula.name}</td>
                                             <td>{formula.expression}</td>
                                             <td className="action-column">
-                                                <span className="material-icons">edit</span>
-                                                <span className="material-icons">delete</span>
+                                                <span className="material-icons" onClick={() => handleFormulaClick(formula)}>edit</span>
+                                                <span className="material-icons" onClick={() => handleFormulaClick(formula, false)}>delete</span>
                                             </td>
                                         </tr>
                                     ))}
@@ -284,9 +406,9 @@ function ActivitiesForm() {
             </main>
 
             <dialog id="activityDialog" ref={activityDialogRef}>
-                <form method="dialog" id="activityForm" onSubmit={handleSubmit}>
+                <form method="dialog" id="activityForm" onSubmit={handleSubmitActivity}>
                     <div className="dialog-header">
-                        <h3>Dodavanje nove aktivnosti</h3>
+                        <h3>{activityDialogText}</h3>
                         <button type="button" id="closeActivityDialog" className="close-btn" onClick={() => closeDialog(activityDialogRef)}>
                             <span className="material-icons">close</span>
                         </button>
@@ -305,30 +427,37 @@ function ActivitiesForm() {
             </dialog>
 
             <dialog id="formulaDialog" ref={formulaDialogRef} onCancel={() => closeDialog(formulaDialogRef)}>
-                <form method="dialog" id="formulaForm">
+                <form method="dialog" id="formulaForm" onSubmit={handleSubmitFormula}>
                     <div className="dialog-header">
-                        <h3>Dodavanje nove formule</h3>
+                        <h3>{formulaDialogText}</h3>
                         <button type="button" id="closeFormulaDialog" className="close-btn" onClick={() => closeDialog(formulaDialogRef)}>
                             <span className="material-icons">close</span>
                         </button>
                     </div>
                     <label>Naziv</label>
-                    <input type="text" name="naziv" required />
+                    <input type="text" name="naziv" value={formulaName} onChange={(e) => setFormulaName(e.target.value)} required />
                     <label>Izraz</label>
-                    <textarea name="izraz" required></textarea>
+                    <textarea name="izraz" value={formulaExpression} onChange={(e) => setFormulaExpression(e.target.value)} required></textarea>
                     <div className="inline-buttons">
                         <span>Aktivnosti</span>
-                        <div className="group" id="activityTags"></div>
+                        <div className="group" id="activityTags">
+                            {activities.filter(activity => activity.schoolYear == selectedYear).map((activity, i) => (
+                                <button type="button" className='inline-buttons' onClick={() => insertIntoExpression(activity.shortName)}>{activity.shortName}</button>
+                            ))}
+                        </div>
                     </div>
                     <div className="inline-buttons">
                         <span>Operatori</span>
                         <div className="group" id="operators">
-                            <button type="button">+</button>
-                            <button type="button">*</button>
-                            <button type="button">&lt;</button>
-                            <button type="button">&gt;</button>
-                            <button type="button">AND</button>
-                            <button type="button">OR</button>
+                            <button type="button" onClick={() => insertIntoExpression('+')}>+</button>
+                            <button type="button" onClick={() => insertIntoExpression('-')}>-</button>
+                            <button type="button" onClick={() => insertIntoExpression('*')}>*</button>
+                            <button type="button" onClick={() => insertIntoExpression('<')}>&lt;</button>
+                            <button type="button" onClick={() => insertIntoExpression('>')}>&gt;</button>
+                            <button type="button" onClick={() => insertIntoExpression('&')}>AND</button>
+                            <button type="button" onClick={() => insertIntoExpression('|')}>OR</button>
+                            <button type="button" onClick={() => insertIntoExpression(':')}>:</button>
+                            <button type="button" onClick={() => insertIntoExpression('?')}>?</button>
                         </div>
                     </div>
                     <div className="buttons">
@@ -337,23 +466,24 @@ function ActivitiesForm() {
                     </div>
                 </form>
             </dialog>
-
             <dialog ref={warningDialogRef} id="warningDialog" className="warning-dialog" onCancel={() => closeDialog(warningDialogRef)}>
-                <form className="warning-form" onSubmit={handleSubmit} >
+                <form className="warning-form" onSubmit={
+                    isDeleteFormula ? handleSubmitFormula :
+                        isDeleteActivity ? handleSubmitActivity :
+                            undefined
+                }>
                     <div className="dialog-header">
                         <h3>Upozorenje</h3>
-                        <button type="button" id="closeWarningDialog" className="close-btn" onClick={() => closeDialog(warningDialogRef)} >
+                        <button type="button" id="closeWarningDialog" className="close-btn" onClick={() => closeDialog(warningDialogRef)}>
                             <span className="material-icons">close</span>
                         </button>
                     </div>
-
                     <div className="warning-content">
                         <span className="material-icons warning-icon">warning</span>
                         <p style={{ whiteSpace: 'pre-line' }}>{warningDialogText}</p>
                     </div>
-
                     <div className="buttons">
-                        <button type="button" className="cancel-btn" id="cancelWarning" onClick={() => closeDialog(warningDialogRef)} >Otkaži</button>
+                        <button type="button" className="cancel-btn" id="cancelWarning" onClick={() => closeDialog(warningDialogRef)}>Otkaži</button>
                         <button type="submit" className="confirm-btn" id="confirmDelete">Nastavi</button>
                     </div>
                 </form>

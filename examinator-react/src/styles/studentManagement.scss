@@ -112,6 +112,7 @@
 
       &:hover {
         background-color: var(--accent-color);
+        opacity: 0.8;
       }
     }
 
@@ -169,6 +170,8 @@
       background-repeat: no-repeat;
       background-position: right 0.8rem center;
       background-size: 1.2rem;
+      background-color: var(--background-color);
+      color: var(--text-color);
 
       &:focus {
         outline: none;
@@ -182,7 +185,7 @@
   text-align: center;
   margin-top: 5rem;
   font-size: 1.1rem;
-  color: var(--text-color-bright);
+  color: var(--text-color);
 }
 
 
@@ -203,7 +206,7 @@ table {
     user-select: none;
 
     &:hover {
-      color: var(--primary-color);
+      color: var(--accent-color);
     }
   }
 
@@ -251,7 +254,7 @@ dialog#studentDialog {
       display: flex;
       flex-direction: column;
       font-size: 1rem;
-      color: var(--label-text-color);
+      color: var(--text-color);
       font-weight: 500;
       // margin-bottom: 0.1rem;
     }
@@ -261,6 +264,8 @@ dialog#studentDialog {
       margin-top: 0.1rem;
       padding: 0.5rem 0.8rem;
       border: 1px solid var(--border-color);
+      background-color: var(--background-color);
+      color: var(--text-color);
       border-radius: 5px;
       font-size: 0.9rem;
 
@@ -288,7 +293,8 @@ dialog#studentDialog {
         color: var(--white);
 
         &:hover {
-          background-color: var(--select-color);
+          background-color: var(--accent-color);
+          opacity: 0.8;
         }
       }
     }
@@ -306,7 +312,7 @@ dialog#studentDialog {
       h3 {
         margin: 0;
         font-size: 0.92rem;
-        color: var(--dialog-header-color);
+        color: var(--text-color);
         font-weight: 400;
       }
 
@@ -324,68 +330,71 @@ dialog#studentDialog {
 }
 
 
-// // paginacija
-// #paginationWrapper {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   margin-top: 2rem;
-//   padding-top: 1.5rem;
-//   border-top: 1px solid $border-color; // <---- da li da ostane ili ne pitanje je sada ????
-//
-//   &.hidden {
-//     display: none;
-//   }
-//
-//   #paginationCenter {
-//     display: flex;
-//     align-items: center;
-//     gap: 1.2rem; // veći razmak između strelica i broja
-//     justify-content: center;
-//     flex: 1;
-//   }
-//
-//   #paginationControls {
-//     display: flex;
-//     align-items: center;
-//     gap: 0.8rem;
-//
-//     .material-icons {
-//       font-size: 24px;
-//       cursor: pointer;
-//       color: $text-color;
-//       transition: color 0.3s;
-//
-//       &:hover {
-//         color: $select-color;
-//       }
-//     }
-//   }
-//
-//   #paginationInfo {
-//     font-weight: 500;
-//     color: $text-color;
-//   }
-//
-//   #rowsPerPage {
-//     padding: 0.4rem 0.8rem;
-//     font-size: 1rem;
-//     border: 1px solid $border-color;
-//     border-radius: 6px;
-//     background-color: $bg-color;
-//     appearance: none;
-//     background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-//     background-repeat: no-repeat;
-//     background-position: right 0.8rem center;
-//     background-size: 1rem;
-//     padding-right: 2rem;
-//     cursor: pointer;
-//     margin-left: auto;
-//     width: 110px;
-//
-//     &:focus {
-//       border-color: $select-color;
-//       outline: none;
-//     }
-//   }
-// }
+// paginacija
+#paginationWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color); // <---- da li da ostane ili ne pitanje je sada ????
+
+  color: var(--text-color);
+
+  &.hidden {
+    display: none;
+  }
+
+  #paginationCenter {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem; // veći razmak između strelica i broja
+    justify-content: center;
+    flex: 1;
+  }
+
+  #paginationControls {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    .material-icons {
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-color);
+      transition: color 0.3s;
+
+      &:hover {
+        color: var(--select-color);
+      }
+    }
+  }
+
+  #paginationInfo {
+    font-weight: 500;
+    color: var(--text-color);
+  }
+
+  #rowsPerPage {
+    padding: 0.4rem 0.8rem;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 1rem;
+    padding-right: 2rem;
+    cursor: pointer;
+    margin-left: auto;
+    width: 110px;
+
+    &:focus {
+      border-color: var(--select-color);
+      outline: none;
+    }
+  }
+}

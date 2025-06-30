@@ -7,16 +7,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 
 import net.etfbl.examinator.models.Activity;
+import net.etfbl.examinator.requests.AddActivityRequest;
 import net.etfbl.examinator.services.ActivityService;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,7 +36,7 @@ public class ActivityController {
     /**
      * Adds a new Activity using the provided request body.
      *
-     * @param body Map containing the Activity fields and values.
+     * @param request AddActivityRequest DTO containing validated Activity fields.
      * @return HTTP 200 with success message if added; 400 with error message otherwise.
      */
     @Operation(summary = "Add a new Activity")
@@ -46,12 +49,11 @@ public class ActivityController {
                         content = @Content(schema = @Schema(implementation = String.class)))
             })
     @PostMapping("/add")
-    public ResponseEntity<?> register(
-            @Parameter(description = "Activity fields as key-value pairs", required = true)
-                    @RequestBody
-                    Map<String, Object> body) {
+    public ResponseEntity<?> addActivity(
+            @Parameter(description = "Activity details", required = true) @Valid @RequestBody
+                    AddActivityRequest request) {
         try {
-            Optional<Activity> result = activityService.addActivity(body);
+            Optional<Activity> result = activityService.addActivity(request);
             return result.map(activity -> ResponseEntity.ok("Activity added successfully"))
                     .orElseGet(
                             () -> ResponseEntity.badRequest().body("Activity could not be added"));
@@ -149,5 +151,11 @@ public class ActivityController {
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
+    }
+
+    @GetMapping("/years/{subjectCode}")
+    public ResponseEntity<List<Integer>> getAllActivityYears(@PathVariable Integer subjectCode) {
+        List<Integer> list = activityService.getAllSubjectStudentYears(subjectCode);
+        return ResponseEntity.ok(list);
     }
 }

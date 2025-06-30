@@ -11,7 +11,8 @@ import java.util.*;
 
 @Entity
 @Table(name = "student_predmet", uniqueConstraints = @UniqueConstraint(columnNames = { "Indeks", "IdPredmeta",
-        "SkolskaGodina" }))
+        "SkolskaGodina"
+}))
 @Getter
 @Setter
 @NoArgsConstructor

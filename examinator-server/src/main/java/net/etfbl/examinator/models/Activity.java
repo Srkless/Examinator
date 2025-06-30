@@ -11,10 +11,8 @@ import lombok.*;
 import java.util.*;
 
 @Entity
-@Table(
-        name = "aktivnost",
-        uniqueConstraints =
-                @UniqueConstraint(columnNames = {"SkraceniNaziv", "IdPredmeta", "SkolskaGodina"}))
+@Table(name = "aktivnost", uniqueConstraints = @UniqueConstraint(columnNames = { "SkraceniNaziv", "IdPredmeta",
+        "SkolskaGodina" }))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,6 +34,9 @@ public class Activity {
 
     @Column(nullable = false, name = "SkolskaGodina")
     private Integer schoolYear;
+
+    @Column(insertable = false, updatable = false, nullable = false, name = "IdPredmeta")
+    private Integer subjectId;
 
     @ManyToOne
     @JoinColumn(name = "IdPredmeta")
