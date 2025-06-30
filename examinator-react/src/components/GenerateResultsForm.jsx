@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import HeaderComponent from './HeaderComponent';
 import '../styles/generateResults.scss';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getStudents, getYears } from '../services/StudentService';
-import { getSubjectActivities } from '../services/SubjectManagementService';
-
+import {
+    getStudents,
+    getYears,
+    getStudentsFromFile,
+    getStudentsBySubject,
+    getStudentsFromFileAll,
+} from '../services/StudentService';
+import {
+    getSubjectActivities,
+    getUsersOnSubject,
+} from '../services/SubjectManagementService';
 const STUDENT_FIELDS = ['Indeks', 'Ime', 'Prezime', 'Grupa', 'Napomena'];
 
 const columnFieldMap = {
@@ -40,10 +48,88 @@ function GenerateResultsForm() {
     const [studentNote, setStudentNote] = useState('');
     const [subjectActivities, setSubjectActivities] = useState([]);
     const [subjectFormulas, setSubjectFormulas] = useState([]);
-    const [generatedResults, setGeneratedResults] = useState(true);
+    const [showTop, setShowTop] = useState(false);
+    const [showBottom, setShowBottom] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [formData, setFormData] = useState('');
+
+    const lastScrollY = useRef(0);
+    const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY < lastScrollY.current) {
+                // Skrolovanje nadole
+                setShowTop(true);
+                setShowBottom(false);
+            } else if (currentScrollY > lastScrollY.current) {
+                // Skrolovanje nagore
+                setShowTop(false);
+                setShowBottom(true);
+            }
+
+            lastScrollY.current = currentScrollY;
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const handleRadioChange = () => {
+        // Ne postavlja studentSource odmah, samo otvara file explorer
+        setTimeout(() => {
+            fileInputRef.current?.click();
+        }, 100);
+    };
+
+    // Detektovanje otkazivanja file dialoga
+    useEffect(() => {
+        const handleFocus = () => {
+            setTimeout(() => {
+                if (
+                    fileInputRef.current &&
+                    !fileInputRef.current.files.length
+                ) {
+                    console.log('Korisnik je otkazao izbor fajla');
+                    setStudentSource('svi'); // Vraća na "svi" ako je otkazano
+                    setFormData(''); // Očisti formData ako je otkazano
+                }
+            }, 300);
+        };
+
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, []);
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+            console.log('Nije izabran nijedan fajl');
+            setStudentSource('svi'); // Vraća na "svi" ako nije izabran <fajl>
+            setFormData(''); // Očisti formData ako nije izabran <fajl>
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        setStudentSource('fajl');
+        setFormData(formData);
+    };
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const scrollToBottom = () => {
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+        });
+    };
 
     const location = useLocation();
     const subject = location.state?.subject;
+    const tableRef = useRef(null);
 
     useEffect(() => {
         document.body.classList.forEach((className) => {
@@ -56,34 +142,32 @@ function GenerateResultsForm() {
 
     const code = subject.match(/\((\d+)\)/)[1];
 
-    function useDebounce(value, delay) {
-        const [debouncedValue, setDebouncedValue] = useState(value);
-
-        useEffect(() => {
-            const handler = setTimeout(() => {
-                setDebouncedValue(value);
-            }, delay);
-
-            return () => {
-                clearTimeout(handler);
-            };
-        }, [value, delay]);
-
-        return debouncedValue;
-    }
-    const debouncedSearchTerm = useDebounce(searchTerm, 400);
-
     const fetchStudents = useCallback(
-        async (page = currentPage, resetPage = false) => {
+        async (
+            page = currentPage,
+            resetPage = false,
+            length = selectedLength,
+        ) => {
             if (schoolYears.length === 0) return;
 
             try {
-                const students = await getStudents(
-                    code,
-                    resetPage ? 0 : page,
-                    selectedLength,
-                    selectedYear,
-                );
+                let students;
+                if (studentSource === 'fajl') {
+                    students = await getStudentsFromFile(
+                        code,
+                        resetPage ? 0 : page,
+                        length,
+                        selectedYear,
+                        formData,
+                    );
+                } else if (studentSource === 'svi') {
+                    students = await getStudents(
+                        code,
+                        resetPage ? 0 : page,
+                        length,
+                        selectedYear,
+                    );
+                }
 
                 setData(students);
                 setContent(students.content);
@@ -118,15 +202,139 @@ function GenerateResultsForm() {
                 });
 
                 setContent(transformed);
-                console.log('Transformed students:', transformed);
-                console.log('MAPA:', columnFieldMap);
             } catch (error) {
                 console.error('Error fetching students:', error);
             }
         },
-        [code],
+        [code, currentPage, selectedYear, studentSource, formData],
     );
 
+    async function exportToCSV(filename = `${selectedSubject}_results.csv`) {
+        try {
+            let fetchedData;
+            if (studentSource === 'fajl') {
+                fetchedData = await getStudentsFromFileAll(code, formData);
+            } else if (studentSource === 'svi') {
+                fetchedData = await getStudentsBySubject(code);
+            }
+            if (!fetchedData || fetchedData.length === 0) {
+                alert('Nema podataka za izvoz!');
+                return;
+            }
+
+            const { activities } = await getSubjectActivities(code);
+
+            activities.forEach((a) => {
+                columnFieldMap[a.shortName] = a.shortName; // npr. "K1": "K1"
+            });
+            const activityIdToShortName = Object.fromEntries(
+                activities.map((a) => [a.id, a.shortName]),
+            );
+            const transformed = fetchedData.map((student) => {
+                const resultMap = {};
+
+                student.results.forEach((res) => {
+                    const activityId = res.id.activityId;
+                    const shortName = activityIdToShortName[activityId];
+                    if (shortName) {
+                        resultMap[shortName] = res.points;
+                    }
+                });
+                return {
+                    ...student,
+                    ...resultMap, // dodaje K1, K2, PR sa bodovima
+                };
+            });
+            const csvRows = [];
+
+            // Zaglavlja su nazivi kolona koje korisnik vidi (keys iz selectedColumns)
+            csvRows.push(selectedColumns.join(','));
+
+            for (const row of transformed) {
+                const values = selectedColumns.map((col) => {
+                    const field = columnFieldMap[col]; // npr. 'Ime' -> 'firstName'
+                    const val = row[field];
+                    return val !== undefined ? `"${val}"` : '""';
+                });
+                csvRows.push(values.join(','));
+            }
+
+            const csvString = csvRows.join('\n');
+
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } catch (error) {
+            alert('Greška pri dohvatanju podataka: ' + error.message);
+        }
+    }
+
+    async function copyTableToClipboard() {
+        try {
+            let fetchedData;
+            if (studentSource === 'fajl') {
+                fetchedData = await getStudentsFromFileAll(code, formData);
+            } else if (studentSource === 'svi') {
+                fetchedData = await getStudentsBySubject(code);
+            }
+            if (!fetchedData || fetchedData.length === 0) {
+                alert('Nema podataka za izvoz!');
+                return;
+            }
+
+            const { activities } = await getSubjectActivities(code);
+
+            activities.forEach((a) => {
+                columnFieldMap[a.shortName] = a.shortName; // npr. "K1": "K1"
+            });
+            const activityIdToShortName = Object.fromEntries(
+                activities.map((a) => [a.id, a.shortName]),
+            );
+            const transformed = fetchedData.map((student) => {
+                const resultMap = {};
+
+                student.results.forEach((res) => {
+                    const activityId = res.id.activityId;
+                    const shortName = activityIdToShortName[activityId];
+                    if (shortName) {
+                        resultMap[shortName] = res.points;
+                    }
+                });
+                return {
+                    ...student,
+                    ...resultMap, // dodaje K1, K2, PR sa bodovima
+                };
+            });
+            const header = selectedColumns.join('\t');
+
+            // Zatim pripremi svaki red sa vrednostima polja
+            const rows = transformed.map((row) =>
+                selectedColumns
+                    .map((col) => row[columnFieldMap[col]] ?? '') // koristi vrednost ili prazno
+                    .join('\t'),
+            );
+
+            // Spoji header i redove sa novim redom
+            const tsv = [header, ...rows].join('\n');
+
+            // Kopiraj u clipboard
+            navigator.clipboard
+                .writeText(tsv)
+                .then(() => {
+                    alert('Tabela je kopirana u clipboard!');
+                })
+                .catch((err) => {
+                    alert('Nešto je pošlo po zlu: ' + err);
+                });
+        } catch (error) {
+            return;
+        }
+    }
     useEffect(() => {
         const fetchYears = async () => {
             if (!code) return;
@@ -146,8 +354,18 @@ function GenerateResultsForm() {
     }, [code]);
 
     useEffect(() => {
-        fetchStudents(0, true);
+        fetchStudents(0, true, selectedLength);
     }, []);
+
+    useEffect(() => {
+        fetchStudents(0, true, selectedLength);
+    }, [studentSource]);
+
+    useEffect(() => {
+        if (content.length > 0) {
+            tableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [content, currentPage]);
 
     useEffect(() => {
         const savedSubject = localStorage.getItem('selectedSubject');
@@ -179,25 +397,30 @@ function GenerateResultsForm() {
         );
     };
 
-    const handleGenerate = () => {
-        setGeneratedResults(false);
-    };
-
     const handleSort = (column) => {
-        const direction = !sortDirection[column];
-        setSortDirection({ [column]: direction });
+        setSortDirection((prev) => {
+            const newDirection = !prev[column]; // true = ASC, false = DESC
 
-        const sorted = [...students].sort((a, b) => {
-            if (a[column] < b[column]) return direction ? -1 : 1;
-            if (a[column] > b[column]) return direction ? 1 : -1;
-            return 0;
+            const sorted = [...content].sort((a, b) => {
+                const valA = a[columnFieldMap[column]] ?? '';
+                const valB = b[columnFieldMap[column]] ?? '';
+
+                if (valA < valB) return newDirection ? -1 : 1;
+                if (valA > valB) return newDirection ? 1 : -1;
+                return 0;
+            });
+
+            setContent(sorted);
+
+            return {
+                ...prev,
+                [column]: newDirection,
+            };
         });
-
-        setStudents(sorted);
     };
 
     useEffect(() => {
-        if (currentPage > 0) {
+        if (currentPage >= 0) {
             fetchStudents(currentPage, false);
         }
     }, [currentPage]);
@@ -207,6 +430,7 @@ function GenerateResultsForm() {
     };
     const selectedLengthChange = (event) => {
         setSelectedLength(event.target.value);
+        fetchStudents(0, true, event.target.value);
     };
 
     const changePage = (next = true) => {
@@ -317,10 +541,18 @@ function GenerateResultsForm() {
                                 name="studentSource"
                                 value="fajl"
                                 checked={studentSource === 'fajl'}
-                                onChange={() => setStudentSource('fajl')}
+                                onChange={handleRadioChange}
                             />{' '}
                             prema spisku
                         </label>
+
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            style={{ display: 'none' }}
+                            onChange={handleFileUpload}
+                            accept=".txt,.csv,.xlsx,.xls" // Dodajte željene tipove fajlova
+                        />
                     </div>
                 </div>
 
@@ -329,22 +561,13 @@ function GenerateResultsForm() {
                     <span>{selectedColumns.join(', ')}</span>
                 </div>
 
-                <div className="generate-button-wrapper">
-                    <button
-                        onClick={handleGenerate}
-                        className="generate-button"
-                    >
-                        Generiši
-                    </button>
-                </div>
-
                 <div className="table-section">
                     {selectedColumns.length === 0 ? (
                         <p className="no-data">
                             Izaberite kolone koje želite da imate u tabeli
                         </p>
                     ) : (
-                        <table>
+                        <table ref={tableRef}>
                             <thead>
                                 <tr>
                                     {selectedColumns.map((col) => (
@@ -358,25 +581,19 @@ function GenerateResultsForm() {
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody hidden={generatedResults}>
-                                {content
-                                    .filter(
-                                        (student) =>
-                                            student.schoolYear === selectedYear,
-                                    )
-                                    .map((student, index) => (
-                                        <tr key={index}>
-                                            {selectedColumns.map((col) => {
-                                                const field =
-                                                    columnFieldMap[col]; // npr. 'firstName' za 'Ime'
-                                                return (
-                                                    <td key={col}>
-                                                        {student[field] || ''}
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    ))}
+                            <tbody>
+                                {content.map((student, index) => (
+                                    <tr key={index}>
+                                        {selectedColumns.map((col) => {
+                                            const field = columnFieldMap[col]; // npr. 'firstName' za 'Ime'
+                                            return (
+                                                <td key={col}>
+                                                    {student[field] || ''}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     )}
@@ -451,12 +668,11 @@ function GenerateResultsForm() {
                                 : 'none',
                         }}
                         className="export-btn"
-                        onClick={() =>
-                            alert('Export funkcionalnost nije implementirana.')
-                        }
+                        onClick={() => exportToCSV()}
                     >
-                        Export
+                        Export (CSV)
                     </button>
+
                     <button
                         style={{
                             display: selectedColumns.length
@@ -464,15 +680,42 @@ function GenerateResultsForm() {
                                 : 'none',
                         }}
                         className="export-btn"
-                        onClick={() =>
-                            alert(
-                                'Podaci su kopirani u clipboard (simulacija).',
-                            )
-                        }
+                        onClick={() => copyTableToClipboard(content)}
                     >
                         Kopiraj u Clipboard
                     </button>
                 </div>
+                <button
+                    id="goTopBtn"
+                    title="Idi na vrh"
+                    onClick={() =>
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }
+                >
+                    <span className="material-icons">arrow_upward</span>
+                </button>
+
+                {showTop && (
+                    <button
+                        id="goTopBtn"
+                        onClick={scrollToTop}
+                        title="Idi na vrh"
+                        style={{ display: 'flex' }}
+                    >
+                        <span className="material-icons">arrow_upward</span>
+                    </button>
+                )}
+
+                {showBottom && (
+                    <button
+                        id="goBottomBtn"
+                        onClick={scrollToBottom}
+                        title="Idi na dno"
+                        style={{ display: 'flex' }}
+                    >
+                        <span className="material-icons">arrow_downward</span>
+                    </button>
+                )}
             </main>
         </div>
     );

@@ -44,7 +44,7 @@ function HomeForm() {
         };
 
         fetchSubjects();
-    }, []);
+    }, [isProfessorDialogOpen]);
 
     useEffect(() => {
         const fetchSubjectUsers = async () => {
@@ -65,9 +65,7 @@ function HomeForm() {
                     };
                 });
 
-                console.log('Učitani korisnici predmeta:', subjectUsers);
                 setSubjectUsers(subjectUsers);
-
                 const users = await getUsers();
 
                 const availableUsers = users.filter(
@@ -83,7 +81,7 @@ function HomeForm() {
             }
         };
         fetchSubjectUsers();
-    }, [subjectCode, isProfessorDialogOpen]); // pozovi kad se otvori dialog ili promeni subjectId
+    }, [subjectCode, isProfessorDialogOpen]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -225,6 +223,7 @@ function HomeForm() {
         } else if (text === 'school') {
         } else if (text === 'groups') {
             if (match) {
+                setSubjectName(match[1]);
                 setSubjectCode(match[2]);
                 setProfessorDialogOpen(true);
             }
@@ -402,7 +401,9 @@ function HomeForm() {
             >
                 <form id="professors-form">
                     <div class="dialog-header">
-                        <h3>Dodavanje predavača</h3>
+                        <h3>
+                            {subjectName} ({subjectCode})
+                        </h3>
                         <button
                             type="button"
                             id="close-professors-dialog"

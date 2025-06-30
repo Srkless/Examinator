@@ -178,6 +178,9 @@ $text-color-bright: #666;
 .home-body {
   margin: 0;
   font-family: "Roboto", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .main-header {
@@ -490,6 +493,7 @@ dialog#professors-dialog form#professors-form .dialog-header .close-btn {
 
 dialog#professors-dialog form#professors-form .dialog-header .close-btn .material-icons {
   font-size: 1.5rem;
+  color: var(--text-color);
 }
 
 dialog#professors-dialog form#professors-form .add-professor-row {
