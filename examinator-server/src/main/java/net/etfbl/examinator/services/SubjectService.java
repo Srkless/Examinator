@@ -29,7 +29,11 @@ public class SubjectService {
                 userRepository
                         .findByUsername(principal.getName())
                         .orElseThrow(() -> new RuntimeException("User not found"));
-        return new ArrayList<Subject>(user.getSubjects());
+        List<Subject> subjects = new ArrayList<>(user.getSubjects());
+
+        subjects.sort((s1, s2) -> s1.getCode().compareTo(s2.getCode()));
+
+        return subjects;
     }
 
     public Optional<Subject> getById(Integer id) {
