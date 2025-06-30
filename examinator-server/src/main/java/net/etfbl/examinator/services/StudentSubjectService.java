@@ -1,11 +1,22 @@
 package net.etfbl.examinator.services;
 
 import net.etfbl.examinator.models.StudentSubject;
+import net.etfbl.examinator.parsers.CsvStudentParser;
+import net.etfbl.examinator.repositories.StudentSubjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import net.etfbl.examinator.models.Subject;
 import net.etfbl.examinator.repositories.StudentSubjectRepository;
 import net.etfbl.examinator.repositories.SubjectRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class StudentSubjectService {
@@ -63,6 +75,34 @@ public class StudentSubjectService {
 
         return studentSubjectRepository.findDistinctSchoolYearsBySubjectId(subj.getId());
     }
+  public List<StudentSubject> addStudentsFromCsv(MultipartFile file, int subjectCode) throws IOException {
+    List<StudentSubject> students = new ArrayList<>();
+    CsvStudentParser csvStudentParser = new CsvStudentParser();
+
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+      String fileContent = new String(file.getBytes(), StandardCharsets.UTF_8);
+      students = csvStudentParser.parseStudentsOnSubject(fileContent);
+
+      students.forEach(student -> {
+        LocalDate currentDate = LocalDate.now();
+        // ako je poceo oktobar, uzima se trenutnagodina/narednagodina!
+        student.setSchoolYear(currentDate.getMonthValue() >= 10 ? currentDate.getYear() : currentDate.getYear() - 1);
+      });
+
+      // subject needs to be set manually, because .csv data does not contain subjectID!
+      students.forEach(student -> student.setSubject(subjectRepository.findByCode(subjectCode).get()));
+    }
+
+    return addStudentsToSubject(students);
+  }
+
+  // GET students filtered and paged, the filter parameters are checked with the
+  // AND operator, which implies separate filters for each parameter
+  // the search query is provided in the following format:
+  // "index_query name_query group_query"
+  // The filter parameters are separated by a space
+  public Page<StudentSubject> getFilteredAndPaged(Integer subjectCode, Pageable pageable, String searchQuery) {
+    List<StudentSubject> all = studentSubjectRepository.findAllBySubjectCode(subjectCode);
 
     public List<StudentSubject> addStudentsToSubject(List<StudentSubject> students) {
         for (StudentSubject studentSubject : students) {

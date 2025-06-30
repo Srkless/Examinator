@@ -37,7 +37,7 @@ SkolskaGodina		int				not null,
 Indeks				varchar(10)		not null,
 Ime					varchar(30)		not null,
 Prezime				varchar(30) 	not null,
-Grupa				varchar(5)		not null,
+Grupa				varchar(5),
 Napomena			text,
 IdPredmeta			int				not null,
 constraint FK_student_predmet_predmet

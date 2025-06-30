@@ -1,10 +1,15 @@
 package net.etfbl.examinator.parsers;
 
 import net.etfbl.examinator.models.StudentSubject;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Parser implementation for parsing student subject data from CSV-formatted
@@ -99,5 +104,55 @@ public class CsvStudentParser implements StudentParser {
 
       return s;
     }).filter(filter).collect(Collectors.toList());
+  }
+
+  /**
+   * Parses student subject data from a CSV string. This method is meant to be used to parse .csv students
+   * file containing students on a specific subject.
+   *
+   * @param source the CSV data string, with each line representing one student
+   *               subject record
+   * @return a list of {@link StudentSubject} objects parsed from the CSV data
+   * @throws IllegalArgumentException if the school year field cannot be parsed as
+   *                                  an integer
+   */
+  public List<StudentSubject> parseStudentsOnSubject(String source) throws IllegalArgumentException {
+    //analiza header-a
+    String header = source.split("\\R")[0];
+    String[] headerParts = header.split(",");
+    int indexIndex = 2;
+    int firstNameIndex = 1;
+    int lastNameIndex = 0;
+    int groupIndex = -1;
+
+    // dinamicko trazenje idenksa u .csv-u
+    for(int i = 0; i < headerParts.length; i++) {
+        switch (headerParts[i]) {
+            case "презиме" -> lastNameIndex = i;
+            case "име" -> firstNameIndex = i;
+            case "алтернативни индекс" -> indexIndex = i;
+            case "група" -> groupIndex = i;
+        }
+    }
+
+    final int indexIndexCopy = indexIndex;
+    final int firstNameIndexCopy = firstNameIndex;
+    final int groupIndexCopy = groupIndex;
+    final int lastNameIndexCopy = lastNameIndex;
+
+    // preskakanje header reda sa skip(1)!
+    return Arrays.stream(source.split("\\R")).skip(1).map(line -> {
+      StudentSubject s = new StudentSubject();
+      String[] parts = line.split(",");
+
+
+      s.setIndex(parts[indexIndexCopy]);
+      s.setFirstName(parts[firstNameIndexCopy]);
+      s.setLastName(parts[lastNameIndexCopy]);
+      if(groupIndexCopy != -1)
+        s.setGroup(parts[groupIndexCopy]);
+
+      return s;
+    }).collect(Collectors.toList());
   }
 }
