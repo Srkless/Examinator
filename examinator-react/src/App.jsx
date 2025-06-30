@@ -5,13 +5,14 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RequireAuth from './components/RequireAuth';
 import SettingsPage from './pages/SettingsPage';
-import LogoutPage from './pages/LogoutPage.jsx'
-import ActivitiesPage from './pages/ActivitiesPage.jsx'
+import LogoutPage from './pages/LogoutPage.jsx';
+import ActivitiesPage from './pages/ActivitiesPage.jsx';
 import StudentManagementPage from './pages/StudentManagementPage.jsx';
-import ResultsPage from './pages/ResultsPage.jsx'
+import ResultsPage from './pages/ResultsPage.jsx';
 import { AuthContext } from './contexts/AuthContext.jsx';
 import { useContext } from 'react';
 import './styles/styles.scss';
+import GenerateResultsPage from './pages/GenerateResultsPage.jsx';
 
 const App = () => {
     const { token, loading } = useContext(AuthContext);
@@ -42,8 +43,19 @@ const App = () => {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/activities" element={<ActivitiesPage />} />
-                    <Route path="/students" element={<StudentManagementPage />} />
+                    <Route
+                        path="/students"
+                        element={<StudentManagementPage />}
+                    />
                     <Route path="/results" element={<ResultsPage />} />
+                    <Route
+                        path="/students"
+                        element={<StudentManagementPage />}
+                    />
+                    <Route
+                        path="/generate-results"
+                        element={<GenerateResultsPage />}
+                    />
                 </Route>
             </Routes>
         </Router>

@@ -19,19 +19,31 @@ function HomeForm() {
     const [selectedSubjectIndex, setSelectedSubjectIndex] = useState(null);
     const [selectedSchoolYear, setSelectedSchoolYear] = useState('');
     const [selectedActivity, setSelectedActivity] = useState('');
+    const [users, setUsers] = useState([]);
+    const [subjectUsers, setSubjectUsers] = useState([]);
+
+    const [selectedUsername, setSelectedUsername] = useState(null);
+    const [isProfessorDialogOpen, setProfessorDialogOpen] = useState(false);
 
     const dialogRef = useRef(null);
+    const profDialogRef = useRef(null);
+
     const resultsDialogRef = useRef(null);
 
     const selectedSubject = rawSubjects[selectedSubjectIndex] || {};
 
     const activitySchoolYears = Array.from(
-        new Set(selectedSubject.activities?.map(activity => activity.schoolYear))
+        new Set(
+            selectedSubject.activities?.map((activity) => activity.schoolYear),
+        ),
     ).sort((a, b) => b - a);
 
-    const filteredActivities = selectedSubject.activities?.filter(
-        activity => selectedSchoolYear ? activity.schoolYear == selectedSchoolYear : true
-    ) || [];
+    const filteredActivities =
+        selectedSubject.activities?.filter((activity) =>
+            selectedSchoolYear
+                ? activity.schoolYear == selectedSchoolYear
+                : true,
+        ) || [];
 
     useEffect(() => {
         const fetchSubjects = async () => {
@@ -54,7 +66,44 @@ function HomeForm() {
         };
 
         fetchSubjects();
-    }, []);
+    }, [isProfessorDialogOpen]);
+
+    useEffect(() => {
+        const fetchSubjectUsers = async () => {
+            if (!subjectCode) return; // ne pozivaj ako subjectId nije definisan
+
+            try {
+                const res = await getUsersOnSubject(subjectCode);
+
+                const subjectUsers = res.map((user) => {
+                    const firstName = user.firstName.trim();
+                    const lastName = user.lastName.trim();
+                    return {
+                        id: user.id,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: user.email,
+                        username: user.username,
+                    };
+                });
+
+                setSubjectUsers(subjectUsers);
+                const users = await getUsers();
+
+                const availableUsers = users.filter(
+                    (user) => !res.some((u) => u.id === user.id),
+                );
+
+                setUsers(availableUsers);
+            } catch (err) {
+                console.error(
+                    'Greška pri učitavanju korisnika predmeta:',
+                    err.message,
+                );
+            }
+        };
+        fetchSubjectUsers();
+    }, [subjectCode, isProfessorDialogOpen]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -111,10 +160,11 @@ function HomeForm() {
     const openResultsDialog = (subjectIndex) => {
         setSelectedSubjectIndex(subjectIndex);
 
-
         const subject = rawSubjects[subjectIndex];
         const schoolYears = Array.from(
-            new Set(subject?.activities?.map(activity => activity.schoolYear))
+            new Set(
+                subject?.activities?.map((activity) => activity.schoolYear),
+            ),
         ).sort((a, b) => b - a);
 
         const newestYear = schoolYears[0] || '';
@@ -166,13 +216,12 @@ function HomeForm() {
         if (!selectedSchoolYear || !selectedActivity) return;
 
         try {
-
             navigate('/results', {
                 state: {
                     subject: subjects[selectedSubjectIndex],
                     selectedSchoolYear: selectedSchoolYear,
-                    selectedActivity: selectedActivity
-                }
+                    selectedActivity: selectedActivity,
+                },
             });
 
             closeResultsDialog();
@@ -191,15 +240,17 @@ function HomeForm() {
                 setDialogOpen(true);
             }
         } else if (text === 'display_settings') {
-
         } else if (text === 'school') {
         } else if (text === 'grid_on') {
             openResultsDialog(index);
-        } else {
-            window.location.href = '.html';
+        } else if (text === 'groups') {
+            if (match) {
+                setSubjectName(match[1]);
+                setSubjectCode(match[2]);
+                setProfessorDialogOpen(true);
+            }
         }
     };
-
 
     const handleSchoolYearChange = (e) => {
         setSelectedSchoolYear(e.target.value);
@@ -239,21 +290,35 @@ function HomeForm() {
                                             </span>
                                         </td>
                                         <td>
-                                            <Link to='/activities' state={{ subject: subjects[i] }}>
+                                            <Link
+                                                to="/activities"
+                                                state={{ subject: subjects[i] }}
+                                            >
                                                 <span
                                                     className="material-icons"
-                                                    onClick={() => handleIconClick('display_settings', i)}
+                                                    onClick={() =>
+                                                        handleIconClick(
+                                                            'display_settings',
+                                                            i,
+                                                        )
+                                                    }
                                                 >
                                                     display_settings
                                                 </span>
                                             </Link>
                                         </td>
                                         <td>
-                                            <Link to='/students' state={{ subject: subjects[i] }}>
+                                            <Link
+                                                to="/students"
+                                                state={{ subject: subjects[i] }}
+                                            >
                                                 <span
                                                     className="material-icons"
                                                     onClick={() =>
-                                                        handleIconClick('school', i)
+                                                        handleIconClick(
+                                                            'school',
+                                                            i,
+                                                        )
                                                     }
                                                 >
                                                     school
@@ -261,17 +326,22 @@ function HomeForm() {
                                             </Link>
                                         </td>
                                         <td>
-                                            <span
-                                                className="material-icons"
-                                                onClick={() =>
-                                                    handleIconClick(
-                                                        'description',
-                                                        i,
-                                                    )
-                                                }
+                                            <Link
+                                                to="/generate-results"
+                                                state={{ subject: subjects[i] }}
                                             >
-                                                description
-                                            </span>
+                                                <span
+                                                    className="material-icons"
+                                                    onClick={() =>
+                                                        handleIconClick(
+                                                            'description',
+                                                            i,
+                                                        )
+                                                    }
+                                                >
+                                                    description
+                                                </span>
+                                            </Link>
                                         </td>
                                         <td>
                                             <span
@@ -352,7 +422,11 @@ function HomeForm() {
             </dialog>
 
             {/* Results Dialog */}
-            <dialog ref={resultsDialogRef} id="results-dialog" onCancel={closeResultsDialog}>
+            <dialog
+                ref={resultsDialogRef}
+                id="results-dialog"
+                onCancel={closeResultsDialog}
+            >
                 <form id="results-form" onSubmit={handleResultsSubmit}>
                     <div className="dialog-header">
                         <h3 id="results-dialog-title">
@@ -360,7 +434,8 @@ function HomeForm() {
                             {selectedSubjectIndex !== null && (
                                 <span>
                                     {' - '}
-                                    {rawSubjects[selectedSubjectIndex]?.name} ({rawSubjects[selectedSubjectIndex]?.code})
+                                    {rawSubjects[selectedSubjectIndex]?.name} (
+                                    {rawSubjects[selectedSubjectIndex]?.code})
                                 </span>
                             )}
                         </h3>
@@ -398,12 +473,91 @@ function HomeForm() {
                         <select
                             id="activity"
                             value={selectedActivity}
-                            onChange={(e) => setSelectedActivity(e.target.value)}
+                            onChange={(e) =>
+                                setSelectedActivity(e.target.value)
+                            }
                             required
                             disabled={!selectedSchoolYear}
                         >
                             <option value="">
-                                {selectedSchoolYear ? "Izaberite aktivnost" : "Prvo izaberite školsku godinu"}
+                                {selectedSchoolYear
+                                    ? 'Izaberite aktivnost'
+                                    : 'Prvo izaberite školsku godinu'}
+                            </option>
+                            {filteredActivities.map((activity) => (
+                                <option key={activity.id} value={activity.name}>
+                                    {activity.name} ({activity.maxPoints} poena)
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
+                    <div className="buttons">
+                        <button
+                            type="button"
+                            onClick={closeResultsDialog}
+                            id="cancel-results-btn"
+                        >
+                            Otkaži
+                        </button>
+                        <button type="submit">Potvrdi</button>
+                    </div>
+                </form>
+            </dialog>
+            <dialog
+                ref={profDialogRef}
+                id="professors-dialog"
+                onCancel={closeDialog}
+            >
+                <form id="professors-form">
+                    <div class="dialog-header">
+                        <h3>
+                            {subjectName} ({subjectCode})
+                        </h3>
+                        <button
+                            type="button"
+                            id="close-results-dialog"
+                            className="close-btn"
+                            onClick={closeResultsDialog}
+                        >
+                            <span className="material-icons">close</span>
+                        </button>
+                    </div>
+
+                    {/* Show School Year selection first */}
+                    <label>
+                        Školska godina
+                        <select
+                            id="school-year"
+                            value={selectedSchoolYear}
+                            onChange={handleSchoolYearChange}
+                            required
+                        >
+                            <option value="">Izaberite školsku godinu</option>
+                            {activitySchoolYears.map((year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
+                    {/* Show Activity selection second, only after school year is selected */}
+                    <label>
+                        Aktivnost
+                        <select
+                            id="activity"
+                            value={selectedActivity}
+                            onChange={(e) =>
+                                setSelectedActivity(e.target.value)
+                            }
+                            required
+                            disabled={!selectedSchoolYear}
+                        >
+                            <option value="">
+                                {selectedSchoolYear
+                                    ? 'Izaberite aktivnost'
+                                    : 'Prvo izaberite školsku godinu'}
                             </option>
                             {filteredActivities.map((activity) => (
                                 <option key={activity.id} value={activity.name}>

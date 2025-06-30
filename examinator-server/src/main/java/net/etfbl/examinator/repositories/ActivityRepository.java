@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface ActivityRepository extends JpaRepository<Activity, Integer> {
 
     Optional<Activity> findById(Integer id);
+
     Optional<Activity> findByShortName(String shortName);
 
     boolean existsByName(String name);
