@@ -10,8 +10,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -124,5 +131,88 @@ public class StudentSubjectService {
         List<StudentSubject> pageContent = start > end ? List.of() : filtered.subList(start, end);
 
         return new PageImpl<>(pageContent, pageable, filtered.size());
+    }
+
+    public Page<StudentSubject> getStudentsFromFilePaged(
+            MultipartFile file, Integer subjectCode, Pageable pageable) {
+        try (BufferedReader reader =
+                new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            Set<String> indexesInFile = new HashSet<>();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+
+                String[] parts = line.split(",");
+
+                for (String part : parts) {
+                    String trimmed = part.trim();
+                    String clean = trimmed.replaceAll("^\"|\"$", "");
+                    if (clean.matches("\\d{3,}/\\d+")) {
+                        indexesInFile.add(clean);
+                    }
+                }
+            }
+
+            if (indexesInFile.isEmpty()) {
+                return new PageImpl<>(List.of(), pageable, 0);
+            }
+
+            // Pretpostavljam da imaš metodu u repository da pronađeš po indeksima i predmetu
+            List<StudentSubject> studentsFound =
+                    studentSubjectRepository.findByIndexInAndSubjectCode(
+                            new ArrayList<>(indexesInFile), subjectCode);
+
+            // Sada filtriraj i sortiraj u memoriji jer smo izvukli listu
+            // Sortiranje:
+            String sortProperty = pageable.getSort().iterator().next().getProperty();
+
+            List<StudentSubject> sorted = studentsFound.stream().collect(Collectors.toList());
+
+            // Paginacija
+            int start = (int) pageable.getOffset();
+            int end = Math.min(start + pageable.getPageSize(), sorted.size());
+            List<StudentSubject> pageContent = start > end ? List.of() : sorted.subList(start, end);
+
+            return new PageImpl<>(pageContent, pageable, sorted.size());
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload students: " + e.getMessage(), e);
+        }
+    }
+
+    public List<StudentSubject> getStudentsFromFile(MultipartFile file, Integer subjectCode) {
+        try (BufferedReader reader =
+                new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            Set<String> indexesInFile = new HashSet<>();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+
+                String[] parts = line.split(",");
+
+                for (String part : parts) {
+                    String trimmed = part.trim();
+                    String clean = trimmed.replaceAll("^\"|\"$", "");
+                    if (clean.matches("\\d{3,}/\\d+")) {
+                        indexesInFile.add(clean);
+                    }
+                }
+            }
+
+            if (indexesInFile.isEmpty()) {
+                return List.of(); // Prazna lista, nema podataka
+            }
+
+            List<StudentSubject> studentsFound =
+                    studentSubjectRepository.findByIndexInAndSubjectCode(
+                            new ArrayList<>(indexesInFile), subjectCode);
+
+            return studentsFound;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload students: " + e.getMessage(), e);
+        }
     }
 }

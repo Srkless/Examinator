@@ -26,6 +26,8 @@ public interface StudentSubjectRepository extends JpaRepository<StudentSubject, 
 
     @Query(
             "SELECT DISTINCT ss.schoolYear FROM StudentSubject ss WHERE ss.subject.id = :subjectId"
-                + " ORDER BY ss.schoolYear")
+                    + " ORDER BY ss.schoolYear")
     List<Integer> findDistinctSchoolYearsBySubjectId(@Param("subjectId") Integer subjectId);
+
+    List<StudentSubject> findByIndexInAndSubjectCode(List<String> indexes, Integer subjectCode);
 }

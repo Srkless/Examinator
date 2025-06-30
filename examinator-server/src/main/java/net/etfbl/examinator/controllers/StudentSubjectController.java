@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -180,5 +181,34 @@ public class StudentSubjectController {
                 studentSubjectService.getFilteredAndPaged(subjectCode, pageable, searchQuery);
 
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/subject/{subjectCode}/upload/paged")
+    public ResponseEntity<Page<StudentSubject>> uploadStudentsPaged(
+            @RequestParam("file") MultipartFile file,
+            @PathVariable Integer subjectCode,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "index") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "") String searchQuery) {
+
+        Sort sort =
+                direction.equalsIgnoreCase("desc")
+                        ? Sort.by(sortBy).descending()
+                        : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<StudentSubject> saved =
+                studentSubjectService.getStudentsFromFilePaged(file, subjectCode, pageable);
+        return ResponseEntity.ok(saved);
+    }
+
+    @PostMapping("/subject/{subjectCode}/upload")
+    public ResponseEntity<List<StudentSubject>> uploadStudents(
+            @RequestParam("file") MultipartFile file, @PathVariable Integer subjectCode) {
+
+        List<StudentSubject> saved = studentSubjectService.getStudentsFromFile(file, subjectCode);
+        return ResponseEntity.ok(saved);
     }
 }
