@@ -1,10 +1,12 @@
 package net.etfbl.examinator.services;
 
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import net.etfbl.examinator.parsers.FormulaParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -200,4 +202,56 @@ public class ResultService {
     }
     return null;
   }
+
+  public List<Integer> calculateResults(String formula, List<String> studentIndexes, Integer subjectCode) {
+    List<Integer> computedResults = new ArrayList<>();
+    Set<String> activityNames = extractActivityNames(formula);
+    FormulaParser formulaParser = new FormulaParser(formula);
+
+    label: for(String studentIndex : studentIndexes) {
+      Optional<StudentSubject> studentOptional = studentRepository.findByIndexAndSubject_Code(studentIndex, subjectCode);
+      if (studentOptional.isPresent()) {
+        StudentSubject student = studentOptional.get();
+        Map<String, Integer> studentPoints = new HashMap<>();
+
+        for(String activityName : activityNames) {
+          Optional<Result> result = resultRepository.findByStudentIndexAndSubjectCodeAndActivityShortName(studentIndex, subjectCode, activityName);
+          if (result.isPresent()) {
+            studentPoints.put(activityName, result.get().getPoints());
+          }
+          else {
+            // nema rezultata za studenta za datu aktivnost -> Upisujemo null za tog studenta i prelazimo na sljedeceg stud.
+            computedResults.add(null);
+            continue label;
+          }
+        }
+
+        computedResults.add(formulaParser.evaluate(studentPoints));
+
+      }
+      else computedResults.add(null);
+
+    }
+
+    return computedResults;
+  }
+
+  private static Set<String> extractActivityNames(String formula) {
+    Set<String> activities = new HashSet<>();
+
+    Pattern pattern = Pattern.compile("\\b[A-Za-z][A-Za-z0-9_]*\\b");
+    Matcher matcher = pattern.matcher(formula);
+
+    Set<String> keywordsToIgnore = Set.of("true", "false");
+
+    while (matcher.find()) {
+      String token = matcher.group();
+      if (!keywordsToIgnore.contains(token)) {
+        activities.add(token);
+      }
+    }
+
+    return activities;
+  }
+
 }

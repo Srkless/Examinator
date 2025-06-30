@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import net.etfbl.examinator.requests.CalculateResultsRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -68,7 +69,7 @@ public class ResultController {
 
   /**
    * Retrieves all results for a specific subject by ID.
-   *
+   *x
    * @param subjectId ID of the subject.
    * @return List of results or 404 if subject not found.
    */
@@ -323,5 +324,30 @@ public class ResultController {
 
     return new ResponseEntity<>(csv, headers, HttpStatus.OK);
   }
+
+  /**
+   * Generate JSON containing results calculated by given formula for given students.
+   * @param request Composite request containing student index, subject code and formula.
+   * @return JSON containing a list of calculated results.
+   */
+  @Operation(summary = "Generate calculated results for students with given indexes based on a given formula.")
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "Results generated", content = @Content(mediaType = "application/json")),
+          @ApiResponse(responseCode = "404", description = "Activity, student or subject not found.")
+  })
+  @PostMapping("/calculate")
+  public ResponseEntity<List<Integer>> calculateResults(
+          @RequestBody CalculateResultsRequest request) {
+
+    List<Integer> results = resultService.calculateResults(
+            request.getFormula(),
+            request.getStudentIndexes(),
+            request.getSubjectCode()
+    );
+
+    return ResponseEntity.ok(results);
+  }
+
+
 
 }
