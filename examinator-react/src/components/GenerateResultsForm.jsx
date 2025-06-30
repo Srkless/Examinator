@@ -15,6 +15,7 @@ import {
     getUsersOnSubject,
 } from '../services/SubjectManagementService';
 const STUDENT_FIELDS = ['Indeks', 'Ime', 'Prezime', 'Grupa', 'Napomena'];
+import { calculate } from '../services/resultService';
 
 const columnFieldMap = {
     Indeks: 'index',
@@ -83,7 +84,6 @@ function GenerateResultsForm() {
             fileInputRef.current?.click();
         }, 100);
     };
-
     // Detektovanje otkazivanja file dialoga
     useEffect(() => {
         const handleFocus = () => {
@@ -114,6 +114,29 @@ function GenerateResultsForm() {
         formData.append('file', file);
         setStudentSource('fajl');
         setFormData(formData);
+    };
+
+    const handleGenerateResultsMultiple = async () => {
+        try {
+            const studentIndexes = content.map((s) => s.index);
+            const resultsByFormula = {};
+
+            const { formulas } = await getSubjectActivities(code);
+            for (const formulaObj of formulas) {
+                const formula = formulaObj.expression;
+
+                console.log(`Izračunavanje rezultata za formulu: ${formula}`);
+                console.log(`Indeksi studenata: ${studentIndexes.join(', ')}`);
+                console.log(`Šifra predmeta: ${code}`);
+                const results = await calculate(formula, studentIndexes, code);
+                console.log(results);
+            }
+
+            return resultsByFormula;
+        } catch (err) {
+            console.error('Greška prilikom generisanja rezultata:', err);
+            return null;
+        }
     };
 
     const scrollToTop = () => {
@@ -177,11 +200,16 @@ function GenerateResultsForm() {
                     setCurrentPage(0);
                 }
 
-                const { activities } = await getSubjectActivities(code);
+                const { activities, formulas } =
+                    await getSubjectActivities(code);
 
                 activities.forEach((a) => {
                     columnFieldMap[a.shortName] = a.shortName; // npr. "K1": "K1"
                 });
+                formulas.forEach((f) => {
+                    columnFieldMap[f.expression] = f.expression; // npr. "K1": "K1"
+                });
+
                 const activityIdToShortName = Object.fromEntries(
                     activities.map((a) => [a.id, a.shortName]),
                 );
@@ -193,6 +221,7 @@ function GenerateResultsForm() {
                         const shortName = activityIdToShortName[activityId];
                         if (shortName) {
                             resultMap[shortName] = res.points;
+                            console.log(resultMap);
                         }
                     });
                     return {
@@ -202,6 +231,31 @@ function GenerateResultsForm() {
                 });
 
                 setContent(transformed);
+                const studentIndexes = students.content.map((s) => s.index);
+                const resultsByFormula = {};
+                for (const formula of formulas) {
+                    resultsByFormula[formula.expression] = await calculate(
+                        formula.expression,
+                        studentIndexes,
+                        code,
+                    );
+                }
+                const transformedWithFormulas = transformed.map(
+                    (student, idx) => {
+                        const resMap = {};
+                        for (const formula of formulas) {
+                            resMap[formula.expression] =
+                                resultsByFormula[formula.expression][idx];
+                        }
+                        console.log(resMap);
+                        return {
+                            ...student,
+                            ...resMap,
+                        };
+                    },
+                );
+                console.log(transformedWithFormulas);
+                setContent(transformedWithFormulas);
             } catch (error) {
                 console.error('Error fetching students:', error);
             }
@@ -449,7 +503,7 @@ function GenerateResultsForm() {
         <div>
             <HeaderComponent />
             <main className="main-content container">
-                <div className="subject-row">
+                <div className="genResults-subject-row">
                     <div className="field field-subject">
                         <label htmlFor="subject">Naziv predmeta</label>
                         <input
@@ -515,7 +569,7 @@ function GenerateResultsForm() {
                                         label.name,
                                     )}
                                     onChange={() =>
-                                        handleColumnToggle(label.name)
+                                        handleColumnToggle(label.expression)
                                     }
                                 />{' '}
                                 {label.name}({label.expression})

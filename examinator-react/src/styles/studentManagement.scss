@@ -35,7 +35,8 @@
   padding: 2rem;
 }
 
-.subject-row {
+.studentMan-subject-row {
+
   display: flex;
   align-items: flex-end;
   gap: 3rem;
@@ -60,6 +61,7 @@
       border-radius: 6px;
       line-height: 1.2;
       background-color: var(--background-color);
+      color: var(--text-color);
     }
 
     select {
@@ -391,6 +393,7 @@ dialog#studentDialog {
     cursor: pointer;
     margin-left: auto;
     width: 110px;
+    background-color: var(--background-color);
 
     &:focus {
       border-color: var(--select-color);

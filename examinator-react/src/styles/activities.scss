@@ -19,7 +19,7 @@
   padding: 2rem;
 }
 
-.subject-row {
+.activity-subject-row {
   display: flex;
   align-items: flex-start;
   gap: 3rem;
@@ -72,7 +72,7 @@
   }
 }
 
-.section-header {
+.activity-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -91,7 +91,7 @@
     border-radius: variables.$border-radius;
     cursor: pointer;
     background-color: var(--accent-color);
-    color: var(--white);
+    color: var(--text-color);
 
     &:hover {
       background-color: var(--accent-color);
@@ -102,9 +102,29 @@
 
 .formule-section {
   margin-top: 6rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+
+  .add-activity-button {
+    width: 150px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: variables.$border-radius;
+    cursor: pointer;
+    background-color: var(--accent-color);
+    color: var(--text-color);
+
+    &:hover {
+      background-color: var(--accent-color);
+      opacity: 0.8;
+    }
+  }
 }
-
-
 
 .no-data {
   color: var(--text-color);
@@ -120,6 +140,7 @@ dialog {
   border-radius: 10px;
   box-shadow: var(--box-shadow);
   font-family: "Roboto", sans-serif;
+  color: var(--text-color);
 
   &::backdrop {
     background: rgba(0, 0, 0, 0.3);
@@ -172,7 +193,7 @@ dialog {
         border-radius: variables.$border-radius;
         cursor: pointer;
         background-color: var(--accent-color);
-        color: var(--white);
+        color: var(--text-color);
 
         &:hover {
           background-color: var(--accent-color);
@@ -233,7 +254,7 @@ dialog {
       border-radius: variables.$border-radius;
       cursor: pointer;
       background-color: var(--accent-color);
-      color: var(--white);
+      color: var(--text-color);
 
       &:hover {
         background-color: var(--accent-color);
@@ -286,4 +307,17 @@ dialog {
 
 .warning-content {
   color: var(--text-color);
+}
+
+/* Dark mode specific styles */
+body.dark-theme {
+  --background-color: #222222;
+  --text-color: #f5f5f5;
+  --border-color: #444444;
+}
+
+body.dark-theme .theme-toggle-container,
+body.dark-theme .color-setting-container {
+  background-color: #333333;
+  border-color: var(--border-color);
 }

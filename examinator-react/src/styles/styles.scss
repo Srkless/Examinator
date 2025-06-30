@@ -332,6 +332,7 @@ table {
 
     &:hover {
       color: var(--accent-color);
+      opacity: 0.8;
     }
   }
 }
@@ -367,7 +368,8 @@ dialog {
   background-color: var(--background-color);
   font-family: "Roboto", sans-serif;
 
-form#subject-form, form#results-form {
+  form#subject-form,
+  form#results-form {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -411,7 +413,9 @@ form#subject-form, form#results-form {
       color: var(--text-color);
       font-weight: 500;
 
-      input, select { // Add select here
+      input,
+      select {
+        // Add select here
         margin-top: 0.4rem;
         padding: 0.5rem 0.8rem;
         border: 1px solid $border-color;
@@ -429,7 +433,7 @@ form#subject-form, form#results-form {
 
       select {
         cursor: pointer; // Add cursor pointer for selects
-        
+
         option {
           background-color: var(--background-color);
           color: var(--text-color);
@@ -517,7 +521,7 @@ dialog#professors-dialog form#professors-form .add-professor-row {
 
 dialog#professors-dialog form#professors-form .add-professor-row label {
   font-weight: 500;
-  color: #444;
+  color: var(--text-color);
 }
 
 dialog#professors-dialog form#professors-form .add-professor-row select {
@@ -529,6 +533,8 @@ dialog#professors-dialog form#professors-form .add-professor-row select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 dialog#professors-dialog form#professors-form .add-professor-row select:focus {
@@ -555,7 +561,7 @@ dialog#professors-dialog form#professors-form .add-professor-row button:hover {
 dialog#professors-dialog form#professors-form .no-data-msg {
   text-align: center;
   font-size: 1rem;
-  color: #666;
+  color: var(--text-color);
   margin-top: 1rem;
 }
 
@@ -580,14 +586,14 @@ dialog#professors-dialog form#professors-form .professor-table-container table t
 
 dialog#professors-dialog form#professors-form .professor-table-container table td,
 dialog#professors-dialog form#professors-form .professor-table-container table th {
-  border: 0.4px solid #333;
+  border: 0.4px solid color-mix(in srgb, var(--text-color) 30%, transparent);
   text-align: center;
-  color: #1f1f1f;
+  color: var(--text-color);
 }
 
 dialog#professors-dialog form#professors-form .professor-table-container table .material-icons {
   cursor: pointer;
-  color: #333;
+  color: var(--text-color);
 }
 
 dialog#professors-dialog form#professors-form .professor-table-container table .material-icons:hover {

@@ -10,7 +10,7 @@ $dialog-header-color: #888;
 $light-gray: #f5f5f5;
 $white: #fff;
 $border-radius: 8px;
-$box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+$box-shadow: 0 4px 6px color-mix(in srgb, var(--text-color) 20%, transparent);
 $border-color: #dcdcdc;
 $logo-size: 32px;
 $logo-color: #000;
@@ -34,7 +34,7 @@ body {
   padding: 2rem;
 }
 
-.subject-row {
+.genResults-subject-row {
   display: flex;
   align-items: flex-start;
   gap: 3rem;
@@ -47,7 +47,7 @@ body {
     label {
       font-weight: 500;
       margin-bottom: 0.4rem;
-      color: $text-color;
+      color: var(--text-color);
       font-size: 1rem;
     }
 
@@ -55,10 +55,11 @@ body {
     select {
       padding: 0.5rem 0.8rem;
       font-size: 1rem;
-      border: 1px solid $border-color;
+      border: 1px solid color-mix(in srgb, var(--text-color) 30%, transparent);
       border-radius: 6px;
       line-height: 1.2;
-      background-color: $bg-color;
+      background-color: var(--background-color);
+      color: var(--text-color);
     }
 
     select {
@@ -72,7 +73,7 @@ body {
 
       &:focus {
         outline: none;
-        border-color: $primary-color;
+        border-color: var(--accent-color);
       }
     }
   }
@@ -90,7 +91,7 @@ body {
   text-align: center;
   margin-top: 5rem;
   font-size: 1.1rem;
-  color: $text-color-bright;
+  color: var(--text-color);
 }
 
 .checkbox-section .section {
@@ -100,6 +101,8 @@ body {
   margin-bottom: 1rem;
   gap: 1rem; // razmak između strong i checkboxova
   flex-wrap: wrap; // ako ne stane sve u jedan red
+  color: var(--text-color);
+
 }
 
 #activityOptionsContainer,
@@ -121,13 +124,13 @@ body {
 
 .checkbox-section input[type="checkbox"] {
   transform: scale(1.3);
-  accent-color: $select-color;
+  accent-color: var(--accent-color);
 }
 
 .checkbox-section input[type="radio"] {
   transform: scale(1.1);
   margin-right: 0.5rem;
-  accent-color: $select-color;
+  accent-color: var(--accent-color);
 }
 
 .selected-columns {
@@ -139,7 +142,8 @@ body {
   gap: 0.5rem;
   flex-wrap: wrap;
   padding-bottom: 0.8rem;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid color-mix(in srgb, var(--text-color) 30%, transparent);
+  color: var(--text-color);
 }
 
 .generate-button-wrapper {
@@ -157,11 +161,12 @@ body {
   border: none;
   border-radius: $border-radius;
   cursor: pointer;
-  background-color: $primary-color;
+  background-color: var(--accent-color);
   color: $white;
 
   &:hover {
-    background-color: $select-color;
+    background-color: var(--accent-color);
+    opacity: 0.8;
   }
 }
 
@@ -173,7 +178,7 @@ body {
   th,
   td {
     padding: 0.75rem 1rem;
-    border: 1px solid $border-color;
+    border: 1px solid color-mix(in srgb, var(--table-border-color) 30%, transparent);
     text-align: center;
   }
 
@@ -182,7 +187,8 @@ body {
     user-select: none;
 
     &:hover {
-      color: $primary-color;
+      color: var(--accent-color);
+      opacity: 0.8;
     }
   }
 
@@ -220,26 +226,27 @@ body {
     .material-icons {
       font-size: 24px;
       cursor: pointer;
-      color: $text-color;
+      color: var(--text-color);
       transition: color 0.3s;
 
       &:hover {
-        color: $select-color;
+        color: var(--accent-color);
+        opacity: 0.8;
       }
     }
   }
 
   #paginationInfo {
     font-weight: 500;
-    color: $text-color;
+    color: var(--text-color);
   }
 
   #rowsPerPage {
     padding: 0.4rem 0.8rem;
     font-size: 1rem;
-    border: 1px solid $border-color;
+    border: 1px solid color-mix(in srgb, var(--text-color) 30%, transparent);
     border-radius: 6px;
-    background-color: $bg-color;
+    background-color: var(--background-color);
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -251,7 +258,7 @@ body {
     width: 110px;
 
     &:focus {
-      border-color: $select-color;
+      border-color: var(--accent-color);
       outline: none;
     }
   }
@@ -274,11 +281,12 @@ body {
     border: none;
     border-radius: $border-radius;
     cursor: pointer;
-    background-color: $primary-color;
+    background-color: var(--accent-color);
     color: $white;
 
     &:hover {
-      background-color: $select-color;
+      background-color: var(--accent-color);
+      opacity: 0.8;
     }
   }
 }
@@ -290,15 +298,15 @@ body {
   right: 30px;
   z-index: 100;
   display: none;
-  background-color: #fff;
-  color: #F88E4A;
+  background-color: var(--background-color);
+  color: var(--accent-color);
   border: none;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: $box-shadow;
   transition: opacity 0.3s ease;
   justify-content: center;
   align-items: center;
@@ -306,7 +314,8 @@ body {
 
 #goTopBtn:hover,
 #goBottomBtn:hover {
-  color: #f66f19;
+  color: var(--accent-color);
+  opacity: 0.8;
 }
 
 #goTopBtn .material-icons,

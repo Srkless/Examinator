@@ -4,7 +4,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
     addSubject,
     getUserSubjects,
+    getUsersOnSubject,
+    addUserToSubject,
+    removeUserFromSubject,
 } from '../services/SubjectManagementService';
+import { getUsers } from '../services/UserService';
 
 function HomeForm() {
     const navigate = useNavigate();
@@ -126,7 +130,12 @@ function HomeForm() {
             resultsDialogRef.current.showModal();
         }
     }, [isResultsDialogOpen]);
-
+    useEffect(() => {
+        if (isProfessorDialogOpen && profDialogRef.current) {
+            profDialogRef.current.showModal();
+        }
+        setSelectedUsername('');
+    }, [isProfessorDialogOpen]);
     useEffect(() => {
         document.body.classList.forEach((className) => {
             if (className !== 'dark-theme') {
@@ -135,7 +144,51 @@ function HomeForm() {
         });
         document.body.classList.add('home-body');
     }, []);
+    const handleAddProfessor = async () => {
+        if (!selectedUsername || !subjectCode) return;
 
+        try {
+            await addUserToSubject(selectedUsername, subjectCode);
+            setSubjectUsers((prevUsers) => [
+                ...prevUsers,
+                {
+                    username: selectedUsername,
+                    firstName: users.find(
+                        (user) => user.username === selectedUsername,
+                    ).firstName,
+                    lastName: users.find(
+                        (user) => user.username === selectedUsername,
+                    ).lastName,
+                    email: users.find(
+                        (user) => user.username === selectedUsername,
+                    ).email,
+                },
+            ]);
+        } catch (err) {
+            console.error('Greška pri dodavanju:', err.message);
+        }
+    };
+
+    const handleRemoveProfessor = async (selectedUsername) => {
+        console.log('username:', selectedUsername, 'subjectCode:', subjectCode);
+        if (!selectedUsername || !subjectCode) return;
+
+        try {
+            const res = await getUsersOnSubject(subjectCode);
+            if (res.length === 1) {
+                alert('Ne možete ukloniti posljednjeg predavača.');
+                return;
+            }
+            await removeUserFromSubject(selectedUsername, subjectCode);
+            setSubjectUsers((prevUsers) =>
+                prevUsers.filter((user) => user.username !== selectedUsername),
+            );
+            setSelectedUsername('');
+            console.log('Uspješno uklonjen predavač:', selectedUsername);
+        } catch (err) {
+            console.error('Greška pri brisanju:', err.message);
+        }
+    };
     const handleAddClick = () => {
         setSubjectName('');
         setSubjectCode('');
@@ -148,15 +201,19 @@ function HomeForm() {
     };
 
     const closeDialog = () => {
-        setDialogOpen(false);
         if (dialogRef.current) {
             dialogRef.current.close();
+            setDialogOpen(false);
+            setEditingIndex(null);
+            setSubjectName('');
+            setSubjectCode('');
         }
-        setEditingIndex(null);
-        setSubjectName('');
-        setSubjectCode('');
-    };
 
+        if (profDialogRef.current) {
+            profDialogRef.current.close();
+            setProfessorDialogOpen(false);
+        }
+    };
     const openResultsDialog = (subjectIndex) => {
         setSelectedSubjectIndex(subjectIndex);
 
@@ -231,8 +288,8 @@ function HomeForm() {
     };
 
     const handleIconClick = (text, index) => {
+        const match = subjects[index].match(/(.+)\s+\((.+)\)/);
         if (text === 'edit') {
-            const match = subjects[index].match(/(.+)\s+\((.+)\)/);
             if (match) {
                 setSubjectName(match[1]);
                 setSubjectCode(match[2]);
@@ -516,67 +573,97 @@ function HomeForm() {
                         </h3>
                         <button
                             type="button"
-                            id="close-results-dialog"
-                            className="close-btn"
-                            onClick={closeResultsDialog}
+                            id="close-professors-dialog"
+                            class="close-btn"
+                            onClick={closeDialog}
                         >
-                            <span className="material-icons">close</span>
+                            <span class="material-icons">close</span>
                         </button>
                     </div>
 
-                    {/* Show School Year selection first */}
-                    <label>
-                        Školska godina
+                    <div class="add-professor-row">
+                        <label for="professor-select">Predavač</label>
                         <select
-                            id="school-year"
-                            value={selectedSchoolYear}
-                            onChange={handleSchoolYearChange}
-                            required
-                        >
-                            <option value="">Izaberite školsku godinu</option>
-                            {activitySchoolYears.map((year) => (
-                                <option key={year} value={year}>
-                                    {year}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    {/* Show Activity selection second, only after school year is selected */}
-                    <label>
-                        Aktivnost
-                        <select
-                            id="activity"
-                            value={selectedActivity}
+                            id="professor-select"
+                            value={selectedUsername}
                             onChange={(e) =>
-                                setSelectedActivity(e.target.value)
+                                setSelectedUsername(e.target.value)
                             }
-                            required
-                            disabled={!selectedSchoolYear}
                         >
-                            <option value="">
-                                {selectedSchoolYear
-                                    ? 'Izaberite aktivnost'
-                                    : 'Prvo izaberite školsku godinu'}
+                            <option value="" disabled>
+                                Izaberite predavača
                             </option>
-                            {filteredActivities.map((activity) => (
-                                <option key={activity.id} value={activity.name}>
-                                    {activity.name} ({activity.maxPoints} poena)
+                            {users.map((user) => (
+                                <option key={user.id} value={user.username}>
+                                    {user.firstName} {user.lastName}
                                 </option>
                             ))}
                         </select>
-                    </label>
-
-                    <div className="buttons">
                         <button
                             type="button"
-                            onClick={closeResultsDialog}
-                            id="cancel-results-btn"
+                            id="add-professor"
+                            onClick={handleAddProfessor}
                         >
-                            Otkaži
+                            Dodaj
                         </button>
-                        <button type="submit">Potvrdi</button>
                     </div>
+
+                    {subjectUsers.length === 0 ? (
+                        <p id="no-professors" className="no-data-msg">
+                            Trenutno nema ni jedan predavač na predmetu
+                        </p>
+                    ) : (
+                        <div className="professor-table-container">
+                            <table id="professor-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ime</th>
+                                        <th>Prezime</th>
+                                        <th>Email</th>
+                                        <th>Akcija</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="professor-body">
+                                    {subjectUsers.map((p) => (
+                                        <tr key={p.username}>
+                                            <td>{p.firstName}</td>
+                                            <td>{p.lastName}</td>
+                                            <td>{p.email}</td>
+                                            <td>
+                                                <span
+                                                    className="material-icons delete-professor"
+                                                    onClick={() =>
+                                                        handleRemoveProfessor(
+                                                            p.username,
+                                                        )
+                                                    }
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    delete
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {/* <div class="buttons bottom-buttons"> */}
+                    {/*     <button */}
+                    {/*         type="button" */}
+                    {/*         class="cancel-btn" */}
+                    {/*         id="cancel-professors" */}
+                    {/*         onClick={closeDialog} */}
+                    {/*     > */}
+                    {/*         Otkaži */}
+                    {/*     </button> */}
+                    {/*     <button type="submit" class="confirm-btn"> */}
+                    {/*         Sačuvaj */}
+                    {/*     </button> */}
+                    {/* </div> */}
                 </form>
             </dialog>
         </div>
