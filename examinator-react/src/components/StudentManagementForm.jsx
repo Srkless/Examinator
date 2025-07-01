@@ -34,11 +34,24 @@ const StudentManagementForm = () => {
     const [sortingQuery, setSortingQuery] = useState('index');
     const [sortingDirection, setSortingDirection] = useState('asc')
     const [studentsFromFileLoaded, setStudentsFromFileLoaded] = useState(false)
-
+    const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
     const fileInputRef = useRef(null);
 
     const handleButtonClick = () => {
         fileInputRef.current?.click();
+    };
+
+    const getStatusClassName = (type) => {
+        switch (type) {
+            case 'success':
+                return 'status-success';
+            case 'error':
+                return 'status-error';
+            case 'warning':
+                return 'status-warning';
+            default:
+                return '';
+        }
     };
 
     const handleFileChange = async (event) => {
@@ -50,9 +63,18 @@ const StudentManagementForm = () => {
                 await addStudentsByFile(file, code)
 
                 setStudentsFromFileLoaded(true)
+
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Studenti uspješno importovani iz fajla',
+                });
             } catch (error) {
 
                 console.log(error)
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri učitavanju studenata iz fajla',
+                });
             }
         }
     };
@@ -127,9 +149,11 @@ const StudentManagementForm = () => {
     const fetchStudents = useCallback(
         async (page = currentPage, resetPage = false) => {
             // Don't fetch if years aren't loaded yet or no year is selected
+            console.log(!isYearsLoaded, "    ", selectedYear)
             if (!isYearsLoaded || selectedYear === null) return;
 
             try {
+                console.log('fetch pozvan')
                 let formattedSearch = debouncedSearchTerm.replace(/ /g, '_');
                 let indexSearchTerm = '';
                 if (hasNumbers(formattedSearch)) {
@@ -148,7 +172,7 @@ const StudentManagementForm = () => {
                     indexSearchTerm,
                 );
 
-                console.log(students);
+                console.log('ovo je', students);
                 setData(students);
                 setContent(students.content);
                 setTotalPages(students.totalPages);
@@ -159,6 +183,10 @@ const StudentManagementForm = () => {
                 setStudentsFromFileLoaded(false)
             } catch (error) {
                 console.error('Error fetching students:', error);
+                // setSaveStatus({
+                //     type: 'error',
+                //     message: 'Greška pri učitavanju studenata',
+                // });
             }
         },
         [
@@ -183,7 +211,7 @@ const StudentManagementForm = () => {
 
             try {
                 const years = await getYears(code);
-                console.log(years)
+                console.log('dohvataju se godine')
                 const validYears = years.filter((item) => !isNaN(item));
                 if (validYears.length == 0) {
                     const month = new Date().getMonth();
@@ -198,6 +226,7 @@ const StudentManagementForm = () => {
                 }
 
                 validYears.sort((a, b) => b - a);
+                console.log(validYears)
                 setSchoolYears(validYears);
 
                 if (validYears.length === 0) {
@@ -210,6 +239,11 @@ const StudentManagementForm = () => {
                 setStudentsFromFileLoaded(false)
             } catch (error) {
                 console.error('Error fetching years:', error);
+
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri učitavanju godina',
+                });
                 setIsYearsLoaded(true);
             }
         };
@@ -260,8 +294,18 @@ const StudentManagementForm = () => {
         try {
             await deleteStudent(id);
             fetchStudents(currentPage, false);
+
+            setSaveStatus({
+                type: 'success',
+                message: 'Student obrisan',
+            });
         } catch (error) {
             console.log(error);
+            setSaveStatus({
+                type: 'error',
+                message: 'Greška pri brisanju stuenta',
+            });
+
         }
     };
 
@@ -299,9 +343,17 @@ const StudentManagementForm = () => {
                     subjectJson,
                 );
                 closeDialog(studentDialogRef);
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Student ažuriran',
+                });
                 fetchStudents(currentPage, false);
             } catch (error) {
                 console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri ažuriranju studenta',
+                });
             }
         } else {
             try {
@@ -315,9 +367,17 @@ const StudentManagementForm = () => {
                     subjectJson,
                 );
                 closeDialog(studentDialogRef);
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Student dodan',
+                });
                 fetchStudents(currentPage, false);
             } catch (error) {
                 console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri dodavanju studenta',
+                });
             }
         }
     };
@@ -410,6 +470,14 @@ const StudentManagementForm = () => {
                                 />
                             </div>
                         </div>
+
+                        {saveStatus.message && (
+                            <div
+                                className={`status-message ${getStatusClassName(saveStatus.type)}`}
+                            >
+                                {saveStatus.message}
+                            </div>
+                        )}
 
                         <div id="studentsContainer">
                             {!isYearsLoaded ? (
