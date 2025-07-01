@@ -17,6 +17,8 @@ const ResultsForm = () => {
     const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
     const [showTop, setShowTop] = useState(false);
     const [showBottom, setShowBottom] = useState(false);
+    const [subjectActivities, setSubjectActivities] = useState([]);
+    const [activity, setActivity] = useState('');
 
     const subjectCode = subject?.match(/\((\d+)\)/)?.[1];
 
@@ -39,6 +41,10 @@ const ResultsForm = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        console.log('Activity changed:', activity.name);
+    }, [activity]);
+
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -49,17 +55,50 @@ const ResultsForm = () => {
             behavior: 'smooth',
         });
     };
+
+    const code = subject.match(/\((\d+)\)/)[1];
+    useEffect(() => {
+        const fetchActivities = async () => {
+            if (!subject) return;
+
+            try {
+                const sub = await getSubjectActivities(code);
+                const activities = sub.activities.filter(
+                    (a) => a.schoolYear === Number(selectedSchoolYear),
+                );
+                setSubjectActivities(activities);
+                const cleanSelected = selectedActivity.replace(/^"|"$/g, '');
+
+                const match = activities.find(
+                    (a) => a.name.replace(/^"|"$/g, '') === cleanSelected,
+                );
+
+                if (match) {
+                    setActivity(match);
+                }
+            } catch (error) {
+                console.error('Error fetching years:', error);
+            }
+        };
+
+        fetchActivities();
+    }, [subject, selectedSchoolYear]);
+
     useEffect(() => {
         const fetchActivityData = async () => {
             try {
                 const data = await getSubjectActivities(subjectCode);
                 const studentsInYear = data.studentSubjects.filter(
-                    (student) => student.schoolYear == selectedSchoolYear,
+                    (student) =>
+                        Number(student.schoolYear) ===
+                        Number(selectedSchoolYear),
                 );
                 setStudents(studentsInYear);
 
                 const selected = data.activities.find(
-                    (a) => a.name === selectedActivity,
+                    (a) =>
+                        a.name === activity.name &&
+                        a.schoolYear === Number(selectedSchoolYear),
                 );
                 setActivityData(selected);
 
@@ -76,12 +115,15 @@ const ResultsForm = () => {
         };
 
         if (subjectCode) fetchActivityData();
-    }, [subjectCode, selectedSchoolYear, selectedActivity]);
+    }, [subjectCode, selectedSchoolYear, activity]);
 
     const handleCsvUploadToServer = async (e) => {
         const file = e.target.files[0];
         if (!file || !activityData?.id) {
-            setSaveStatus({ type: 'error', message: 'Fajl ili aktivnost nije definisana' });
+            setSaveStatus({
+                type: 'error',
+                message: 'Fajl ili aktivnost nije definisana',
+            });
             return;
         }
 
@@ -91,13 +133,16 @@ const ResultsForm = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch(`/api/results/upload/${activityData.id}`, {
-                method: 'POST',
-                headers: {
-                    Authorization: token ? `Bearer ${token}` : undefined,
+            const response = await fetch(
+                `/api/results/upload/${activityData.id}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: token ? `Bearer ${token}` : undefined,
+                    },
+                    body: formData,
                 },
-                body: formData,
-            });
+            );
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -114,7 +159,6 @@ const ResultsForm = () => {
 
             // Optionally reload results from server
             await loadExistingResults(activityData.id, students);
-
         } catch (err) {
             console.error('CSV upload error:', err);
             setSaveStatus({
@@ -252,7 +296,7 @@ const ResultsForm = () => {
                     if (errorData.error) {
                         errorMessage = errorData.error;
                     }
-                } catch (e) { }
+                } catch (e) {}
 
                 throw new Error(errorMessage);
             }
@@ -284,6 +328,10 @@ const ResultsForm = () => {
                 setSaveStatus({ type: '', message: '' });
             }, 5000);
         }
+    };
+    const activityChange = (event) => {
+        console.log('Activity changed:', event.target.value);
+        setActivity(event.target.value);
     };
 
     const filteredStudents = students.filter((s) =>
@@ -321,13 +369,24 @@ const ResultsForm = () => {
                     </div>
 
                     <div class="field field-activity">
-                        <label for="schoolYear">Aktivnost</label>
-                        <input
-                            type="text"
+                        <label for="activity">Aktivnost</label>
+                        <select
                             id="schoolYear"
-                            value={`${activityData ? `${activityData.maxPoints} bodova` : ''}`}
-                            readOnly
-                        />
+                            value={activity?.id || ''} // ako je `null`, stavi prazan string
+                            onChange={(e) => {
+                                const selectedId = Number(e.target.value);
+                                const selectedActivity = subjectActivities.find(
+                                    (a) => a.id === selectedId,
+                                );
+                                setActivity(selectedActivity); // postavlja ceo objekat
+                            }}
+                        >
+                            {subjectActivities.map((a) => (
+                                <option key={a.id} value={a.id}>
+                                    {a.name} ({a.maxPoints} bodova)
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div class="field field-year">
                         <label for="schoolYear">Školska godina</label>
@@ -340,7 +399,11 @@ const ResultsForm = () => {
                     </div>
 
                     <div className="result-buttons">
-                        <label htmlFor="csvFile" className="upload-label" title="Uvezi CSV fajl">
+                        <label
+                            htmlFor="csvFile"
+                            className="upload-label"
+                            title="Uvezi CSV fajl"
+                        >
                             <span className="material-icons">upload</span>
                         </label>
                         <input
@@ -403,7 +466,7 @@ const ResultsForm = () => {
                                                         student.index,
                                                         parseInt(
                                                             results[
-                                                            student.index
+                                                                student.index
                                                             ] || 0,
                                                         ) - 1,
                                                     )
@@ -438,7 +501,7 @@ const ResultsForm = () => {
                                                         student.index,
                                                         parseInt(
                                                             results[
-                                                            student.index
+                                                                student.index
                                                             ] || 0,
                                                         ) + 1,
                                                     )

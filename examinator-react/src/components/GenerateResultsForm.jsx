@@ -54,12 +54,10 @@ function GenerateResultsForm() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [formData, setFormData] = useState('');
     const [sortingQuery, setSortingQuery] = useState('index');
-    const [sortingDirection, setSortingDirection] = useState('asc')
+    const [sortingDirection, setSortingDirection] = useState('asc');
 
     const lastScrollY = useRef(0);
     const fileInputRef = useRef(null);
-
-
 
     useEffect(() => {
         const handleScroll = () => {
@@ -151,6 +149,7 @@ function GenerateResultsForm() {
             page = currentPage,
             resetPage = false,
             length = selectedLength,
+            year = selectedYear,
         ) => {
             if (schoolYears.length === 0) return;
 
@@ -161,7 +160,7 @@ function GenerateResultsForm() {
                         code,
                         resetPage ? 0 : page,
                         length,
-                        selectedYear,
+                        year,
                         formData,
                     );
                 } else if (studentSource === 'svi') {
@@ -169,9 +168,9 @@ function GenerateResultsForm() {
                         code,
                         resetPage ? 0 : page,
                         length,
-                        selectedYear,
+                        year,
                         sortingQuery,
-                        sortingDirection
+                        sortingDirection,
                     );
                 }
 
@@ -240,13 +239,19 @@ function GenerateResultsForm() {
                 console.error('Error fetching students:', error);
             }
         },
-        [code, currentPage, selectedYear, studentSource, formData, sortingDirection, sortingQuery],
+        [
+            code,
+            currentPage,
+            studentSource,
+            formData,
+            sortingDirection,
+            sortingQuery,
+        ],
     );
-
 
     useEffect(() => {
         fetchStudents(currentPage, false, selectedLength);
-    }, [sortingQuery, sortingDirection])
+    }, [sortingQuery, sortingDirection]);
 
     async function exportToCSV(filename = `${selectedSubject}_results.csv`) {
         try {
@@ -261,15 +266,19 @@ function GenerateResultsForm() {
                 return;
             }
 
-            const { activities } = await getSubjectActivities(code);
+            const { activities, formulas } = await getSubjectActivities(code);
 
             activities.forEach((a) => {
                 columnFieldMap[a.shortName] = a.shortName; // npr. "K1": "K1"
             });
+            formulas.forEach((f) => {
+                columnFieldMap[f.name] = f.name; // npr. "K1": "K1"
+            });
+
             const activityIdToShortName = Object.fromEntries(
                 activities.map((a) => [a.id, a.shortName]),
             );
-            const transformed = fetchedData.map((student) => {
+            const transformed = students.content.map((student) => {
                 const resultMap = {};
 
                 student.results.forEach((res) => {
@@ -282,6 +291,26 @@ function GenerateResultsForm() {
                 return {
                     ...student,
                     ...resultMap, // dodaje K1, K2, PR sa bodovima
+                };
+            });
+
+            const studentIndexes = students.content.map((s) => s.index);
+            const resultsByFormula = {};
+            for (const formula of formulas) {
+                resultsByFormula[formula.name] = await calculate(
+                    formula.expression,
+                    studentIndexes,
+                    code,
+                );
+            }
+            const transformedWithFormulas = transformed.map((student, idx) => {
+                const resMap = {};
+                for (const formula of formulas) {
+                    resMap[formula.name] = resultsByFormula[formula.name][idx];
+                }
+                return {
+                    ...student,
+                    ...resMap,
                 };
             });
             const csvRows = [];
@@ -326,15 +355,19 @@ function GenerateResultsForm() {
                 return;
             }
 
-            const { activities } = await getSubjectActivities(code);
+            const { activities, formulas } = await getSubjectActivities(code);
 
             activities.forEach((a) => {
                 columnFieldMap[a.shortName] = a.shortName; // npr. "K1": "K1"
             });
+            formulas.forEach((f) => {
+                columnFieldMap[f.name] = f.name; // npr. "K1": "K1"
+            });
+
             const activityIdToShortName = Object.fromEntries(
                 activities.map((a) => [a.id, a.shortName]),
             );
-            const transformed = fetchedData.map((student) => {
+            const transformed = students.content.map((student) => {
                 const resultMap = {};
 
                 student.results.forEach((res) => {
@@ -347,6 +380,26 @@ function GenerateResultsForm() {
                 return {
                     ...student,
                     ...resultMap, // dodaje K1, K2, PR sa bodovima
+                };
+            });
+
+            const studentIndexes = students.content.map((s) => s.index);
+            const resultsByFormula = {};
+            for (const formula of formulas) {
+                resultsByFormula[formula.name] = await calculate(
+                    formula.expression,
+                    studentIndexes,
+                    code,
+                );
+            }
+            const transformedWithFormulas = transformed.map((student, idx) => {
+                const resMap = {};
+                for (const formula of formulas) {
+                    resMap[formula.name] = resultsByFormula[formula.name][idx];
+                }
+                return {
+                    ...student,
+                    ...resMap,
                 };
             });
             const header = selectedColumns.join('\t');
@@ -399,7 +452,6 @@ function GenerateResultsForm() {
     useEffect(() => {
         fetchStudents(0, true, selectedLength);
     }, [studentSource]);
-
 
     useEffect(() => {
         if (content.length > 0) {
@@ -463,17 +515,16 @@ function GenerateResultsForm() {
         //         [column]: newDirection,
         //     };
         // });
-        console.log("handle sort")
+        console.log('handle sort');
         if (sortBy === sortingQuery) {
-
             if (sortingDirection === 'asc') {
-                setSortingDirection('desc')
+                setSortingDirection('desc');
             } else {
-                setSortingDirection('asc')
+                setSortingDirection('asc');
             }
         } else {
-            setSortingQuery(sortBy)
-            setSortingDirection('asc')
+            setSortingQuery(sortBy);
+            setSortingDirection('asc');
         }
     };
 
@@ -485,8 +536,9 @@ function GenerateResultsForm() {
 
     const schoolYearChange = (event) => {
         setSelectedYear(event.target.value);
-        fetchStudents(0, true, selectedLength);
+        fetchStudents(0, true, selectedLength, event.target.value);
     };
+
     const selectedLengthChange = (event) => {
         setSelectedLength(event.target.value);
         fetchStudents(0, true, event.target.value);
@@ -503,6 +555,13 @@ function GenerateResultsForm() {
             }
         }
     };
+
+    useEffect(() => {
+        const activityShortNames = subjectActivities.map((a) => a.shortName);
+        setSelectedColumns((prev) =>
+            prev.filter((col) => !activityShortNames.includes(col)),
+        );
+    }, [selectedYear]);
 
     return (
         <div>
@@ -633,7 +692,9 @@ function GenerateResultsForm() {
                                         <th
                                             key={col}
                                             style={{ cursor: 'pointer' }}
-                                            onClick={() => handleSort(columnFieldMap[col])}
+                                            onClick={() =>
+                                                handleSort(columnFieldMap[col])
+                                            }
                                         >
                                             {col}
                                         </th>
