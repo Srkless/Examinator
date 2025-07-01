@@ -91,7 +91,7 @@
     border-radius: variables.$border-radius;
     cursor: pointer;
     background-color: var(--accent-color);
-    color: var(--text-color);
+    color: white;
 
     &:hover {
       background-color: var(--accent-color);
@@ -117,7 +117,7 @@
     border-radius: variables.$border-radius;
     cursor: pointer;
     background-color: var(--accent-color);
-    color: var(--text-color);
+    color: white;
 
     &:hover {
       background-color: var(--accent-color);
@@ -193,7 +193,7 @@ dialog {
         border-radius: variables.$border-radius;
         cursor: pointer;
         background-color: var(--accent-color);
-        color: var(--text-color);
+        color: white;
 
         &:hover {
           background-color: var(--accent-color);
@@ -246,7 +246,8 @@ dialog {
     gap: 0.5rem;
 
     button {
-      width: 60px;
+      width: auto;
+      min-width: 60px;
       padding: 0.4rem 0.4rem;
       font-size: 1rem;
       font-weight: 500;
@@ -254,7 +255,7 @@ dialog {
       border-radius: variables.$border-radius;
       cursor: pointer;
       background-color: var(--accent-color);
-      color: var(--text-color);
+      color: white;
 
       &:hover {
         background-color: var(--accent-color);
@@ -298,7 +299,7 @@ dialog {
         border-radius: 4px;
 
         &:hover {
-          color: var(--primary-color);
+          color: var(--accent-color);
         }
       }
     }

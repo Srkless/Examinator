@@ -198,7 +198,6 @@ function GenerateResultsForm() {
                         const shortName = activityIdToShortName[activityId];
                         if (shortName) {
                             resultMap[shortName] = res.points;
-                            console.log(resultMap);
                         }
                     });
                     return {
@@ -224,7 +223,6 @@ function GenerateResultsForm() {
                             resMap[formula.expression] =
                                 resultsByFormula[formula.expression][idx];
                         }
-                        console.log(resMap);
                         return {
                             ...student,
                             ...resMap,
@@ -408,8 +406,15 @@ function GenerateResultsForm() {
 
             try {
                 const subject = await getSubjectActivities(code);
-                setSubjectActivities(subject.activities);
-                setSubjectFormulas(subject.formulas);
+                console.log(subject);
+                const activities = subject.activities.filter(
+                    (a) => a.schoolYear === Number(selectedYear),
+                );
+                const formulas = subject.formulas.filter(
+                    (f) => f.schoolYear === Number(selectedYear),
+                );
+                setSubjectActivities(activities);
+                setSubjectFormulas(formulas);
                 setSelectedSubject(subject.name);
             } catch (error) {
                 console.error('Error fetching years:', error);
@@ -417,7 +422,7 @@ function GenerateResultsForm() {
         };
 
         fetchActivities();
-    }, [code]);
+    }, [code, selectedYear]);
 
     const handleColumnToggle = (label) => {
         setSelectedColumns((prev) =>

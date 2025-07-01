@@ -122,7 +122,6 @@ const StudentManagementForm = () => {
                 let formattedSearch = debouncedSearchTerm.replace(/ /g, '_');
                 let indexSearchTerm = '';
                 if (hasNumbers(formattedSearch)) {
-                    console.log('ima brojeva');
                     indexSearchTerm = formattedSearch;
                     formattedSearch = '';
                 }
@@ -175,7 +174,7 @@ const StudentManagementForm = () => {
                 if (validYears.length == 0) {
                     const month = new Date().getMonth();
                     const newYear = new Date().getFullYear();
-                    if (month < 5) {
+                    if (month < 9) {
                         validYears.push(newYear - 1);
                     } else {
                         validYears.push(newYear);
@@ -183,13 +182,15 @@ const StudentManagementForm = () => {
                 } else {
                     validYears.push(validYears[0] + 1);
                 }
-                console.log(validYears);
 
                 validYears.sort((a, b) => b - a);
                 setSchoolYears(validYears);
 
-                if (validYears.length > 0) {
+                if (validYears.length === 0) {
                     setSelectedYear(validYears[0]);
+                }
+                if (validYears.length > 1) {
+                    setSelectedYear(validYears[1]);
                 }
                 setIsYearsLoaded(true);
             } catch (error) {
@@ -549,28 +550,27 @@ const StudentManagementForm = () => {
                         </button>
                     </div>
 
-                    <label>Ime *</label>
+                    <label>Ime</label>
                     <input
                         type="text"
                         name="ime"
-                        required
                         value={studentName}
                         onChange={(e) => setStudentName(e.target.value)}
                     />
 
-                    <label>Prezime *</label>
+                    <label>Prezime</label>
                     <input
                         type="text"
                         name="prezime"
-                        required
                         value={studentLastName}
                         onChange={(e) => setStudentLastName(e.target.value)}
                     />
 
-                    <label>Indeks</label>
+                    <label>Indeks *</label>
                     <input
                         type="text"
                         name="indeks"
+                        required
                         value={studentIndex}
                         onChange={(e) => setStudentIndex(e.target.value)}
                     />

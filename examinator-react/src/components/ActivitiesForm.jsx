@@ -616,6 +616,25 @@ function ActivitiesForm() {
                                 ))}
                         </div>
                     </div>
+
+                    <div className="inline-buttons">
+                        <span>Formule</span>
+                        <div className="group" id="activityTags">
+                            {formulas
+                                .filter((f) => f.schoolYear == selectedYear)
+                                .map((f, i) => (
+                                    <button
+                                        type="button"
+                                        className="inline-buttons"
+                                        onClick={() =>
+                                            insertIntoExpression(f.expression)
+                                        }
+                                    >
+                                        {f.name}
+                                    </button>
+                                ))}
+                        </div>
+                    </div>
                     <div className="inline-buttons">
                         <span>Operatori</span>
                         <div className="group" id="operators">
