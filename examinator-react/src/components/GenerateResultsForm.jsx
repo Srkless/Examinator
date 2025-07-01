@@ -184,7 +184,7 @@ function GenerateResultsForm() {
                     columnFieldMap[a.shortName] = a.shortName; // npr. "K1": "K1"
                 });
                 formulas.forEach((f) => {
-                    columnFieldMap[f.expression] = f.expression; // npr. "K1": "K1"
+                    columnFieldMap[f.name] = f.name; // npr. "K1": "K1"
                 });
 
                 const activityIdToShortName = Object.fromEntries(
@@ -210,7 +210,7 @@ function GenerateResultsForm() {
                 const studentIndexes = students.content.map((s) => s.index);
                 const resultsByFormula = {};
                 for (const formula of formulas) {
-                    resultsByFormula[formula.expression] = await calculate(
+                    resultsByFormula[formula.name] = await calculate(
                         formula.expression,
                         studentIndexes,
                         code,
@@ -220,8 +220,8 @@ function GenerateResultsForm() {
                     (student, idx) => {
                         const resMap = {};
                         for (const formula of formulas) {
-                            resMap[formula.expression] =
-                                resultsByFormula[formula.expression][idx];
+                            resMap[formula.name] =
+                                resultsByFormula[formula.name][idx];
                         }
                         return {
                             ...student,
@@ -406,7 +406,6 @@ function GenerateResultsForm() {
 
             try {
                 const subject = await getSubjectActivities(code);
-                console.log(subject);
                 const activities = subject.activities.filter(
                     (a) => a.schoolYear === Number(selectedYear),
                 );
@@ -544,14 +543,14 @@ function GenerateResultsForm() {
                     <div className="section">
                         <strong>Formule:</strong>
                         {subjectFormulas.map((label) => (
-                            <label key={label.expression}>
+                            <label key={label.name}>
                                 <input
                                     type="checkbox"
                                     checked={selectedColumns.includes(
-                                        label.expression,
+                                        label.name,
                                     )}
                                     onChange={() =>
-                                        handleColumnToggle(label.expression)
+                                        handleColumnToggle(label.name)
                                     }
                                 />{' '}
                                 {label.name}({label.expression})
