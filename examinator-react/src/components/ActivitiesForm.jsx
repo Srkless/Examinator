@@ -207,12 +207,12 @@ function ActivitiesForm() {
                 validYears.sort((a, b) => b - a);
                 setSchoolYears(validYears);
 
-                if (validYears.length === 0) {
-                    setSelectedYear(validYears[0]);
-                }
-                if (validYears.length > 1) {
+                // if (validYears.length === 0) {
+                //     setSelectedYear(validYears[0]);
+                // }
+                if (validYears.length >= 2) {
                     setSelectedYear(validYears[1]);
-                }
+                } else setSelectedYear(validYears[0])
 
             } catch (error) {
                 console.log(error);

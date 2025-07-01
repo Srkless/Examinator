@@ -136,12 +136,12 @@ export async function updateStudent(
     let data;
     const contentType = res.headers.get('Content-Type');
     const isJson = contentType && contentType.includes('application/json');
+    const bodyText = await res.text();
     try {
         data = isJson ? JSON.parse(bodyText) : bodyText;
     } catch {
         data = bodyText;
     }
-    const bodyText = await res.text();
     if (!res.ok) {
         const message =
             typeof data === 'string'
@@ -151,7 +151,9 @@ export async function updateStudent(
     }
 }
 
+
 export async function deleteStudent(id) {
+    console.log('pozvan delet')
     const res = await fetch(`${API_URL}/delete/${id}`, {
         method: 'DELETE',
         headers: {
@@ -160,6 +162,7 @@ export async function deleteStudent(id) {
         },
     });
 
+    const bodyText = await res.text();
     let data;
     const contentType = res.headers.get('Content-Type');
     const isJson = contentType && contentType.includes('application/json');
@@ -168,7 +171,6 @@ export async function deleteStudent(id) {
     } catch {
         data = bodyText;
     }
-    const bodyText = await res.text();
     if (!res.ok) {
         if (!res.ok) {
             const message =

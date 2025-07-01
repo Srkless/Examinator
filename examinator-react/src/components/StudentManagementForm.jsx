@@ -229,12 +229,12 @@ const StudentManagementForm = () => {
                 console.log(validYears)
                 setSchoolYears(validYears);
 
-                if (validYears.length === 0) {
-                    setSelectedYear(validYears[0]);
-                }
-                if (validYears.length > 1) {
+                // if (validYears.length === 0) {
+                //     setSelectedYear(validYears[0]);
+                // }
+                if (validYears.length >= 2) {
                     setSelectedYear(validYears[1]);
-                }
+                } else setSelectedYear(validYears[0])
                 setIsYearsLoaded(true);
                 setStudentsFromFileLoaded(false)
             } catch (error) {
@@ -332,6 +332,7 @@ const StudentManagementForm = () => {
         if (isEdit) {
             console.log('edit mode');
             try {
+                console.log(selectedYear, 'selektana')
                 await updateStudent(
                     studentId,
                     studentIndex,
