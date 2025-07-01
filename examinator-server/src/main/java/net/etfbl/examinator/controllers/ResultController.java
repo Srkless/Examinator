@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,17 +22,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import net.etfbl.examinator.models.Activity;
 import net.etfbl.examinator.models.Result;
 import net.etfbl.examinator.models.ResultId;
 import net.etfbl.examinator.models.StudentSubject;
+import net.etfbl.examinator.parsers.CsvResultsParser;
 import net.etfbl.examinator.repositories.ActivityRepository;
 import net.etfbl.examinator.repositories.StudentSubjectRepository;
 import net.etfbl.examinator.requests.AddResultRequest;
 import net.etfbl.examinator.requests.UpdateResultRequest;
+import net.etfbl.examinator.services.ActivityService;
 import net.etfbl.examinator.services.ResultService;
+import net.etfbl.examinator.services.StudentSubjectService;
 import net.etfbl.examinator.services.SubjectService;
 import net.etfbl.examinator.requests.BatchResultRequest;
 
@@ -47,6 +52,12 @@ public class ResultController {
 
   @Autowired
   private SubjectService subjectService;
+
+  @Autowired
+  private StudentSubjectService studentSubjectService;
+
+  @Autowired
+  private ActivityService activityService;
 
   @Autowired
   private StudentSubjectRepository studentSubjectRepository;
@@ -69,7 +80,8 @@ public class ResultController {
 
   /**
    * Retrieves all results for a specific subject by ID.
-   *x
+   * x
+   * 
    * @param subjectId ID of the subject.
    * @return List of results or 404 if subject not found.
    */
@@ -326,28 +338,59 @@ public class ResultController {
   }
 
   /**
-   * Generate JSON containing results calculated by given formula for given students.
-   * @param request Composite request containing student index, subject code and formula.
+   * Generate JSON containing results calculated by given formula for given
+   * students.
+   * 
+   * @param request Composite request containing student index, subject code and
+   *                formula.
    * @return JSON containing a list of calculated results.
    */
   @Operation(summary = "Generate calculated results for students with given indexes based on a given formula.")
   @ApiResponses({
-          @ApiResponse(responseCode = "200", description = "Results generated", content = @Content(mediaType = "application/json")),
-          @ApiResponse(responseCode = "404", description = "Activity, student or subject not found.")
+      @ApiResponse(responseCode = "200", description = "Results generated", content = @Content(mediaType = "application/json")),
+      @ApiResponse(responseCode = "404", description = "Activity, student or subject not found.")
   })
   @PostMapping("/calculate")
   public ResponseEntity<List<Integer>> calculateResults(
-          @RequestBody CalculateResultsRequest request) {
+      @RequestBody CalculateResultsRequest request) {
 
     List<Integer> results = resultService.calculateResults(
-            request.getFormula(),
-            request.getStudentIndexes(),
-            request.getSubjectCode()
-    );
+        request.getFormula(),
+        request.getStudentIndexes(),
+        request.getSubjectCode());
 
     return ResponseEntity.ok(results);
   }
 
+  @Operation(summary = "Upload CSV with results for a specific activity")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "CSV processed successfully"),
+      @ApiResponse(responseCode = "400", description = "Invalid activity ID or file"),
+  })
+  @PostMapping(value = "/upload/{activityId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> uploadCsvResults(
+      @Parameter(description = "Activity ID", required = true) @PathVariable Integer activityId,
+      @Parameter(description = "CSV file", required = true) @RequestPart("file") MultipartFile file) {
 
+    Optional<Activity> activityOpt = activityRepository.findById(activityId);
+    if (activityOpt.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "Activity with ID " + activityId + " not found"));
+    }
+
+    byte[] csvBytes;
+    try {
+      csvBytes = file.getBytes();
+    } catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "Failed to read uploaded file: " + e.getMessage()));
+    }
+
+    CsvResultsParser csvResultsParser = new CsvResultsParser(studentSubjectService, activityService);
+    List<Result> parsed = csvResultsParser.parseResults(activityId, csvBytes);
+    resultService.addResultsFromList(parsed);
+
+    return ResponseEntity.ok(Map.of("message", "CSV uploaded successfully"));
+  }
 
 }

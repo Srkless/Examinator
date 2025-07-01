@@ -25,11 +25,9 @@ const ResultsForm = () => {
             const currentScrollY = window.scrollY;
 
             if (currentScrollY < lastScrollY.current) {
-                // Skrolovanje nadole
                 setShowTop(true);
                 setShowBottom(false);
             } else if (currentScrollY > lastScrollY.current) {
-                // Skrolovanje nagore
                 setShowTop(false);
                 setShowBottom(true);
             }
@@ -80,6 +78,52 @@ const ResultsForm = () => {
         if (subjectCode) fetchActivityData();
     }, [subjectCode, selectedSchoolYear, selectedActivity]);
 
+    const handleCsvUploadToServer = async (e) => {
+        const file = e.target.files[0];
+        if (!file || !activityData?.id) {
+            setSaveStatus({ type: 'error', message: 'Fajl ili aktivnost nije definisana' });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`/api/results/upload/${activityData.id}`, {
+                method: 'POST',
+                headers: {
+                    Authorization: token ? `Bearer ${token}` : undefined,
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Greška pri slanju CSV fajla: ${errorText}`);
+            }
+
+            const result = await response.json();
+            console.log('CSV upload response:', result);
+
+            setSaveStatus({
+                type: 'success',
+                message: 'CSV fajl je uspješno poslan',
+            });
+
+            // Optionally reload results from server
+            await loadExistingResults(activityData.id, students);
+
+        } catch (err) {
+            console.error('CSV upload error:', err);
+            setSaveStatus({
+                type: 'error',
+                message: err.message || 'Neuspješno slanje CSV fajla',
+            });
+        }
+    };
+
     const loadExistingResults = async (activityId, studentList) => {
         try {
             const token = localStorage.getItem('token');
@@ -102,7 +146,6 @@ const ResultsForm = () => {
                             result.points.toString();
                     }
                 } catch (error) {
-                    // Result doesn't exist yet, which is fine
                     console.log(
                         `No existing result for student ${student.index}`,
                     );
@@ -116,52 +159,21 @@ const ResultsForm = () => {
     };
 
     const handleScoreChange = (index, value) => {
-        // Convert to number and validate
         const numValue = parseFloat(value);
         const maxPoints = activityData?.maxPoints || 0;
 
-        // If empty string, allow it (user is clearing the field)
         if (value === '') {
             setResults((prev) => ({ ...prev, [index]: '' }));
             return;
         }
 
-        // If not a valid number, don't update
         if (isNaN(numValue)) {
             return;
         }
 
-        // Clamp the value between 0 and maxPoints
         const clampedValue = Math.max(0, Math.min(numValue, maxPoints));
 
         setResults((prev) => ({ ...prev, [index]: clampedValue.toString() }));
-    };
-
-    const handleFileUpload = (e) => {
-        const file = e.target.files[0];
-        const maxPoints = activityData?.maxPoints || 0;
-
-        // Example CSV parsing logic with validation
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const lines = event.target.result.split('\n');
-            const newResults = {};
-            lines.forEach((line) => {
-                const [index, score] = line.split(',');
-                if (index && score) {
-                    const numScore = parseFloat(score.trim());
-                    if (!isNaN(numScore)) {
-                        const clampedScore = Math.max(
-                            0,
-                            Math.min(numScore, maxPoints),
-                        );
-                        newResults[index.trim()] = clampedScore.toString();
-                    }
-                }
-            });
-            setResults((prev) => ({ ...prev, ...newResults }));
-        };
-        if (file) reader.readAsText(file);
     };
 
     const saveResults = async () => {
@@ -174,7 +186,6 @@ const ResultsForm = () => {
         }
 
         const token = localStorage.getItem('token');
-        console.log('Token exists:', !!token); // Debug log
 
         setLoading(true);
         setSaveStatus({ type: '', message: '' });
@@ -202,8 +213,6 @@ const ResultsForm = () => {
                 return;
             }
 
-            console.log('Sending batch data:', batchData); // Debug log
-
             const headers = {
                 'Content-Type': 'application/json',
             };
@@ -220,8 +229,6 @@ const ResultsForm = () => {
                     body: JSON.stringify(batchData),
                 },
             );
-
-            console.log('Response status:', response.status); // Debug log
 
             if (!response.ok) {
                 if (response.status === 401) {
@@ -245,7 +252,7 @@ const ResultsForm = () => {
                     if (errorData.error) {
                         errorMessage = errorData.error;
                     }
-                } catch (e) {}
+                } catch (e) { }
 
                 throw new Error(errorMessage);
             }
@@ -273,7 +280,6 @@ const ResultsForm = () => {
         } finally {
             setLoading(false);
 
-            // Clear status message after 5 seconds
             setTimeout(() => {
                 setSaveStatus({ type: '', message: '' });
             }, 5000);
@@ -333,21 +339,17 @@ const ResultsForm = () => {
                         />
                     </div>
 
-                    <div class="result-buttons">
-                        <button
-                            id="importResult"
-                            data-tooltip="Importovanje rezultata"
+                    <div className="result-buttons">
+                        <label htmlFor="csvFile" className="upload-label" title="Uvezi CSV fajl">
+                            <span className="material-icons">upload</span>
+                        </label>
+                        <input
+                            id="csvFile"
                             type="file"
                             accept=".csv"
-                            onChange={handleFileUpload}
-                        >
-                            <span
-                                class="material-icons"
-                                title="Uvezi spisak studenata"
-                            >
-                                upload
-                            </span>
-                        </button>
+                            style={{ display: 'none' }}
+                            onChange={handleCsvUploadToServer}
+                        />
                     </div>
                 </div>
 
@@ -401,7 +403,7 @@ const ResultsForm = () => {
                                                         student.index,
                                                         parseInt(
                                                             results[
-                                                                student.index
+                                                            student.index
                                                             ] || 0,
                                                         ) - 1,
                                                     )
@@ -436,7 +438,7 @@ const ResultsForm = () => {
                                                         student.index,
                                                         parseInt(
                                                             results[
-                                                                student.index
+                                                            student.index
                                                             ] || 0,
                                                         ) + 1,
                                                     )

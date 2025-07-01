@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import net.etfbl.examinator.parsers.CsvResultsParser;
 import net.etfbl.examinator.parsers.FormulaParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -174,9 +175,9 @@ public class ResultService {
 
   public byte[] generateActivityResultsCsv(Integer activityId) {
     List<Result> results = resultRepository.findAll().stream()
-            .filter(r -> r.getActivity().getId().equals(activityId))
-            .sorted(getStudentIndexComparator())
-            .collect(Collectors.toList());
+        .filter(r -> r.getActivity().getId().equals(activityId))
+        .sorted(getStudentIndexComparator())
+        .collect(Collectors.toList());
 
     StringBuilder builder = new StringBuilder();
     builder.append("Indeks,Ime i prezime,Bodovi\n");
@@ -193,7 +194,6 @@ public class ResultService {
     return builder.toString().getBytes();
   }
 
-
   // TODO implement service for generating finals results
   public byte[] generateSubjectResultsPdf(Integer subjectId, List<Integer> students) {
     if (students.size() == 0) {
@@ -208,18 +208,19 @@ public class ResultService {
     Set<String> activityNames = extractActivityNames(formula);
     FormulaParser formulaParser = new FormulaParser(formula);
 
-    label: for(String studentIndex : studentIndexes) {
-      Optional<StudentSubject> studentOptional = studentRepository.findByIndexAndSubject_Code(studentIndex, subjectCode);
+    label: for (String studentIndex : studentIndexes) {
+      Optional<StudentSubject> studentOptional = studentRepository.findByIndexAndSubject_Code(studentIndex,
+          subjectCode);
       if (studentOptional.isPresent()) {
         StudentSubject student = studentOptional.get();
         Map<String, Integer> studentPoints = new HashMap<>();
 
-        for(String activityName : activityNames) {
-          Optional<Result> result = resultRepository.findByStudentIndexAndSubjectCodeAndActivityShortName(studentIndex, subjectCode, activityName);
+        for (String activityName : activityNames) {
+          Optional<Result> result = resultRepository.findByStudentIndexAndSubjectCodeAndActivityShortName(studentIndex,
+              subjectCode, activityName);
           if (result.isPresent()) {
             studentPoints.put(activityName, result.get().getPoints());
-          }
-          else {
+          } else {
             // sada racunamo da je ostvario nula bodova na toj aktivnosti ako nije izasao
             // i prelazimo na trazenje sljedece aktivnosti u formuli
             studentPoints.put(activityName, 0);
@@ -228,8 +229,8 @@ public class ResultService {
 
         computedResults.add(formulaParser.evaluate(studentPoints));
 
-      }
-      else computedResults.add(null);
+      } else
+        computedResults.add(null);
 
     }
 
@@ -252,6 +253,19 @@ public class ResultService {
     }
 
     return activities;
+  }
+
+  public void addResultsFromList(List<Result> results) {
+    for (Result result : results) {
+      if (resultRepository.existsById(result.getId())) {
+        Result r = resultRepository.findById(result.getId()).get();
+        r.setPoints(result.getPoints());
+        resultRepository.save(r);
+      } else {
+        resultRepository.save(result);
+      }
+    }
+
   }
 
 }

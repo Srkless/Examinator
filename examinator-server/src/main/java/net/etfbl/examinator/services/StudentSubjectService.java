@@ -27,20 +27,20 @@ import java.util.stream.Collectors;
 @Service
 public class StudentSubjectService {
 
-    @Autowired private StudentSubjectRepository studentSubjectRepository;
+    @Autowired
+    private StudentSubjectRepository studentSubjectRepository;
 
-    @Autowired private SubjectRepository subjectRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     public StudentSubject addStudentToSubject(StudentSubject studentSubject) {
         Integer subjectCode = studentSubject.getSubject().getCode();
 
-        Subject subject =
-                subjectRepository
-                        .findByCode(subjectCode)
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "Subject with code " + subjectCode + " not found"));
+        Subject subject = subjectRepository
+                .findByCode(subjectCode)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Subject with code " + subjectCode + " not found"));
 
         studentSubject.setSubject(subject);
 
@@ -56,13 +56,11 @@ public class StudentSubjectService {
     }
 
     public List<Integer> getAllSubjectStudentYears(Integer subjectCode) {
-        Subject subj =
-                subjectRepository
-                        .findByCode(subjectCode)
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "Subject with ID " + subjectCode + " not found"));
+        Subject subj = subjectRepository
+                .findByCode(subjectCode)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Subject with ID " + subjectCode + " not found"));
 
         return studentSubjectRepository.findDistinctSchoolYearsBySubjectId(subj.getId());
     }
@@ -71,13 +69,11 @@ public class StudentSubjectService {
         for (StudentSubject studentSubject : students) {
             Integer subjectId = studentSubject.getSubject().getId();
 
-            Subject subject =
-                    subjectRepository
-                            .findById(subjectId)
-                            .orElseThrow(
-                                    () ->
-                                            new IllegalArgumentException(
-                                                    "Subject with ID " + subjectId + " not found"));
+            Subject subject = subjectRepository
+                    .findById(subjectId)
+                    .orElseThrow(
+                            () -> new IllegalArgumentException(
+                                    "Subject with ID " + subjectId + " not found"));
             studentSubject.setSubject(subject);
         }
         return studentSubjectRepository.saveAll(students);
@@ -88,8 +84,7 @@ public class StudentSubjectService {
         List<StudentSubject> students = new ArrayList<>();
         CsvStudentParser csvStudentParser = new CsvStudentParser();
 
-        try (BufferedReader reader =
-                new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String fileContent = new String(file.getBytes(), StandardCharsets.UTF_8);
             students = csvStudentParser.parseStudentsOnSubject(fileContent);
 
@@ -103,7 +98,8 @@ public class StudentSubjectService {
                                         : currentDate.getYear() - 1);
                     });
 
-            // subject needs to be set manually, because .csv data does not contain subjectID!
+            // subject needs to be set manually, because .csv data does not contain
+            // subjectID!
             students.forEach(
                     student -> student.setSubject(subjectRepository.findByCode(subjectCode).get()));
         }
@@ -113,13 +109,11 @@ public class StudentSubjectService {
 
     public StudentSubject updateStudentSubject(StudentSubject updated) {
         Integer id = updated.getId();
-        StudentSubject existing =
-                studentSubjectRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "StudentSubject with ID " + id + " not found"));
+        StudentSubject existing = studentSubjectRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "StudentSubject with ID " + id + " not found"));
 
         // existing.setIndex(updated.getIndex());
         // existing.setSubject(updated.getSubject());
@@ -135,15 +129,13 @@ public class StudentSubjectService {
 
         // Handle Subject by code
         if (updated.getSubject() != null && updated.getSubject().getCode() != null) {
-            Subject subject =
-                    subjectRepository
-                            .findByCode(updated.getSubject().getCode())
-                            .orElseThrow(
-                                    () ->
-                                            new IllegalArgumentException(
-                                                    "Subject with code "
-                                                            + updated.getSubject().getCode()
-                                                            + " not found"));
+            Subject subject = subjectRepository
+                    .findByCode(updated.getSubject().getCode())
+                    .orElseThrow(
+                            () -> new IllegalArgumentException(
+                                    "Subject with code "
+                                            + updated.getSubject().getCode()
+                                            + " not found"));
             existing.setSubject(subject);
         }
 
@@ -165,18 +157,16 @@ public class StudentSubjectService {
         String groupQuery = parts.length > 2 ? parts[2] : "";
         String schoolYearQuery = parts.length > 3 ? parts[3] : "";
 
-        List<StudentSubject> filtered =
-                all.stream()
-                        .filter(
-                                s ->
-                                        s.getIndex().contains(indexQuery)
-                                                && (s.getFirstName() + "_" + s.getLastName())
-                                                        .contains(nameQuery)
-                                                && s.getGroup().contains(groupQuery)
-                                                && s.getSchoolYear()
-                                                        .toString()
-                                                        .contains(schoolYearQuery))
-                        .collect(Collectors.toList());
+        List<StudentSubject> filtered = all.stream()
+                .filter(
+                        s -> s.getIndex().contains(indexQuery)
+                                && (s.getFirstName() + "_" + s.getLastName())
+                                        .contains(nameQuery)
+                                && s.getGroup().contains(groupQuery)
+                                && s.getSchoolYear()
+                                        .toString()
+                                        .contains(schoolYearQuery))
+                .collect(Collectors.toList());
 
         if (pageable.getSort().isSorted()) {
             String sortField = pageable.getSort().iterator().next().getProperty();
@@ -199,13 +189,13 @@ public class StudentSubjectService {
 
     public Page<StudentSubject> getStudentsFromFilePaged(
             MultipartFile file, Integer subjectCode, Pageable pageable) {
-        try (BufferedReader reader =
-                new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             Set<String> indexesInFile = new HashSet<>();
 
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
+                if (line.trim().isEmpty())
+                    continue;
 
                 String[] parts = line.split(",");
 
@@ -222,10 +212,10 @@ public class StudentSubjectService {
                 return new PageImpl<>(List.of(), pageable, 0);
             }
 
-            // Pretpostavljam da imaš metodu u repository da pronađeš po indeksima i predmetu
-            List<StudentSubject> studentsFound =
-                    studentSubjectRepository.findByIndexInAndSubjectCode(
-                            new ArrayList<>(indexesInFile), subjectCode);
+            // Pretpostavljam da imaš metodu u repository da pronađeš po indeksima i
+            // predmetu
+            List<StudentSubject> studentsFound = studentSubjectRepository.findByIndexInAndSubjectCode(
+                    new ArrayList<>(indexesInFile), subjectCode);
 
             // Sada filtriraj i sortiraj u memoriji jer smo izvukli listu
             // Sortiranje:
@@ -246,13 +236,13 @@ public class StudentSubjectService {
     }
 
     public List<StudentSubject> getStudentsFromFile(MultipartFile file, Integer subjectCode) {
-        try (BufferedReader reader =
-                new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             Set<String> indexesInFile = new HashSet<>();
 
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
+                if (line.trim().isEmpty())
+                    continue;
 
                 String[] parts = line.split(",");
 
@@ -269,15 +259,20 @@ public class StudentSubjectService {
                 return List.of(); // Prazna lista, nema podataka
             }
 
-            List<StudentSubject> studentsFound =
-                    studentSubjectRepository.findByIndexInAndSubjectCode(
-                            new ArrayList<>(indexesInFile), subjectCode);
+            List<StudentSubject> studentsFound = studentSubjectRepository.findByIndexInAndSubjectCode(
+                    new ArrayList<>(indexesInFile), subjectCode);
 
             return studentsFound;
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload students: " + e.getMessage(), e);
         }
+    }
+
+    public StudentSubject getByIndexAndSubjectCode(String index, Integer subjectId) {
+        return studentSubjectRepository.findByIndexAndSubject_Code(index, subjectId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Error finding student with index " + index + " and subject code " + subjectId));
     }
 
     public void delete(Integer id) {
