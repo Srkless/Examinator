@@ -33,6 +33,7 @@ const StudentManagementForm = () => {
     const [isYearsLoaded, setIsYearsLoaded] = useState(false); // New state to track years loading
     const [sortingQuery, setSortingQuery] = useState('index');
     const [sortingDirection, setSortingDirection] = useState('asc')
+    const [studentsFromFileLoaded, setStudentsFromFileLoaded] = useState(false)
 
     const fileInputRef = useRef(null);
 
@@ -41,13 +42,18 @@ const StudentManagementForm = () => {
     };
 
     const handleFileChange = async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            console.log('Selected file:', file);
-            console.log(file.file)
-            const formData = new FormData();
-            formData.append('file', file)
-            await addStudentsByFile(formData, code)
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            const file = new FormData();
+            file.append('file', selectedFile)
+            try {
+                await addStudentsByFile(file, code)
+
+                setStudentsFromFileLoaded(true)
+            } catch (error) {
+
+                console.log(error)
+            }
         }
     };
 
@@ -141,7 +147,6 @@ const StudentManagementForm = () => {
                     formattedSearch,
                     indexSearchTerm,
                 );
-                console.log(sortingDirection, "u pozivu")
 
                 console.log(students);
                 setData(students);
@@ -151,6 +156,7 @@ const StudentManagementForm = () => {
                 if (resetPage) {
                     setCurrentPage(0);
                 }
+                setStudentsFromFileLoaded(false)
             } catch (error) {
                 console.error('Error fetching students:', error);
             }
@@ -200,6 +206,7 @@ const StudentManagementForm = () => {
                     setSelectedYear(validYears[1]);
                 }
                 setIsYearsLoaded(true);
+                setStudentsFromFileLoaded(false)
             } catch (error) {
                 console.error('Error fetching years:', error);
                 setIsYearsLoaded(true);
@@ -207,11 +214,10 @@ const StudentManagementForm = () => {
         };
 
         fetchYears();
-    }, [code]);
+    }, [code, studentsFromFileLoaded]);
 
     useEffect(() => {
         if (isYearsLoaded && selectedYear !== null) {
-            console.log('reload')
             fetchStudents(0, true);
         }
     }, [

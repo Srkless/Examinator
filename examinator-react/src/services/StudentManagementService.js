@@ -225,9 +225,11 @@ export async function addStudentsByFile(file, subjectCode) {
         body: file
     })
 
-    console.log(res);
 
-    const bodyText = await res.text();
-    console.log(bodyText)
+
+
+    if (!res.ok) {
+        throw new Error("Greška pri učitavanju studenata iz fajla")
+    }
 }
 
