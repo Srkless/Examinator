@@ -7,7 +7,7 @@ import '../styles/activities.scss';
 import {
     addActivity,
     deleteActivity,
-    getYears,
+    // getYears,
     updateActivity,
 } from '../services/ActivityService';
 import {
@@ -15,6 +15,7 @@ import {
     deleteFormula,
     updateFormula,
 } from '../services/FormulaService';
+import { getYears } from '../services/StudentManagementService';
 
 function ActivitiesForm() {
     useEffect(() => {
@@ -52,6 +53,7 @@ function ActivitiesForm() {
     const [formulaDialogText, setFormulaDialogText] = useState(
         'Dodavanje nove formule',
     );
+    const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
 
     const activityDialogRef = useRef(null);
     const formulaDialogRef = useRef(null);
@@ -156,6 +158,11 @@ function ActivitiesForm() {
                 });
             } catch (error) {
                 console.error('Error fetching activities:', error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri učitavanju aktivnosti',
+                });
+
             }
         };
 
@@ -166,23 +173,53 @@ function ActivitiesForm() {
     useEffect(() => {
         const fetchYears = async () => {
             try {
+                // const years = await getYears(code);
+                // console.log(years)
+                // if (years.length == 0) {
+                //     const month = new Date().getMonth();
+                //     const newYear = new Date().getFullYear();
+                //     if (month < 9) {
+                //         years.push(newYear - 1);
+                //     } else {
+                //         years.push(newYear);
+                //     }
+                // } else {
+                //     years.push(years[0] + 1);
+                // }
+                //
+                // years.sort((a, b) => b - a);
+                // setSchoolYears(years);
                 const years = await getYears(code);
-                if (years.length == 0) {
+                console.log(years)
+                const validYears = years.filter((item) => !isNaN(item));
+                if (validYears.length == 0) {
                     const month = new Date().getMonth();
                     const newYear = new Date().getFullYear();
-                    if (month < 5) {
-                        years.push(newYear - 1);
+                    if (month < 9) {
+                        validYears.push(newYear - 1);
                     } else {
-                        years.push(newYear);
+                        validYears.push(newYear);
                     }
                 } else {
-                    years.push(years[0] + 1);
+                    validYears.push(validYears[0] + 1);
                 }
 
-                years.sort((a, b) => b - a);
-                setSchoolYears(years);
+                validYears.sort((a, b) => b - a);
+                setSchoolYears(validYears);
+
+                if (validYears.length === 0) {
+                    setSelectedYear(validYears[0]);
+                }
+                if (validYears.length > 1) {
+                    setSelectedYear(validYears[1]);
+                }
+
             } catch (error) {
                 console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri učitavanju godina',
+                });
             }
         };
         fetchYears();
@@ -206,118 +243,171 @@ function ActivitiesForm() {
 
     const handleSubmitActivity = async (e) => {
         e.preventDefault();
-        try {
-            if (isEditActivity) {
-                try {
-                    await updateActivity(
-                        activityId,
-                        activityName,
-                        activityShortName,
-                        activityMaxPoints,
-                        selectedYear,
-                        subjectJson,
-                    );
-                    setIsEditActivity(false);
-                    setIsDeleteActivity(false);
-                    setEditingActivity(null);
-                } catch (error) {
-                    console.log(error);
-                }
-
-                setReload(true);
-                closeDialog(activityDialogRef);
-            } else if (isDeleteActivity) {
-                try {
-                    await deleteActivity(editingActivity.id);
-                    setIsEditActivity(false);
-                    setIsDeleteActivity(false);
-                    setEditingActivity(null);
-                } catch (error) {
-                    console.log(error);
-                }
-                setReload(true);
-                closeDialog(warningDialogRef);
-            } else {
-                try {
-                    console.log(
-                        activityName,
-                        activityShortName,
-                        activityMaxPoints,
-                        selectedYear,
-                        code,
-                    );
-                    await addActivity(
-                        activityName,
-                        activityShortName,
-                        activityMaxPoints,
-                        selectedYear,
-                        code,
-                    );
-                    setIsEditActivity(false);
-                    setIsDeleteActivity(false);
-                    setEditingActivity(null);
-                } catch (error) {
-                    console.log(error);
-                }
-                setReload(true);
-                closeDialog(activityDialogRef);
+        if (isEditActivity) {
+            try {
+                await updateActivity(
+                    activityId,
+                    activityName,
+                    activityShortName,
+                    activityMaxPoints,
+                    selectedYear,
+                    subjectJson,
+                );
+                setIsEditActivity(false);
+                setIsDeleteActivity(false);
+                setEditingActivity(null);
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Aktivnost ažurirana',
+                });
+            } catch (error) {
+                console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri ažuriranju aktivnosti',
+                });
             }
-        } catch (error) {
-            console.log(error);
+
+            setReload(true);
+            closeDialog(activityDialogRef);
+        } else if (isDeleteActivity) {
+            try {
+                await deleteActivity(editingActivity.id);
+                setIsEditActivity(false);
+                setIsDeleteActivity(false);
+                setEditingActivity(null);
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Aktivnost obrisana',
+                });
+            } catch (error) {
+                console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri brisanju aktivnosti',
+                });
+            }
+            setReload(true);
+            closeDialog(warningDialogRef);
+        } else {
+            try {
+                console.log(
+                    activityName,
+                    activityShortName,
+                    activityMaxPoints,
+                    selectedYear,
+                    code,
+                );
+                await addActivity(
+                    activityName,
+                    activityShortName,
+                    activityMaxPoints,
+                    selectedYear,
+                    code,
+                );
+                setIsEditActivity(false);
+                setIsDeleteActivity(false);
+                setEditingActivity(null);
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Aktivnost dodana',
+                });
+            } catch (error) {
+                console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri dodavanju aktivnosti',
+                });
+            }
+            setReload(true);
+            closeDialog(activityDialogRef);
         }
+
     };
 
     const handleSubmitFormula = async (e) => {
         e.preventDefault();
-        try {
-            if (isEditFormula) {
-                try {
-                    await updateFormula(
-                        editingFormula.id,
-                        formulaName,
-                        formulaExpression,
-                        selectedYear,
-                        subjectJson,
-                    );
-                    closeDialog(formulaDialogRef);
-                    setIsEditFormula(false);
-                    setEditingFormula(null);
-                    setIsDeleteFormula(false);
-                } catch (error) {
-                    console.log(error);
-                }
-                setReload(true);
-            } else if (isDeleteFormula) {
-                try {
-                    await deleteFormula(editingFormula.id);
-                    setIsEditFormula(false);
-                    setEditingFormula(null);
-                    setIsDeleteFormula(false);
-                } catch (error) {
-                    console.log(error);
-                }
-                setReload(true);
-                closeDialog(warningDialogRef);
-            } else {
-                try {
-                    await addFormula(
-                        formulaName,
-                        formulaExpression,
-                        selectedYear,
-                        code,
-                    );
-                    setIsEditFormula(false);
-                    setEditingFormula(null);
-                    setIsDeleteFormula(false);
-                } catch (error) {
-                    console.log(error);
-                }
-
-                setReload(true);
+        if (isEditFormula) {
+            try {
+                await updateFormula(
+                    editingFormula.id,
+                    formulaName,
+                    formulaExpression,
+                    selectedYear,
+                    subjectJson,
+                );
                 closeDialog(formulaDialogRef);
+                setIsEditFormula(false);
+                setEditingFormula(null);
+                setIsDeleteFormula(false);
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Formula ažurirana',
+                });
+            } catch (error) {
+                console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri ažuriranju formule',
+                });
             }
-        } catch (error) {
-            console.log(error);
+            setReload(true);
+        } else if (isDeleteFormula) {
+            try {
+                await deleteFormula(editingFormula.id);
+                setIsEditFormula(false);
+                setEditingFormula(null);
+                setIsDeleteFormula(false);
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Formula obrisana',
+                });
+            } catch (error) {
+                console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri brisanju formule',
+                });
+            }
+            setReload(true);
+            closeDialog(warningDialogRef);
+        } else {
+            try {
+                await addFormula(
+                    formulaName,
+                    formulaExpression,
+                    selectedYear,
+                    code,
+                );
+                setIsEditFormula(false);
+                setEditingFormula(null);
+                setIsDeleteFormula(false);
+                setSaveStatus({
+                    type: 'success',
+                    message: 'Formula dodana',
+                });
+            } catch (error) {
+                console.log(error);
+                setSaveStatus({
+                    type: 'error',
+                    message: 'Greška pri dodavanju formule',
+                });
+            }
+
+            setReload(true);
+            closeDialog(formulaDialogRef);
+        }
+    };
+    const getStatusClassName = (type) => {
+        switch (type) {
+            case 'success':
+                return 'status-success';
+            case 'error':
+                return 'status-error';
+            case 'warning':
+                return 'status-warning';
+            default:
+                return '';
         }
     };
 
@@ -368,6 +458,14 @@ function ActivitiesForm() {
                             Nova aktivnost
                         </button>
                     </div>
+                    {saveStatus.message && (
+                        <div
+                            className={`status-message ${getStatusClassName(saveStatus.type)}`}
+                        >
+                            {saveStatus.message}
+                        </div>
+                    )}
+
                     <div id="activitiesContainer">
                         {activities.filter(
                             (activity) => activity.schoolYear == selectedYear,

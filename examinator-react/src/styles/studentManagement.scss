@@ -349,6 +349,43 @@ dialog#studentDialog {
     display: none;
   }
 
+
+  .status-message {
+    --success-color: #28a745;
+    --success-bg: #d4edda;
+    --success-border: #c3e6cb;
+    --error-color: #721c24;
+    --error-bg: #f8d7da;
+    --error-border: #f5c6cb;
+    --warning-color: #856404;
+    --warning-bg: #fff3cd;
+    --warning-border: #ffeaa7;
+    --input-focus: #007bff;
+    padding: 1rem;
+    border-radius: variables.$border-radius;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    border: 1px solid;
+
+    &.status-success {
+      background-color: var(--success-bg);
+      color: var(--success-color);
+      border-color: var(--success-border);
+    }
+
+    &.status-error {
+      background-color: var(--error-bg);
+      color: var(--error-color);
+      border-color: var(--error-border);
+    }
+
+    &.status-warning {
+      background-color: var(--warning-bg);
+      color: var(--warning-color);
+      border-color: var(--warning-border);
+    }
+  }
+
   #paginationCenter {
     display: flex;
     align-items: center;

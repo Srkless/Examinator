@@ -183,6 +183,7 @@ const StudentManagementForm = () => {
 
             try {
                 const years = await getYears(code);
+                console.log(years)
                 const validYears = years.filter((item) => !isNaN(item));
                 if (validYears.length == 0) {
                     const month = new Date().getMonth();

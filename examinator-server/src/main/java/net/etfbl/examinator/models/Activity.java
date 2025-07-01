@@ -16,7 +16,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Activity.class)
 public class Activity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

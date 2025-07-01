@@ -67,6 +67,14 @@ export async function updateActivity(
             subject,
         }),
     });
+    console.log(JSON.stringify({
+        id,
+        name,
+        shortName,
+        maxPoints: Number(maxPoints),
+        schoolYear,
+        subject,
+    }))
     const bodyText = await res.text();
     const contentType = res.headers.get('Content-Type');
     const isJson = contentType && contentType.includes('application/json');
