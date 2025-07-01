@@ -31,9 +31,9 @@ export async function getStudentsBySubject(code) {
 
     return data;
 }
-export async function getStudents(code, pageNumber, pageSize, year) {
+export async function getStudents(code, pageNumber, pageSize, year, sortingQuery, sortingDirection) {
     const res = await fetch(
-        `${API_URL}/${code}/paged?page=${pageNumber}&size=${pageSize}&searchQuery=   ${year}`,
+        `${API_URL}/${code}/paged?page=${pageNumber}&size=${pageSize}&sortBy=${sortingQuery}&direction=${sortingDirection}&searchQuery=   ${year}`,
         {
             method: 'GET',
             headers: {
@@ -142,7 +142,7 @@ export async function getStudentsFromFileAll(code, formData) {
     return data;
 }
 
-export async function addStudent() {}
+export async function addStudent() { }
 
 export async function getYears(code) {
     const res = await fetch(`${API_URL}/years/${code}`, {

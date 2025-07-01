@@ -53,9 +53,13 @@ function GenerateResultsForm() {
     const [showBottom, setShowBottom] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [formData, setFormData] = useState('');
+    const [sortingQuery, setSortingQuery] = useState('index');
+    const [sortingDirection, setSortingDirection] = useState('asc')
 
     const lastScrollY = useRef(0);
     const fileInputRef = useRef(null);
+
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -166,6 +170,8 @@ function GenerateResultsForm() {
                         resetPage ? 0 : page,
                         length,
                         selectedYear,
+                        sortingQuery,
+                        sortingDirection
                     );
                 }
 
@@ -234,8 +240,13 @@ function GenerateResultsForm() {
                 console.error('Error fetching students:', error);
             }
         },
-        [code, currentPage, selectedYear, studentSource, formData],
+        [code, currentPage, selectedYear, studentSource, formData, sortingDirection, sortingQuery],
     );
+
+
+    useEffect(() => {
+        fetchStudents(currentPage, false, selectedLength);
+    }, [sortingQuery, sortingDirection])
 
     async function exportToCSV(filename = `${selectedSubject}_results.csv`) {
         try {
@@ -389,6 +400,7 @@ function GenerateResultsForm() {
         fetchStudents(0, true, selectedLength);
     }, [studentSource]);
 
+
     useEffect(() => {
         if (content.length > 0) {
             tableRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -431,26 +443,38 @@ function GenerateResultsForm() {
         );
     };
 
-    const handleSort = (column) => {
-        setSortDirection((prev) => {
-            const newDirection = !prev[column]; // true = ASC, false = DESC
+    const handleSort = (sortBy) => {
+        // setSortDirection((prev) => {
+        //     const newDirection = !prev[column]; // true = ASC, false = DESC
+        //
+        //     const sorted = [...content].sort((a, b) => {
+        //         const valA = a[columnFieldMap[column]] ?? '';
+        //         const valB = b[columnFieldMap[column]] ?? '';
+        //
+        //         if (valA < valB) return newDirection ? -1 : 1;
+        //         if (valA > valB) return newDirection ? 1 : -1;
+        //         return 0;
+        //     });
+        //
+        //     setContent(sorted);
+        //
+        //     return {
+        //         ...prev,
+        //         [column]: newDirection,
+        //     };
+        // });
+        console.log("handle sort")
+        if (sortBy === sortingQuery) {
 
-            const sorted = [...content].sort((a, b) => {
-                const valA = a[columnFieldMap[column]] ?? '';
-                const valB = b[columnFieldMap[column]] ?? '';
-
-                if (valA < valB) return newDirection ? -1 : 1;
-                if (valA > valB) return newDirection ? 1 : -1;
-                return 0;
-            });
-
-            setContent(sorted);
-
-            return {
-                ...prev,
-                [column]: newDirection,
-            };
-        });
+            if (sortingDirection === 'asc') {
+                setSortingDirection('desc')
+            } else {
+                setSortingDirection('asc')
+            }
+        } else {
+            setSortingQuery(sortBy)
+            setSortingDirection('asc')
+        }
     };
 
     useEffect(() => {
@@ -609,7 +633,7 @@ function GenerateResultsForm() {
                                         <th
                                             key={col}
                                             style={{ cursor: 'pointer' }}
-                                            onClick={() => handleSort(col)}
+                                            onClick={() => handleSort(columnFieldMap[col])}
                                         >
                                             {col}
                                         </th>
