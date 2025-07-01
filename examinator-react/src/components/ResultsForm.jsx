@@ -340,9 +340,18 @@ const ResultsForm = () => {
                     </div>
 
                     <div className="result-buttons">
-                        <label htmlFor="csvFile" className="upload-label" title="Uvezi CSV fajl">
-                            <span className="material-icons">upload</span>
-                        </label>
+                        <button
+                            id="uploadCsv"
+                            data-tooltip="Učitaj CSV sa rezultatima"
+                            onClick={() => document.getElementById('csvFile').click()}
+                        >
+                            <span
+                                className="material-icons"
+                                title="Učitaj CSV sa rezultatima"
+                            >
+                                upload
+                            </span>
+                        </button>
                         <input
                             id="csvFile"
                             type="file"
