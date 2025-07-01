@@ -375,7 +375,7 @@ public class ResultController {
     Optional<Activity> activityOpt = activityRepository.findById(activityId);
     if (activityOpt.isEmpty()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(Map.of("error", "Activity with ID " + activityId + " not found"));
+          .body("Activity with ID " + activityId + " not found");
     }
 
     byte[] csvBytes;
@@ -383,14 +383,32 @@ public class ResultController {
       csvBytes = file.getBytes();
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(Map.of("error", "Failed to read uploaded file: " + e.getMessage()));
+          .body("Failed to read uploaded file: " + e.getMessage());
+    }
+    List<Result> parsed;
+    List<String> mismatched;
+    try {
+      CsvResultsParser csvResultsParser = new CsvResultsParser(studentSubjectService, activityService);
+
+      parsed = csvResultsParser.parseResults(activityId, csvBytes);
+      mismatched = resultService.addResultsFromList(parsed);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    CsvResultsParser csvResultsParser = new CsvResultsParser(studentSubjectService, activityService);
-    List<Result> parsed = csvResultsParser.parseResults(activityId, csvBytes);
-    resultService.addResultsFromList(parsed);
+    StringBuilder returnMessage = new StringBuilder("Rezultati iz CSV fajla su uspješno ažurirani.");
+    if (!mismatched.isEmpty()) {
+      returnMessage.append(" Studenti sa indeksima: ");
+      for (int i = 0; i < mismatched.size(); i++) {
+        returnMessage.append(mismatched.get(i));
+        if (i < mismatched.size() - 1) {
+          returnMessage.append(", ");
+        }
+      }
+      returnMessage.append(" nisu pronađeni za datu školsku godinu.");
+    }
 
-    return ResponseEntity.ok(Map.of("message", "CSV uploaded successfully"));
+    return ResponseEntity.ok(Map.of("message", returnMessage.toString()));
   }
 
 }

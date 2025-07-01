@@ -255,16 +255,31 @@ public class ResultService {
     return activities;
   }
 
-  public void addResultsFromList(List<Result> results) {
+  public List<String> addResultsFromList(List<Result> results) {
+    List<String> mismatched = new ArrayList<>();
     for (Result result : results) {
+      String index = result.getStudentSubject().getIndex();
+      if (!studentRepository.findByIndexAndSubject_Code(index, result.getActivity().getSubject().getCode()).get()
+          .getSchoolYear().equals(result.getActivity().getSchoolYear())) {
+        mismatched.add(index);
+        System.out.println("SCHOOL YEAR: " + studentRepository
+            .findByIndexAndSubject_Code(index, result.getActivity().getSubject().getCode()).get().getSchoolYear() + " "
+            + result.getActivity().getSchoolYear());
+        continue;
+      }
+
       if (resultRepository.existsById(result.getId())) {
         Result r = resultRepository.findById(result.getId()).get();
+        if (result.getPoints() > result.getActivity().getMaxPoints() || result.getPoints() < 0) {
+          throw new IllegalArgumentException("Bodovi za studenta sa indeksom " + index + " nisu validni.");
+        }
         r.setPoints(result.getPoints());
         resultRepository.save(r);
       } else {
         resultRepository.save(result);
       }
     }
+    return mismatched;
 
   }
 
