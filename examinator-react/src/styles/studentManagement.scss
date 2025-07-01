@@ -293,7 +293,8 @@ dialog#studentDialog {
         border-radius: variables.$border-radius;
         cursor: pointer;
         background-color: var(--accent-color);
-        color: var(--white);
+
+        color: white;
 
         &:hover {
           background-color: var(--accent-color);

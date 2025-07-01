@@ -87,6 +87,7 @@ public class StudentSubjectService {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String fileContent = new String(file.getBytes(), StandardCharsets.UTF_8);
             students = csvStudentParser.parseStudentsOnSubject(fileContent);
+            System.out.println("addd method not controller");
 
             students.forEach(
                     student -> {
@@ -235,6 +236,7 @@ public class StudentSubjectService {
                 if (line.trim().isEmpty())
                     continue;
 
+                System.out.println(line);
                 String[] parts = line.split(",");
 
                 for (String part : parts) {
