@@ -15,9 +15,42 @@ const ResultsForm = () => {
     const [activityData, setActivityData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
+    const [showTop, setShowTop] = useState(false);
+    const [showBottom, setShowBottom] = useState(false);
 
     const subjectCode = subject?.match(/\((\d+)\)/)?.[1];
 
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY < lastScrollY.current) {
+                // Skrolovanje nadole
+                setShowTop(true);
+                setShowBottom(false);
+            } else if (currentScrollY > lastScrollY.current) {
+                // Skrolovanje nagore
+                setShowTop(false);
+                setShowBottom(true);
+            }
+
+            lastScrollY.current = currentScrollY;
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const scrollToBottom = () => {
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+        });
+    };
     useEffect(() => {
         const fetchActivityData = async () => {
             try {
@@ -269,7 +302,7 @@ const ResultsForm = () => {
     return (
         <div className="results-form">
             <HeaderComponent />
-            <main className="main-content results-container">
+            <main className="main-content container">
                 <div className="info-row">
                     <div class="field field-subject">
                         <label for="subject">Naziv predmeta</label>
@@ -308,7 +341,12 @@ const ResultsForm = () => {
                             accept=".csv"
                             onChange={handleFileUpload}
                         >
-                            <span class="material-icons">upload</span>
+                            <span
+                                class="material-icons"
+                                title="Uvezi spisak studenata"
+                            >
+                                upload
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -321,35 +359,28 @@ const ResultsForm = () => {
                     </div>
                 )}
 
-                <div className="section-header">
+                <div className="importResults-section-header">
                     <h2>Unos rezultata</h2>
-                    <div className="search-bar-wrapper">
+                    <div className="search-bar">
                         <input
                             type="text"
                             placeholder="Pretraga studenata..."
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="search-bar"
+                            className="searcbar"
                         />
                     </div>
                 </div>
 
-                <div className="actions">
-                    <button
-                        onClick={saveResults}
-                        disabled={loading}
-                        className={loading ? 'loading' : ''}
-                    >
-                        {loading ? 'Čuvanje...' : 'Sačuvaj rezultate'}
-                    </button>
-                </div>
-                <table>
+                <table className="results-table">
                     <thead>
                         <tr>
                             <th>Indeks</th>
                             <th>Ime</th>
                             <th>Prezime</th>
                             <th>Grupa</th>
-                            <th>Rezultat (0-{activityData?.maxPoints || 0})</th>
+                            <th className="width-20">
+                                Rezultat (0-{activityData?.maxPoints || 0})
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -426,6 +457,36 @@ const ResultsForm = () => {
                         )}
                     </tbody>
                 </table>
+
+                <button
+                    onClick={saveResults}
+                    disabled={loading}
+                    className="save-btn"
+                >
+                    {loading ? 'Čuvanje...' : 'Sačuvaj rezultate'}
+                </button>
+
+                {showTop && (
+                    <button
+                        id="goTopBtn"
+                        onClick={scrollToTop}
+                        title="Idi na vrh"
+                        style={{ display: 'flex' }}
+                    >
+                        <span className="material-icons">arrow_upward</span>
+                    </button>
+                )}
+
+                {showBottom && (
+                    <button
+                        id="goBottomBtn"
+                        onClick={scrollToBottom}
+                        title="Idi na dno"
+                        style={{ display: 'flex' }}
+                    >
+                        <span className="material-icons">arrow_downward</span>
+                    </button>
+                )}
             </main>
         </div>
     );

@@ -116,29 +116,6 @@ function GenerateResultsForm() {
         setFormData(formData);
     };
 
-    const handleGenerateResultsMultiple = async () => {
-        try {
-            const studentIndexes = content.map((s) => s.index);
-            const resultsByFormula = {};
-
-            const { formulas } = await getSubjectActivities(code);
-            for (const formulaObj of formulas) {
-                const formula = formulaObj.expression;
-
-                console.log(`Izračunavanje rezultata za formulu: ${formula}`);
-                console.log(`Indeksi studenata: ${studentIndexes.join(', ')}`);
-                console.log(`Šifra predmeta: ${code}`);
-                const results = await calculate(formula, studentIndexes, code);
-                console.log(results);
-            }
-
-            return resultsByFormula;
-        } catch (err) {
-            console.error('Greška prilikom generisanja rezultata:', err);
-            return null;
-        }
-    };
-
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -254,7 +231,6 @@ function GenerateResultsForm() {
                         };
                     },
                 );
-                console.log(transformedWithFormulas);
                 setContent(transformedWithFormulas);
             } catch (error) {
                 console.error('Error fetching students:', error);
@@ -481,6 +457,7 @@ function GenerateResultsForm() {
 
     const schoolYearChange = (event) => {
         setSelectedYear(event.target.value);
+        fetchStudents(0, true, selectedLength);
     };
     const selectedLengthChange = (event) => {
         setSelectedLength(event.target.value);
@@ -562,11 +539,11 @@ function GenerateResultsForm() {
                     <div className="section">
                         <strong>Formule:</strong>
                         {subjectFormulas.map((label) => (
-                            <label key={label.name}>
+                            <label key={label.expression}>
                                 <input
                                     type="checkbox"
                                     checked={selectedColumns.includes(
-                                        label.name,
+                                        label.expression,
                                     )}
                                     onChange={() =>
                                         handleColumnToggle(label.expression)
@@ -642,7 +619,7 @@ function GenerateResultsForm() {
                                             const field = columnFieldMap[col]; // npr. 'firstName' za 'Ime'
                                             return (
                                                 <td key={col}>
-                                                    {student[field] || ''}
+                                                    {student[field] ?? ''}
                                                 </td>
                                             );
                                         })}

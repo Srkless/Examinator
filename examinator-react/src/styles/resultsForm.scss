@@ -104,11 +104,15 @@ $tooltip-color: #444;
     color: var(--text-color);
   }
 
-  .main-content.results-container {
-    max-width: 1200px;
-    margin: 0 auto;
+  .main-content {
     padding: 2rem;
   }
+
+  .container {
+    max-width: calc(100% - 500px);
+    margin: 0 auto;
+  }
+
 
   .search-bar-wrapper {
     position: relative;
@@ -234,6 +238,7 @@ $tooltip-color: #444;
 
       .material-icons {
         font-size: 22px;
+        color: white;
       }
 
       &:hover {
@@ -333,40 +338,55 @@ $tooltip-color: #444;
 }
 
 
-.section-header {
-  @include flex-between;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border-color);
+.importResults-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 
   h2 {
     margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-color);
   }
 
+  .search-bar {
+    margin: 2rem 0 1rem;
+    display: flex;
+    justify-content: flex-end;
+
+    input {
+      width: 300px;
+      height: 42px;
+      padding: 0 1rem 0 1rem;
+      font-size: 1rem;
+      border: 1px solid color-mix(in srgb, var(--text-color) 30%, transparent);
+      border-radius: 6px;
+      background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      background-size: 1.2rem;
+
+      &:focus {
+        outline: none;
+        border-color: var(--accent-color);
+      }
+    }
+  }
 }
 
 
-table {
+.results-table {
   width: 100%;
-  @include card-style;
   overflow: hidden;
   border-collapse: collapse;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem 0;
 
-  thead {
-    background-color: var(--light-gray);
 
-    th {
-      padding: 1rem;
-      text-align: left;
-      font-weight: 600;
-      color: var(--text-color);
-      border-bottom: 2px solid var(--table-border-color);
-      font-size: 0.9rem;
-    }
+  th {
+    padding: 0.74rem 1rem;
+    border: 1px solid $border-color;
+    text-align: center;
+    cursor: pointer;
+    color: var(--text-color);
   }
 
   tbody {
@@ -379,9 +399,9 @@ table {
     }
 
     td {
-      padding: 1rem;
-      color: var(--text-color);
-      font-size: 0.9rem;
+      padding: 0.4rem;
+      border: 1px solid $border-color;
+      text-align: center;
 
       &.no-data {
         text-align: center;
@@ -391,7 +411,6 @@ table {
       }
 
       input[type="number"] {
-        width: 100%;
         @include input-style;
         padding: 0.5rem;
         font-size: 0.9rem;
@@ -401,6 +420,28 @@ table {
         }
       }
     }
+  }
+}
+
+.width-20 {
+  width: 20%;
+}
+
+.save-btn {
+  margin-top: 2rem;
+  background-color: var(--accent-color);
+  color: $white;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+
+  &:hover {
+    opacity: 0.8;
   }
 }
 
@@ -457,47 +498,6 @@ table {
 }
 
 
-@media (max-width: 768px) {
-  .main-content.results-container {
-    padding: 1rem;
-  }
-
-  .info-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-
-    >div {
-      align-items: center;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-  }
-
-  .section-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-
-  }
-
-
-  table {
-    font-size: 0.8rem;
-
-    th,
-    td {
-      padding: 0.75rem 0.5rem;
-    }
-
-    tbody td input[type="number"] {
-      padding: 0.4rem;
-      font-size: 0.8rem;
-    }
-  }
-}
-
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -523,6 +523,39 @@ table {
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+}
+
+#goTopBtn,
+#goBottomBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 100;
+  display: none;
+  background-color: var(--background-color);
+  color: var(--accent-color);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: $box-shadow;
+  transition: opacity 0.3s ease;
+  justify-content: center;
+  align-items: center;
+}
+
+#goTopBtn:hover,
+#goBottomBtn:hover {
+  color: var(--accent-color);
+  opacity: 0.8;
+}
+
+#goTopBtn .material-icons,
+#goBottomBtn .material-icons {
+  font-size: 28px;
+  line-height: 50px;
 }
 
 /* Dark mode specific styles */

@@ -329,6 +329,7 @@ function HomeForm() {
                                         <td>
                                             <span
                                                 className="material-icons"
+                                                title="Izmjena osnovnih podataka o predmetu"
                                                 onClick={() =>
                                                     handleIconClick('edit', i)
                                                 }
@@ -339,6 +340,7 @@ function HomeForm() {
                                         <td>
                                             <span
                                                 className="material-icons"
+                                                title="Predavači na predmetu"
                                                 onClick={() =>
                                                     handleIconClick('groups', i)
                                                 }
@@ -353,6 +355,7 @@ function HomeForm() {
                                             >
                                                 <span
                                                     className="material-icons"
+                                                    title="Definisanje aktivnosti i formula"
                                                     onClick={() =>
                                                         handleIconClick(
                                                             'display_settings',
@@ -371,6 +374,7 @@ function HomeForm() {
                                             >
                                                 <span
                                                     className="material-icons"
+                                                    title="Studenti na predmetu"
                                                     onClick={() =>
                                                         handleIconClick(
                                                             'school',
@@ -389,6 +393,7 @@ function HomeForm() {
                                             >
                                                 <span
                                                     className="material-icons"
+                                                    title="Rezultati studenata na predmetu"
                                                     onClick={() =>
                                                         handleIconClick(
                                                             'description',
@@ -403,6 +408,7 @@ function HomeForm() {
                                         <td>
                                             <span
                                                 className="material-icons"
+                                                title="Unos rezultata"
                                                 onClick={() =>
                                                     handleIconClick(
                                                         'grid_on',

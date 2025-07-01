@@ -324,7 +324,12 @@ const StudentManagementForm = () => {
                             data-tooltip="Uvezi spisak studenata"
                             onClick={handleButtonClick}
                         >
-                            <span className="material-icons">upload</span>
+                            <span
+                                className="material-icons"
+                                title="Uvezi spisak studenata"
+                            >
+                                upload
+                            </span>
                         </button>
                         <input
                             type="file"
@@ -344,7 +349,12 @@ const StudentManagementForm = () => {
                                 )
                             }
                         >
-                            <span className="material-icons">person_add</span>
+                            <span
+                                className="material-icons"
+                                title="Dodaj studenta"
+                            >
+                                person_add
+                            </span>
                         </button>
                     </div>
                 </div>
