@@ -100,6 +100,7 @@ function ActivitiesForm() {
             setActivityDialogText('Uređivanje aktivnosti');
             activityDialogRef.current?.showModal();
         } else {
+            setIsEditActivity(false);
             setIsDeleteActivity(true);
             setEditingActivity(activity);
             if (activity.results.length !== 0) {
@@ -123,6 +124,7 @@ function ActivitiesForm() {
             setFormulaDialogText('Uređivanje formule');
             formulaDialogRef.current?.showModal();
         } else {
+            setIsEditFormula(false)
             setEditingFormula(formula);
             setIsDeleteFormula(true);
             setWarningDialogText('Jeste li sigurni ?');
@@ -720,8 +722,8 @@ function ActivitiesForm() {
                         isDeleteFormula
                             ? handleSubmitFormula
                             : isDeleteActivity
-                              ? handleSubmitActivity
-                              : undefined
+                                ? handleSubmitActivity
+                                : undefined
                     }
                 >
                     <div className="dialog-header">

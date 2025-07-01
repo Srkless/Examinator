@@ -87,13 +87,33 @@ public class FormulaService {
         boolean expressionConflict = formulaRepository.existsByExpressionAndSubjectIdAndSchoolYear(
                 updated.getExpression(), subjectId, updated.getSchoolYear());
 
+        Optional<Formula> existingByName = formulaRepository.findByNameAndSubjectIdAndSchoolYear(updated.getName(),
+                subjectId, updated.getSchoolYear());
+
+        Optional<Formula> existingByExpression = formulaRepository
+                .findByExpressionAndSubjectIdAndSchoolYear(updated.getExpression(), subjectId, updated.getSchoolYear());
+
+        if (!existingByName.isEmpty()) {
+
+            if (existingByName.get().getId() != updated.getId()) {
+                throw new IllegalArgumentException("Formuila with the same name already exists");
+            }
+        }
+
+        if (!existingByExpression.isEmpty()) {
+            if (existingByExpression.get().getId() != updated.getId()) {
+                throw new IllegalArgumentException("Formula with the same expression already exists");
+            }
+        }
+
         // if (nameConflict) {
         // throw new IllegalArgumentException("Formula with the same name already
         // exists");
         // }
-        if (expressionConflict) {
-            throw new IllegalArgumentException("Formula with the same expression already exists");
-        }
+        // if (expressionConflict) {
+        // throw new IllegalArgumentException("Formula with the same expression already
+        // exists");
+        // }
 
         existingFormula.setName(updated.getName());
         existingFormula.setExpression(updated.getExpression());

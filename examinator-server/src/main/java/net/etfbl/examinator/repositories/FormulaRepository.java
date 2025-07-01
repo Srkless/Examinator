@@ -18,7 +18,12 @@ public interface FormulaRepository extends JpaRepository<Formula, Integer> {
 
     boolean existsByNameAndSubjectIdAndSchoolYear(String name, Integer subjectId, Integer schoolYear);
 
+    Optional<Formula> findByNameAndSubjectIdAndSchoolYear(String name, Integer subjectId, Integer schoolYear);
+
     boolean existsByExpressionAndSubjectIdAndSchoolYear(String experession, Integer subjectId, Integer schoolYear);
+
+    Optional<Formula> findByExpressionAndSubjectIdAndSchoolYear(String experession, Integer subjectId,
+            Integer schoolYear);
 
     boolean existsByNameAndSubjectIdAndSchoolYearAndIdNot(String name, Integer subjectI, Integer schoolYear,
             Integer excludeId);

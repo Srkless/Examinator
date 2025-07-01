@@ -22,45 +22,38 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
- * REST controller for managing StudentSubject entities. Provides endpoints for CRUD operations with
+ * REST controller for managing StudentSubject entities. Provides endpoints for
+ * CRUD operations with
  * optional pagination and sorting.
  */
 @RestController
 @RequestMapping("/api/students")
 public class StudentSubjectController {
 
-    @Autowired private StudentSubjectService studentSubjectService;
+    @Autowired
+    private StudentSubjectService studentSubjectService;
 
     /**
      * Retrieves all students associated with a subject without pagination.
      *
      * @param subjectCode code of the subject.
-     * @param sortBy Field to sort by (default: "index").
-     * @param direction Sort direction: "asc" or "desc" (default: "asc").
+     * @param sortBy      Field to sort by (default: "index").
+     * @param direction   Sort direction: "asc" or "desc" (default: "asc").
      * @return List of StudentSubject entities.
      */
     @Operation(summary = "Get all students for a subject without pagination")
     @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "List of students",
-                content = @Content(schema = @Schema(implementation = StudentSubject.class)))
+            @ApiResponse(responseCode = "200", description = "List of students", content = @Content(schema = @Schema(implementation = StudentSubject.class)))
     })
     @GetMapping("/subject/{subjectCode}")
     public ResponseEntity<List<StudentSubject>> getAllBySubject(
-            @Parameter(description = "Subject ID", required = true) @PathVariable
-                    Integer subjectCode,
-            @Parameter(description = "Sort field, default is 'index'")
-                    @RequestParam(defaultValue = "index")
-                    String sortBy,
-            @Parameter(description = "Sort direction: 'asc' or 'desc', default is 'asc'")
-                    @RequestParam(defaultValue = "asc")
-                    String direction) {
+            @Parameter(description = "Subject ID", required = true) @PathVariable Integer subjectCode,
+            @Parameter(description = "Sort field, default is 'index'") @RequestParam(defaultValue = "index") String sortBy,
+            @Parameter(description = "Sort direction: 'asc' or 'desc', default is 'asc'") @RequestParam(defaultValue = "asc") String direction) {
 
-        Sort sort =
-                direction.equalsIgnoreCase("desc")
-                        ? Sort.by(sortBy).descending()
-                        : Sort.by(sortBy).ascending();
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
         List<StudentSubject> list = studentSubjectService.getAllBySubjectCode(subjectCode);
         return ResponseEntity.ok(list);
     }
@@ -79,15 +72,11 @@ public class StudentSubjectController {
      */
     @Operation(summary = "Add a student to a subject")
     @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Student added",
-                content = @Content(schema = @Schema(implementation = StudentSubject.class)))
+            @ApiResponse(responseCode = "200", description = "Student added", content = @Content(schema = @Schema(implementation = StudentSubject.class)))
     })
     @PostMapping("/add")
     public ResponseEntity<StudentSubject> addStudentToSubject(
-            @Parameter(description = "StudentSubject to add", required = true) @RequestBody
-                    StudentSubject studentSubject) {
+            @Parameter(description = "StudentSubject to add", required = true) @RequestBody StudentSubject studentSubject) {
         StudentSubject saved = studentSubjectService.addStudentToSubject(studentSubject);
         return ResponseEntity.ok(saved);
     }
@@ -100,15 +89,11 @@ public class StudentSubjectController {
      */
     @Operation(summary = "Add multiple students to a subject")
     @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Students added",
-                content = @Content(schema = @Schema(implementation = StudentSubject.class)))
+            @ApiResponse(responseCode = "200", description = "Students added", content = @Content(schema = @Schema(implementation = StudentSubject.class)))
     })
     @PostMapping("/add-multiple")
     public ResponseEntity<List<StudentSubject>> addStudentsToSubject(
-            @Parameter(description = "List of StudentSubjects to add", required = true) @RequestBody
-                    List<StudentSubject> studentSubjects) {
+            @Parameter(description = "List of StudentSubjects to add", required = true) @RequestBody List<StudentSubject> studentSubjects) {
         List<StudentSubject> saved = studentSubjectService.addStudentsToSubject(studentSubjects);
         return ResponseEntity.ok(saved);
     }
@@ -121,23 +106,18 @@ public class StudentSubjectController {
      */
     @Operation(summary = "Add multiple students to a subject from CSV")
     @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Students added",
-                content = @Content(schema = @Schema(implementation = StudentSubject.class))),
-        @ApiResponse(responseCode = "400", description = "Invalid CSV or bad request")
+            @ApiResponse(responseCode = "200", description = "Students added", content = @Content(schema = @Schema(implementation = StudentSubject.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid CSV or bad request")
     })
     @PostMapping("/subject/{subjectCode}/add-multiple-from-csv")
     public ResponseEntity<List<StudentSubject>> addStudentsToSubjectFromCsv(
-            @Parameter(description = "Subject ID", required = true) @PathVariable
-                    Integer subjectCode,
-            @Parameter(description = "CSV file with students", required = true)
-                    @RequestParam("file")
-                    MultipartFile file) {
+            @Parameter(description = "Subject ID", required = true) @PathVariable Integer subjectCode,
+            @Parameter(description = "CSV file with students", required = true) @RequestParam("file") MultipartFile file) {
+
+        System.out.println("upload controller");
 
         try {
-            List<StudentSubject> saved =
-                    studentSubjectService.addStudentsFromCsv(file, subjectCode);
+            List<StudentSubject> saved = studentSubjectService.addStudentsFromCsv(file, subjectCode);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -152,64 +132,47 @@ public class StudentSubjectController {
      */
     @Operation(summary = "Update a student subject")
     @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Student subject updated",
-                content = @Content(schema = @Schema(implementation = StudentSubject.class)))
+            @ApiResponse(responseCode = "200", description = "Student subject updated", content = @Content(schema = @Schema(implementation = StudentSubject.class)))
     })
     @PutMapping("/update")
     public ResponseEntity<StudentSubject> updateStudentSubject(
-            @Parameter(description = "Updated StudentSubject object", required = true) @RequestBody
-                    StudentSubject updatedStudent) {
+            @Parameter(description = "Updated StudentSubject object", required = true) @RequestBody StudentSubject updatedStudent) {
         StudentSubject updated = studentSubjectService.updateStudentSubject(updatedStudent);
         return ResponseEntity.ok(updated);
     }
 
     /**
-     * Retrieves students for a subject with pagination, sorting, and optional search query.
+     * Retrieves students for a subject with pagination, sorting, and optional
+     * search query.
      *
      * @param subjectCode code of the subject.
-     * @param page Page number (default: 0).
-     * @param size Page size (default: 20).
-     * @param sortBy Field to sort by (default: "index").
-     * @param direction Sort direction: "asc" or "desc" (default: "asc").
+     * @param page        Page number (default: 0).
+     * @param size        Page size (default: 20).
+     * @param sortBy      Field to sort by (default: "index").
+     * @param direction   Sort direction: "asc" or "desc" (default: "asc").
      * @param searchQuery Optional search query for filtering.
      * @return Paged result of StudentSubject entities.
      */
     @Operation(summary = "Get paged and filtered students for a subject")
     @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Paged list of students",
-                content = @Content(schema = @Schema(implementation = Page.class)))
+            @ApiResponse(responseCode = "200", description = "Paged list of students", content = @Content(schema = @Schema(implementation = Page.class)))
     })
     @GetMapping("/subject/{subjectCode}/paged")
     public ResponseEntity<Page<StudentSubject>> getPagedFilteredBySubject(
-            @Parameter(description = "Subject Code", required = true) @PathVariable
-                    Integer subjectCode,
-            @Parameter(description = "Page number, default 0") @RequestParam(defaultValue = "0")
-                    int page,
-            @Parameter(description = "Page size, default 20") @RequestParam(defaultValue = "20")
-                    int size,
-            @Parameter(description = "Sort field, default 'index'")
-                    @RequestParam(defaultValue = "index")
-                    String sortBy,
-            @Parameter(description = "Sort direction 'asc' or 'desc', default 'asc'")
-                    @RequestParam(defaultValue = "asc")
-                    String direction,
-            @Parameter(description = "Search query for filtering, optional")
-                    @RequestParam(defaultValue = "")
-                    String searchQuery) {
+            @Parameter(description = "Subject Code", required = true) @PathVariable Integer subjectCode,
+            @Parameter(description = "Page number, default 0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size, default 20") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "Sort field, default 'index'") @RequestParam(defaultValue = "index") String sortBy,
+            @Parameter(description = "Sort direction 'asc' or 'desc', default 'asc'") @RequestParam(defaultValue = "asc") String direction,
+            @Parameter(description = "Search query for filtering, optional") @RequestParam(defaultValue = "") String searchQuery) {
 
-        Sort sort =
-                direction.equalsIgnoreCase("desc")
-                        ? Sort.by(sortBy).descending()
-                        : Sort.by(sortBy).ascending();
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<StudentSubject> result =
-                studentSubjectService.getFilteredAndPaged(subjectCode, pageable, searchQuery);
+        Page<StudentSubject> result = studentSubjectService.getFilteredAndPaged(subjectCode, pageable, searchQuery);
 
         return ResponseEntity.ok(result);
     }
@@ -224,20 +187,19 @@ public class StudentSubjectController {
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "") String searchQuery) {
 
-        Sort sort =
-                direction.equalsIgnoreCase("desc")
-                        ? Sort.by(sortBy).descending()
-                        : Sort.by(sortBy).ascending();
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<StudentSubject> saved =
-                studentSubjectService.getStudentsFromFilePaged(file, subjectCode, pageable);
+        Page<StudentSubject> saved = studentSubjectService.getStudentsFromFilePaged(file, subjectCode, pageable);
         return ResponseEntity.ok(saved);
     }
 
     @PostMapping("/subject/{subjectCode}/upload")
     public ResponseEntity<List<StudentSubject>> uploadStudents(
             @RequestParam("file") MultipartFile file, @PathVariable Integer subjectCode) {
+        System.out.println("upload controller");
 
         List<StudentSubject> saved = studentSubjectService.getStudentsFromFile(file, subjectCode);
         return ResponseEntity.ok(saved);
@@ -250,18 +212,13 @@ public class StudentSubjectController {
      * @return 200 OK if deletion successful; 400 Bad Request otherwise.
      */
     @Operation(summary = "Delete an Student by ID")
-    @ApiResponses(
-            value = {
-                @ApiResponse(responseCode = "200", description = "Student deleted successfully"),
-                @ApiResponse(
-                        responseCode = "400",
-                        description = "Error during deletion",
-                        content = @Content(schema = @Schema(implementation = String.class)))
-            })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Student deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Error during deletion", content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteActivity(
-            @Parameter(description = "ID of the Student to delete", required = true) @PathVariable
-                    Integer id) {
+            @Parameter(description = "ID of the Student to delete", required = true) @PathVariable Integer id) {
         try {
             studentSubjectService.delete(id);
             return ResponseEntity.ok("Student deleted successfully");

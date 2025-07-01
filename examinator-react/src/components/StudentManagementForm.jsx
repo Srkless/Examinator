@@ -9,6 +9,7 @@ import {
     getYears,
     updateStudent,
     deleteStudent,
+    addStudentsByFile,
 } from '../services/StudentManagementService';
 
 const StudentManagementForm = () => {
@@ -39,11 +40,14 @@ const StudentManagementForm = () => {
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
             console.log('Selected file:', file);
-            // Handle your file here
+            console.log(file.file)
+            const formData = new FormData();
+            formData.append('file', file)
+            await addStudentsByFile(formData, code)
         }
     };
 
@@ -360,7 +364,7 @@ const StudentManagementForm = () => {
                             ref={fileInputRef}
                             onChange={handleFileChange}
                             style={{ display: 'none' }}
-                            accept=".csv, .txt" // Optional: restrict file types
+                            accept=".csv" // Optional: restrict file types
                         />
                         <button
                             id="addStudentBtn"

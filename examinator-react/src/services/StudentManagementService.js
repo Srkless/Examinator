@@ -210,3 +210,24 @@ export async function getYears(code) {
 
     return data;
 }
+
+
+export async function addStudentsByFile(file, subjectCode) {
+
+
+
+    const res = await fetch(`${API_URL}/subject/${subjectCode}/add-multiple-from-csv`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+
+        },
+        body: file
+    })
+
+    console.log(res);
+
+    const bodyText = await res.text();
+    console.log(bodyText)
+}
+
