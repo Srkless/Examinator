@@ -220,9 +220,9 @@ public class ResultService {
             studentPoints.put(activityName, result.get().getPoints());
           }
           else {
-            // nema rezultata za studenta za datu aktivnost -> Upisujemo null za tog studenta i prelazimo na sljedeceg stud.
-            computedResults.add(null);
-            continue label;
+            // sada racunamo da je ostvario nula bodova na toj aktivnosti ako nije izasao
+            // i prelazimo na trazenje sljedece aktivnosti u formuli
+            studentPoints.put(activityName, 0);
           }
         }
 
