@@ -142,11 +142,6 @@ public class StudentSubjectService {
         return studentSubjectRepository.save(existing);
     }
 
-    // GET students filtered and paged, the filter parameters are checked with the
-    // AND operator, which implies separate filters for each parameter
-    // the search query is provided in the following format:
-    // "index_query name_query group_query"
-    // The filter parameters are separated by a space
     public Page<StudentSubject> getFilteredAndPaged(
             Integer subjectCode, Pageable pageable, String searchQuery) {
         List<StudentSubject> all = studentSubjectRepository.findAllBySubjectCode(subjectCode);
@@ -212,13 +207,9 @@ public class StudentSubjectService {
                 return new PageImpl<>(List.of(), pageable, 0);
             }
 
-            // Pretpostavljam da imaš metodu u repository da pronađeš po indeksima i
-            // predmetu
             List<StudentSubject> studentsFound = studentSubjectRepository.findByIndexInAndSubjectCode(
                     new ArrayList<>(indexesInFile), subjectCode);
 
-            // Sada filtriraj i sortiraj u memoriji jer smo izvukli listu
-            // Sortiranje:
             String sortProperty = pageable.getSort().iterator().next().getProperty();
 
             List<StudentSubject> sorted = studentsFound.stream().collect(Collectors.toList());

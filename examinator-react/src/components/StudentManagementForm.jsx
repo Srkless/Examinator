@@ -31,6 +31,7 @@ const StudentManagementForm = () => {
     const [studentId, setStudentId] = useState('');
     const [isYearsLoaded, setIsYearsLoaded] = useState(false); // New state to track years loading
     const [sortingQuery, setSortingQuery] = useState('index');
+    const [sortingDirection, setSortingDirection] = useState('asc')
 
     const fileInputRef = useRef(null);
 
@@ -131,11 +132,12 @@ const StudentManagementForm = () => {
                     resetPage ? 0 : page,
                     selectedLength,
                     sortingQuery,
-                    'asc',
+                    sortingDirection,
                     selectedYear,
                     formattedSearch,
                     indexSearchTerm,
                 );
+                console.log(sortingDirection, "u pozivu")
 
                 console.log(students);
                 setData(students);
@@ -157,6 +159,7 @@ const StudentManagementForm = () => {
             debouncedSearchTerm,
             isYearsLoaded,
             sortingQuery,
+            sortingDirection
         ],
     );
 
@@ -204,6 +207,7 @@ const StudentManagementForm = () => {
 
     useEffect(() => {
         if (isYearsLoaded && selectedYear !== null) {
+            console.log('reload')
             fetchStudents(0, true);
         }
     }, [
@@ -212,6 +216,7 @@ const StudentManagementForm = () => {
         selectedYear,
         isYearsLoaded,
         sortingQuery,
+        sortingDirection
     ]);
 
     useEffect(() => {
@@ -248,6 +253,24 @@ const StudentManagementForm = () => {
             console.log(error);
         }
     };
+
+
+    const handleSort = (sortBy) => {
+
+
+        if (sortBy === sortingQuery) {
+
+            if (sortingDirection === 'asc') {
+                setSortingDirection('desc')
+            } else {
+                setSortingDirection('asc')
+            }
+        } else {
+            setSortingQuery(sortBy)
+            setSortingDirection('asc')
+        }
+
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -386,35 +409,35 @@ const StudentManagementForm = () => {
                                         <tr>
                                             <th
                                                 onClick={() =>
-                                                    setSortingQuery('index')
+                                                    handleSort('index')
                                                 }
                                             >
                                                 Indeks
                                             </th>
                                             <th
                                                 onClick={() =>
-                                                    setSortingQuery('firstName')
+                                                    handleSort('firstName')
                                                 }
                                             >
                                                 Ime
                                             </th>
                                             <th
                                                 onClick={() =>
-                                                    setSortingQuery('lastName')
+                                                    handleSort('lastName')
                                                 }
                                             >
                                                 Prezime
                                             </th>
                                             <th
                                                 onClick={() =>
-                                                    setSortingQuery('group')
+                                                    handleSort('group')
                                                 }
                                             >
                                                 Grupa
                                             </th>
                                             <th
                                                 onClick={() =>
-                                                    setSortingQuery('note')
+                                                    handleSort('note')
                                                 }
                                             >
                                                 Napomena
